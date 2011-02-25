@@ -19,18 +19,23 @@
 
 package org.exoplatform.portal.webui.page;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.config.DataStorage;
 import org.exoplatform.portal.config.UserACL;
 import org.exoplatform.portal.config.model.Page;
-import org.exoplatform.portal.config.model.PageNavigation;
-import org.exoplatform.portal.config.model.PageNode;
 import org.exoplatform.portal.config.model.PortalConfig;
+import org.exoplatform.portal.mop.Described;
+import org.exoplatform.portal.mop.description.DescriptionService;
+import org.exoplatform.portal.mop.navigation.NavigationServiceException;
+import org.exoplatform.portal.mop.user.UserNavigation;
+import org.exoplatform.portal.mop.user.UserNode;
+import org.exoplatform.portal.mop.user.UserPortal;
 import org.exoplatform.portal.webui.navigation.UIPageNodeSelector;
 import org.exoplatform.portal.webui.portal.UIPortal;
 import org.exoplatform.portal.webui.portal.UIPortalComposer;
@@ -46,6 +51,8 @@ import org.exoplatform.webui.config.annotation.ComponentConfigs;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
+import org.exoplatform.webui.form.UIFormStringInput;
+import org.exoplatform.webui.form.UIFormCheckBoxInput;
 
 /** Created by The eXo Platform SARL Author : Dang Van Minh minhdv81@yahoo.com Jun 23, 2006 */
 @ComponentConfigs(@ComponentConfig(template = "system:/groovy/webui/core/UIWizard.gtmpl", events = {
@@ -67,81 +74,72 @@ public class UIPageCreationWizard extends UIPageWizard
 
    public UIPageCreationWizard() throws Exception
    {
-      UIWizardPageSetInfo uiPageInfo = addChild(UIWizardPageSetInfo.class, null, null).setRendered(false);
+      addChild(UIWizardPageSetInfo.class, null, null).setRendered(false);
       addChild(UIWizardPageSelectLayoutForm.class, null, null).setRendered(false);
       addChild(UIPagePreview.class, null, null).setRendered(false);
       setNumberSteps(NUMBER_OF_STEPs);
       viewStep(FIRST_STEP);
       setShowWelcomeComponent(false);
-      boolean isUserNav = Util.getUIPortal().getSelectedNavigation().getOwnerType().equals(PortalConfig.USER_TYPE);
-      if (isUserNav)
-      {
-         uiPageInfo.getChild(UIPageNodeSelector.class).setRendered(false);
-      }
    }
 
-   private void saveData() throws Exception
+   public void configure(UserNode node) throws Exception
+   {            
+      UIPageNodeSelector nodeSelector = findFirstComponentOfType(UIPageNodeSelector.class);
+      nodeSelector.configure(node);      
+      if (node.getNavigation().getKey().getTypeName().equals(PortalConfig.USER_TYPE))
+      {
+         nodeSelector.setRendered(false);         
+      }
+   }
+   
+   private UserNode saveData() throws Exception
    {
       UIPagePreview uiPagePreview = getChild(UIPagePreview.class);
       UIPage uiPage = (UIPage)uiPagePreview.getUIComponent();
-      
 
       UIWizardPageSetInfo uiPageInfo = getChild(UIWizardPageSetInfo.class);
       UIPageNodeSelector uiNodeSelector = uiPageInfo.getChild(UIPageNodeSelector.class);
-      PageNode selectedNode = uiNodeSelector.getSelectedPageNode();
-      PageNavigation pageNav = uiNodeSelector.getSelectedNavigation();
-      
-      // reload page navigation
-      DataStorage dataService = getApplicationComponent(DataStorage.class);
-      pageNav = dataService.getPageNavigation(pageNav.getOwnerType(), pageNav.getOwnerId());
-      UIPortalApplication uiPortalApp = Util.getUIPortalApplication();
-      setNavigation(uiPortalApp.getNavigations(), pageNav);
-      uiPortalApp.localizeNavigations();
-      UIPortal uiPortal = Util.getUIPortal();
-      uiPortal.setNavigation(pageNav);
-      uiNodeSelector.selectNavigation(pageNav);
-      if (selectedNode != null)
-      {
-         uiNodeSelector.selectPageNodeByUri(selectedNode.getUri());
-         selectedNode = uiNodeSelector.getSelectedPageNode();
-      }
-      
-      if (PortalConfig.USER_TYPE.equals(pageNav.getOwnerType()))
-         selectedNode = null;
+      UserNode selectedNode = uiNodeSelector.getSelectedNode();
 
       Page page = (Page)PortalDataMapper.buildModelObject(uiPage);
-      PageNode pageNode = uiPageInfo.getPageNode();
-      pageNode.setPageReference(page.getPageId());
-      if (selectedNode != null)
-      {
-         List<PageNode> children = selectedNode.getChildren();
-         if (children == null)
-         {
-            children = new ArrayList<PageNode>();
-         }
-         children.add(pageNode);
-         selectedNode.setChildren((ArrayList<PageNode>)children);
-      }
-      else
-      {
-         pageNav.addNode(pageNode);
-      }
-      uiNodeSelector.selectPageNodeByUri(pageNode.getUri());
-
+      UserNode createdNode = uiPageInfo.createUserNode(selectedNode);
+      
+      createdNode.setPageRef(page.getPageId());
+      DataStorage dataService = getApplicationComponent(DataStorage.class); 
       dataService.create(page);
-      dataService.save(pageNav);
-   }
 
-   private void setNavigation(List<PageNavigation> navs, PageNavigation nav)
-   {
-      for (int i = 0; i < navs.size(); i++)
+      UserPortal userPortal = Util.getUIPortalApplication().getUserPortalConfig().getUserPortal();
+      userPortal.saveNode(selectedNode, null);
+      
+      DescriptionService descriptionService = getApplicationComponent(DescriptionService.class);
+      Map<Locale, Described.State> descriptions = new HashMap<Locale, Described.State>();
+      Map<String, String> cachedLabels = uiPageInfo.getCachedLabels();
+      
+      for (String strLocale : cachedLabels.keySet())
       {
-         if (navs.get(i).getId() == nav.getId())
+         Locale locale;
+         if (strLocale.contains("_"))
          {
-            navs.set(i, nav);
-            return;
+            String[] arr = strLocale.split("_");
+            if (arr.length > 2)
+            {
+               locale = new Locale(arr[0], arr[1], arr[2]);
+            }
+            else
+            {
+               locale = new Locale(arr[0], arr[1]);
+            }
          }
+         else
+         {
+            locale = new Locale(strLocale);
+         }
+         
+         descriptions.put(locale, new Described.State(cachedLabels.get(strLocale), null));
       }
+      
+      descriptionService.setDescriptions(createdNode.getId(), descriptions);
+      return createdNode;
    }
 
    /**
@@ -154,29 +152,12 @@ public class UIPageCreationWizard extends UIPageWizard
    private boolean isSelectedNodeExist() throws Exception
    {
       UIWizardPageSetInfo uiPageSetInfo = getChild(UIWizardPageSetInfo.class);
-      PageNavigation navigation = uiPageSetInfo.getChild(UIPageNodeSelector.class).getSelectedNavigation();
-      PageNode pageNode = uiPageSetInfo.getPageNode();
-      PageNode selectedPageNode = uiPageSetInfo.getSelectedPageNode();
-      List<PageNode> sibbling = null;
-      if (selectedPageNode != null)
+      String pageName = uiPageSetInfo.getUIStringInput(UIWizardPageSetInfo.PAGE_NAME).getValue();
+      UserNode selectedPageNode = uiPageSetInfo.getSelectedPageNode();
+      if (selectedPageNode.getChild(pageName) != null)
       {
-         sibbling = selectedPageNode.getChildren();
+         return true;
       }
-      else
-      {
-         sibbling = navigation.getNodes();
-      }
-      if (sibbling != null)
-      {
-         for (PageNode ele : sibbling)
-         {
-            if (ele.getUri().equals(pageNode.getUri()))
-            {
-               return true;
-            }
-         }
-      }
-
       return false;
    }
 
@@ -226,7 +207,7 @@ public class UIPageCreationWizard extends UIPageWizard
          UIWizardPageSetInfo uiPageSetInfo = uiWizard.getChild(UIWizardPageSetInfo.class);
          UIPageNodeSelector uiNodeSelector = uiPageSetInfo.getChild(UIPageNodeSelector.class);
          uiWizard.updateWizardComponent();
-         PageNavigation navigation = uiNodeSelector.getSelectedNavigation();
+         UserNavigation navigation = uiNodeSelector.getNavigation();
          if (navigation == null)
          {
             uiPortalApp.addMessage(new ApplicationMessage("UIPageCreationWizard.msg.notSelectedPageNavigation",
@@ -235,7 +216,7 @@ public class UIPageCreationWizard extends UIPageWizard
             return;
          }
 
-         if (uiPageSetInfo.getUIFormCheckBoxInput(UIWizardPageSetInfo.SHOW_PUBLICATION_DATE).isChecked())
+         if (((UIFormCheckBoxInput)uiPageSetInfo.getUIInput(UIWizardPageSetInfo.SHOW_PUBLICATION_DATE)).isChecked())
          {
          	
          	Calendar currentCalendar = Calendar.getInstance();
@@ -274,6 +255,10 @@ public class UIPageCreationWizard extends UIPageWizard
                return;
             }
          }
+         
+         // Update the last value of selected locale to cached labels
+         UIFormStringInput label = uiPageSetInfo.getUIStringInput(UIWizardPageSetInfo.I18N_LABEL);
+         uiPageSetInfo.updateCachedLabels(uiPageSetInfo.getSelectedLocale(), label.getValue());
       }
       
    }
@@ -329,14 +314,14 @@ public class UIPageCreationWizard extends UIPageWizard
          UIWizardPageSetInfo uiPageInfo = uiWizard.getChild(UIWizardPageSetInfo.class);
 
          UIPageNodeSelector uiNodeSelector = uiPageInfo.getChild(UIPageNodeSelector.class);
-         PageNavigation pageNavi = uiNodeSelector.getSelectedNavigation();
-         String ownerType = pageNavi.getOwnerType();
-         String ownerId = pageNavi.getOwnerId();
+         UserNavigation pageNavi = uiNodeSelector.getNavigation();
+         String ownerType = pageNavi.getKey().getTypeName();
+         String ownerId = pageNavi.getKey().getName();
 
-         PageNode pageNode = uiPageInfo.getPageNode();
+         UIFormStringInput pageName = uiPageInfo.getUIStringInput(UIWizardPageSetInfo.PAGE_NAME);
          Page page = uiPageTemplateOptions.createPageFromSelectedOption(ownerType, ownerId);
          page.setName("page" + page.hashCode());
-         String pageId = pageNavi.getOwnerType() + "::" + pageNavi.getOwnerId() + "::" + page.getName();
+         String pageId = ownerType + "::" + ownerId + "::" + page.getName();
          DataStorage storage = uiWizard.getApplicationComponent(DataStorage.class);
          if (storage.getPage(pageId) != null)
          {
@@ -351,7 +336,7 @@ public class UIPageCreationWizard extends UIPageWizard
 
          if (page.getTitle() == null || page.getTitle().trim().length() == 0)
          {
-            page.setTitle(pageNode.getName());
+            page.setTitle(pageName.getValue());
          }
 
          UIPagePreview uiPagePreview = uiWizard.getChild(UIPagePreview.class);
@@ -385,16 +370,24 @@ public class UIPageCreationWizard extends UIPageWizard
          }
          uiPortalApp.setModeState(UIPortalApplication.NORMAL_MODE);
          uiWorkingWS.setRenderedChild(UIPortalApplication.UI_VIEWING_WS_ID);
-         uiWizard.saveData();
-         UIPortalToolPanel toolPanel = uiWorkingWS.findFirstComponentOfType(UIPortalToolPanel.class);
-         toolPanel.setUIComponent(null);
-         uiWizard.updateUIPortal(event);
-         UIWizardPageSetInfo uiPageInfo = uiWizard.getChild(UIWizardPageSetInfo.class);
-         UIPageNodeSelector uiNodeSelector = uiPageInfo.getChild(UIPageNodeSelector.class);
-         PageNode selectedNode = uiNodeSelector.getSelectedPageNode();
          
          PortalRequestContext pcontext = Util.getPortalRequestContext();
-         String uri = pcontext.getPortalURI() + selectedNode.getUri();
+         String uri = pcontext.getPortalURI();
+
+         try
+         {
+            UserNode newNode = uiWizard.saveData();
+            uri += newNode.getURI();
+         }
+         catch (NavigationServiceException ex)
+         {
+            pcontext.getUIApplication().addMessage(
+               new ApplicationMessage("UIPageCreationWizard.msg." + ex.getError().name(), null));
+         }
+         
+         UIPortalToolPanel toolPanel = uiWorkingWS.findFirstComponentOfType(UIPortalToolPanel.class);
+         toolPanel.setUIComponent(null);
+         uiWizard.updateUIPortal(event);         
          pcontext.getResponse().sendRedirect(uri);
       }
    }

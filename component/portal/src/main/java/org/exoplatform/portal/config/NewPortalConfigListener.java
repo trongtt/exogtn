@@ -20,29 +20,44 @@
 package org.exoplatform.portal.config;
 
 import org.exoplatform.commons.utils.IOUtil;
+import org.exoplatform.container.PortalContainer;
 import org.exoplatform.container.component.BaseComponentPlugin;
+import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.container.configuration.ConfigurationManager;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
 import org.exoplatform.portal.application.PortletPreferences;
 import org.exoplatform.portal.application.PortletPreferences.PortletPreferencesSet;
+import org.exoplatform.portal.config.model.NavigationFragment;
+import org.exoplatform.portal.mop.importer.ImportMode;
+import org.exoplatform.portal.mop.importer.Imported;
+import org.exoplatform.portal.mop.importer.NavigationImporter;
 import org.exoplatform.portal.config.model.Container;
+import org.exoplatform.portal.config.model.ModelUnmarshaller;
 import org.exoplatform.portal.config.model.Page;
+import org.exoplatform.portal.config.model.Page.PageSet;
 import org.exoplatform.portal.config.model.PageNavigation;
 import org.exoplatform.portal.config.model.PageNode;
 import org.exoplatform.portal.config.model.PortalConfig;
-import org.exoplatform.portal.config.model.Page.PageSet;
+import org.exoplatform.portal.config.model.UnmarshalledObject;
+import org.exoplatform.portal.config.model.Version;
+import org.exoplatform.portal.mop.description.DescriptionService;
+import org.exoplatform.portal.mop.navigation.NavigationService;
+import org.exoplatform.portal.pom.config.POMSession;
+import org.exoplatform.portal.pom.config.POMSessionManager;
 import org.gatein.common.logging.Logger;
 import org.gatein.common.logging.LoggerFactory;
+import org.gatein.mop.api.workspace.Workspace;
 import org.jibx.runtime.*;
-import org.jibx.runtime.impl.UnmarshallingContext;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -83,18 +98,35 @@ public class NewPortalConfigListener extends BaseComponentPlugin
 
    /**
     * If true the portal clear portal metadata from data storage and replace
-    * it with new data created from .xml files
+    * it with new data created from .xml files.
     */
    private boolean overrideExistingData;
 
    /** . */
    private Logger log = LoggerFactory.getLogger(getClass());
 
-   public NewPortalConfigListener(DataStorage dataStorage, ConfigurationManager cmanager, InitParams params)
+   /** . */
+   private final POMSessionManager pomMgr;
+
+   /** . */
+   private NavigationService navigationService_;
+
+   /** . */
+   private DescriptionService descriptionService_;
+
+   public NewPortalConfigListener(
+      POMSessionManager pomMgr,
+      DataStorage dataStorage,
+      ConfigurationManager cmanager,
+      InitParams params,
+      NavigationService navigationService,
+      DescriptionService descriptionService)
       throws Exception
    {
       cmanager_ = cmanager;
       dataStorage_ = dataStorage;
+      navigationService_ = navigationService;
+      descriptionService_ = descriptionService;
 
       ValueParam valueParam = params.getValueParam("page.templates.location");
       if (valueParam != null)
@@ -141,39 +173,100 @@ public class NewPortalConfigListener extends BaseComponentPlugin
          overrideExistingData = false;
       }
 
+      this.pomMgr = pomMgr;
+   }
+
+   private void touchImport()
+   {
+      RequestLifeCycle.begin(PortalContainer.getInstance());
+      try
+      {
+         POMSession session = pomMgr.getSession();
+         Workspace workspace = session.getWorkspace();
+         Imported imported = workspace.adapt(Imported.class);
+         imported.setLastModificationDate(new Date());
+         session.save();
+      }
+      finally
+      {
+         RequestLifeCycle.end();
+      }
+   }
+
+   private boolean performImport()
+   {
+      RequestLifeCycle.begin(PortalContainer.getInstance());
+      try
+      {
+         if (overrideExistingData)
+         {
+            return true;
+         }
+         else
+         {
+            POMSession session = pomMgr.getSession();
+
+            // Obtain the status
+            Workspace workspace = session.getWorkspace();
+            boolean perform = !workspace.isAdapted(Imported.class);
+
+            // We mark it
+            if (perform)
+            {
+               Imported imported = workspace.adapt(Imported.class);
+               imported.setCreationDate(new Date());
+               session.save();
+            }
+
+            //
+            return perform;
+         }
+      }
+      finally
+      {
+         RequestLifeCycle.end();
+      }
    }
 
    public void run() throws Exception
    {
-      //DANGEROUS! If the user delete the defaultPortal (ie: classic), the next time he restarts
-      //the server. Data of predefined owners would be overriden
-      if (dataStorage_.getPortalConfig(defaultPortal) != null && !overrideExistingData)
+      if (!performImport())
+      {
          return;
+      }
 
+      //
       if (isUseTryCatch)
       {
-
-         for (NewPortalConfig ele : configs)
+         RequestLifeCycle.begin(PortalContainer.getInstance());
+         try
          {
-            try
+            for (NewPortalConfig ele : configs)
             {
-               initPortletPreferencesDB(ele);
+               try
+               {
+                  initPortletPreferencesDB(ele);
+               }
+               catch (Exception e)
+               {
+                  log.error("NewPortalConfig error: " + e.getMessage(), e);
+               }
             }
-            catch (Exception e)
+            for (NewPortalConfig ele : configs)
             {
-               log.error("NewPortalConfig error: " + e.getMessage(), e);
+               try
+               {
+                  initPortalConfigDB(ele);
+               }
+               catch (Exception e)
+               {
+                  log.error("NewPortalConfig error: " + e.getMessage(), e);
+               }
             }
          }
-         for (NewPortalConfig ele : configs)
+         finally
          {
-            try
-            {
-               initPortalConfigDB(ele);
-            }
-            catch (Exception e)
-            {
-               log.error("NewPortalConfig error: " + e.getMessage(), e);
-            }
+            RequestLifeCycle.end();
          }
          for (NewPortalConfig ele : configs)
          {
@@ -186,16 +279,24 @@ public class NewPortalConfigListener extends BaseComponentPlugin
                log.error("NewPortalConfig error: " + e.getMessage(), e);
             }
          }
-         for (NewPortalConfig ele : configs)
+         RequestLifeCycle.begin(PortalContainer.getInstance());
+         try
          {
-            try
+            for (NewPortalConfig ele : configs)
             {
-               initPageNavigationDB(ele);
+               try
+               {
+                  initPageNavigationDB(ele);
+               }
+               catch (Exception e)
+               {
+                  log.error("NewPortalConfig error: " + e.getMessage(), e);
+               }
             }
-            catch (Exception e)
-            {
-               log.error("NewPortalConfig error: " + e.getMessage(), e);
-            }
+         }
+         finally
+         {
+            RequestLifeCycle.end();
          }
          for (NewPortalConfig ele : configs)
          {
@@ -209,29 +310,50 @@ public class NewPortalConfigListener extends BaseComponentPlugin
             }
          }
 
+         //
+         touchImport();
       }
       else
       {
-         for (NewPortalConfig ele : configs)
+         RequestLifeCycle.begin(PortalContainer.getInstance());
+         try
          {
-            initPortletPreferencesDB(ele);
+            for (NewPortalConfig ele : configs)
+            {
+               initPortletPreferencesDB(ele);
+            }
+            for (NewPortalConfig ele : configs)
+            {
+               initPortalConfigDB(ele);
+            }
          }
-         for (NewPortalConfig ele : configs)
+         finally
          {
-            initPortalConfigDB(ele);
+            RequestLifeCycle.end();
          }
          for (NewPortalConfig ele : configs)
          {
             initPageDB(ele);
          }
-         for (NewPortalConfig ele : configs)
+         RequestLifeCycle.begin(PortalContainer.getInstance());
+         try
          {
-            initPageNavigationDB(ele);
+            for (NewPortalConfig ele : configs)
+            {
+               initPageNavigationDB(ele);
+            }
+         }
+         finally
+         {
+            RequestLifeCycle.end();
          }
          for (NewPortalConfig ele : configs)
          {
             ele.getPredefinedOwner().clear();
          }
+
+         //
+         touchImport();
       }
    }
 
@@ -343,9 +465,9 @@ public class NewPortalConfigListener extends BaseComponentPlugin
       try
       {
          String type = config.getOwnerType();
-         PortalConfig pconfig = getConfig(config, owner, type, PortalConfig.class);
+         UnmarshalledObject<PortalConfig> obj = getConfig(config, owner, type, PortalConfig.class);
 
-         if (pconfig == null)
+         if (obj == null)
          {
             // Ensure that the PortalConfig has been defined
             // The PortalConfig could be empty if the related PortalConfigListener
@@ -360,6 +482,9 @@ public class NewPortalConfigListener extends BaseComponentPlugin
             }
             return;
          }
+
+         //
+         PortalConfig pconfig = obj.getObject();
 
          // We use that owner value because it may have been fixed for group names
          owner = pconfig.getName();
@@ -383,52 +508,76 @@ public class NewPortalConfigListener extends BaseComponentPlugin
 
    public void createPage(NewPortalConfig config, String owner) throws Exception
    {
-      PageSet pageSet = getConfig(config, owner, "pages", PageSet.class);
+      UnmarshalledObject<PageSet> pageSet = getConfig(config, owner, "pages", PageSet.class);
       if (pageSet == null)
       {
          return;
       }
-      ArrayList<Page> list = pageSet.getPages();
+      ArrayList<Page> list = pageSet.getObject().getPages();
       for (Page page : list)
       {
-         dataStorage_.create(page);
+         RequestLifeCycle.begin(PortalContainer.getInstance());
+         try
+         {
+            dataStorage_.create(page);
+         }
+         finally
+         {
+            RequestLifeCycle.end();
+         }
       }
    }
 
    public void createPageNavigation(NewPortalConfig config, String owner) throws Exception
    {
-      PageNavigation navigation = getConfig(config, owner, "navigation", PageNavigation.class);
-      if (navigation == null)
+      UnmarshalledObject<PageNavigation> obj = getConfig(config, owner, "navigation", PageNavigation.class);
+      if (obj == null)
       {
          return;
       }
-      PageNavigation currentNavigation = dataStorage_.getPageNavigation(navigation.getOwner());
-      if (currentNavigation == null)
+
+      //
+      PageNavigation navigation = obj.getObject();
+      boolean extendedNavigation = obj.getVersion() == Version.V_1_2;
+
+      //
+      ImportMode importMode;
+      if (config.getImportMode() != null)
       {
-         dataStorage_.create(navigation);
+         importMode = ImportMode.valueOf(config.getImportMode().trim().toUpperCase());
       }
       else
       {
-         if(overrideExistingData)
-         {
-            dataStorage_.remove(currentNavigation);
-            dataStorage_.create(navigation);
-         }
-         else
-         {
-            navigation.merge(currentNavigation);
-            dataStorage_.save(navigation);
-         }
+         importMode = ImportMode.CONSERVE;
       }
+
+      //
+      Locale locale;
+      PortalConfig portalConfig = dataStorage_.getPortalConfig(config.getOwnerType(), owner);
+      if (portalConfig != null && portalConfig.getLocale() != null)
+      {
+         locale = new Locale(portalConfig.getLocale());
+      }
+      else
+      {
+         locale = Locale.ENGLISH;
+      }
+
+      //
+      NavigationImporter merge = new NavigationImporter(locale, importMode, navigation, navigationService_, descriptionService_);
+
+      //
+      merge.perform();
    }
 
    public void createPortletPreferences(NewPortalConfig config, String owner) throws Exception
    {
-      PortletPreferencesSet portletSet = getConfig(config, owner, "portlet-preferences", PortletPreferencesSet.class);
-      if (portletSet == null)
+      UnmarshalledObject<PortletPreferencesSet> obj = getConfig(config, owner, "portlet-preferences", PortletPreferencesSet.class);
+      if (obj == null)
       {
          return;
       }
+      PortletPreferencesSet portletSet = obj.getObject();
       ArrayList<PortletPreferences> list = portletSet.getPortlets();
       for (PortletPreferences portlet : list)
       {
@@ -449,7 +598,7 @@ public class NewPortalConfigListener extends BaseComponentPlugin
     * @throws Exception any exception
     * @param <T> the generic type to unmarshall to
     */
-   private <T> T getConfig(NewPortalConfig config, String owner, String fileName, Class<T> type) throws Exception
+   private <T> UnmarshalledObject<T> getConfig(NewPortalConfig config, String owner, String fileName, Class<T> type) throws Exception
    {
       log.debug("About to load config=" + config + " owner=" + owner + " fileName=" + fileName);
 
@@ -481,9 +630,9 @@ public class NewPortalConfigListener extends BaseComponentPlugin
          boolean ok = false;
          try
          {
-            final T t = fromXML(config.getOwnerType(), owner, xml, type);
+            final UnmarshalledObject<T> o = fromXML(config.getOwnerType(), owner, xml, type);
             ok = true;
-            return t;
+            return o;
          }
          catch (JiBXException e)
          {
@@ -525,7 +674,7 @@ public class NewPortalConfigListener extends BaseComponentPlugin
       String path = pageTemplatesLocation_ + "/" + temp + "/page.xml";
       InputStream is = cmanager_.getInputStream(path);
       String xml = IOUtil.getStreamContentAsString(is);
-      return fromXML(ownerType, owner, xml, Page.class);
+      return fromXML(ownerType, owner, xml, Page.class).getObject();
    }
 
    public String getTemplateConfig(String type, String name)
@@ -538,16 +687,60 @@ public class NewPortalConfigListener extends BaseComponentPlugin
       }
       return null;
    }
+   
+   /**
+    * Get all template configurations
+    * @param siteType (portal, group, user)
+    * @return set of template name
+    */
+   public Set<String> getTemplateConfigs(String siteType)
+   {
+      Set<String> result = new HashSet<String>();      
+      for(SiteConfigTemplates tempConfig : templateConfigs)
+      {
+         Set<String> templates = tempConfig.getTemplates(siteType);
+         if(templates != null && templates.size() > 0)
+         {
+            result.addAll(templates);
+         }
+      }      
+      return result;
+   }
+   
+   /**
+    * Get detail configuration from a template file 
+    * @param siteType (portal, group, user)
+    * @param templateName name of template
+    * @return PortalConfig object
+    */
+   public PortalConfig getPortalConfigFromTemplate(String siteType, String templateName)
+   {
+      String templatePath = getTemplateConfig(siteType, templateName);
+      NewPortalConfig config = new NewPortalConfig(templatePath);
+      config.setTemplateName(templateName);
+      config.setOwnerType(siteType);
+      UnmarshalledObject<PortalConfig> result = null;
+      try
+      {
+         result = getConfig(config, templateName, siteType, PortalConfig.class);
+         if (result != null)
+         {
+            return result.getObject();
+         }
+      }
+      catch (Exception e)
+      {
+         log.warn("Cannot find configuration of template: " + templateName);
+      }
+      return null;
+   }
 
    // Deserializing code
 
-   private <T> T fromXML(String ownerType, String owner, String xml, Class<T> clazz) throws Exception
+   private <T> UnmarshalledObject<T> fromXML(String ownerType, String owner, String xml, Class<T> clazz) throws Exception
    {
-      ByteArrayInputStream is = new ByteArrayInputStream(xml.getBytes("UTF-8"));
-      IBindingFactory bfact = BindingDirectory.getFactory(clazz);
-      UnmarshallingContext uctx = (UnmarshallingContext)bfact.createUnmarshallingContext();
-      uctx.setDocument(is, null, "UTF-8", false);
-      T o = clazz.cast(uctx.unmarshalElement());
+      UnmarshalledObject<T> obj = ModelUnmarshaller.unmarshall(clazz, xml.getBytes("UTF-8"));
+      T o = obj.getObject();
       if (o instanceof PageNavigation)
       {
          PageNavigation nav = (PageNavigation)o;
@@ -580,7 +773,7 @@ public class NewPortalConfigListener extends BaseComponentPlugin
             //        pdcService_.create(page);
          }
       }
-      return o;
+      return obj;
    }
 
    private static String fixOwnerName(String type, String owner)
@@ -633,9 +826,25 @@ public class NewPortalConfigListener extends BaseComponentPlugin
    private static void fixOwnerName(PageNavigation pageNav)
    {
       pageNav.setOwnerId(fixOwnerName(pageNav.getOwnerType(), pageNav.getOwnerId()));
-      for (PageNode pageNode : pageNav.getNodes())
+      ArrayList<NavigationFragment> fragments = pageNav.getFragments();
+      if (fragments != null)
       {
-         fixOwnerName(pageNode);
+         for (NavigationFragment fragment : fragments)
+         {
+            fixOwnerName(fragment);
+         }
+      }
+   }
+
+   private static void fixOwnerName(NavigationFragment fragment)
+   {
+      ArrayList<PageNode> nodes = fragment.getNodes();
+      if (nodes != null)
+      {
+         for (PageNode pageNode : nodes)
+         {
+            fixOwnerName(pageNode);
+         }
       }
    }
 
@@ -653,9 +862,9 @@ public class NewPortalConfigListener extends BaseComponentPlugin
          pageRef = type + "::" + owner + "::" + name;
          pageNode.setPageReference(pageRef);
       }
-      if (pageNode.getChildren() != null)
+      if (pageNode.getNodes() != null)
       {
-         for (PageNode childPageNode : pageNode.getChildren())
+         for (PageNode childPageNode : pageNode.getNodes())
          {
             fixOwnerName(childPageNode);
          }

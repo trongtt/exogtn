@@ -47,13 +47,23 @@
    <!-- A top node-navigation element -->
    <xs:element name="node-navigation" type="nodeNavigationType"/>
 
+   <!-- A localized string -->
+   <xs:complexType name="localizedString">
+      <xs:simpleContent>
+         <xs:extension base="xs:string">
+            <xs:attribute ref="xml:lang" />
+         </xs:extension>
+      </xs:simpleContent>
+   </xs:complexType>
+
    <!-- The type of a top navigation node -->
    <xs:complexType name="nodeNavigationType">
       <xs:sequence>
          <xs:element name="priority" type="xs:positiveInteger"/>
-         <xs:element name="page-nodes" minOccurs="0" maxOccurs="1">
+         <xs:element name="page-nodes" minOccurs="0" maxOccurs="unbounded">
             <xs:complexType>
                <xs:sequence>
+                  <xs:element name="parent-uri" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
                   <xs:element name="node" type="nodeType" minOccurs="0" maxOccurs="unbounded"/>
                </xs:sequence>
             </xs:complexType>
@@ -64,9 +74,9 @@
    <!-- The type of a navigation node -->
    <xs:complexType name="nodeType">
       <xs:sequence>
-         <xs:element name="uri" type="xs:string"/>
+         <xs:element name="uri" type="xs:string" minOccurs="0" maxOccurs="1"/>
          <xs:element name="name" type="xs:string"/>
-         <xs:element name="label" type="xs:string" minOccurs="0" maxOccurs="1"/>
+         <xs:element name="label" type="localizedString" minOccurs="0" maxOccurs="unbounded"/>
          <xs:element name="icon" type="xs:string" minOccurs="0" maxOccurs="1"/>
          <xs:element name="start-publication-date" type="xs:string" minOccurs="0" maxOccurs="1"/>
          <xs:element name="end-publication-date" type="xs:string" minOccurs="0" maxOccurs="1"/>
@@ -166,10 +176,11 @@
 
    <xs:complexType name="portletApplicationType">
       <xs:sequence>
-       <xs:choice>
-          <xs:element name="portlet" type="portletType"/>
-          <xs:element name="wsrp" type="xs:string"/>
-       </xs:choice>
+         <xs:choice>
+            <xs:element name="portlet" type="portletType"/>
+            <xs:element name="wsrp" type="xs:string"/>
+         </xs:choice>
+         <xs:element name="theme" type="xs:string" minOccurs="0" maxOccurs="1"/>
          <xs:element name="title" type="xs:string" minOccurs="0" maxOccurs="1"/>
          <xs:element name="access-permissions" type="xs:string" minOccurs="1" maxOccurs="1"/>
          <xs:element name="show-info-bar" type="xs:boolean" minOccurs="1" maxOccurs="1"/>

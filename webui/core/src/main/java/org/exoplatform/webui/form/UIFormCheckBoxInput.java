@@ -19,17 +19,19 @@
 
 package org.exoplatform.webui.form;
 
-import org.exoplatform.webui.application.WebuiRequestContext;
-import org.exoplatform.commons.serialization.api.annotations.Serialized;
-
 import java.io.Writer;
+
+import org.exoplatform.commons.serialization.api.annotations.Serialized;
+import org.exoplatform.webui.application.WebuiRequestContext;
 
 /**
  * Represents a checkbox field.
  * @param <T> The type of value that is expected
+ * @deprecated use {@link org.exoplatform.webui.form.input.UICheckBoxInput} instead 
  */
 @SuppressWarnings("hiding")
 @Serialized
+@Deprecated
 public class UIFormCheckBoxInput<T> extends UIFormInputBase<T>
 {
    /**
@@ -70,6 +72,10 @@ public class UIFormCheckBoxInput<T> extends UIFormInputBase<T>
       else if (boolean.class.isInstance(value))
       {
          checked = boolean.class.cast(value);
+      }
+      else if (value instanceof String)
+      {
+         checked = Boolean.parseBoolean((String)value);
       }
       typeValue_ = (Class<T>)value.getClass();
       return super.setValue(value);

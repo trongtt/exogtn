@@ -28,6 +28,13 @@ import org.exoplatform.portal.config.model.Page;
 import org.exoplatform.portal.config.model.PageNavigation;
 import org.exoplatform.portal.config.model.PageNode;
 import org.exoplatform.portal.config.model.PortalConfig;
+import org.exoplatform.portal.mop.SiteKey;
+import org.exoplatform.portal.mop.Visibility;
+import org.exoplatform.portal.mop.navigation.NavigationContext;
+import org.exoplatform.portal.mop.navigation.NavigationService;
+import org.exoplatform.portal.mop.navigation.NodeContext;
+import org.exoplatform.portal.mop.navigation.NodeModel;
+import org.exoplatform.portal.mop.navigation.Scope;
 import org.exoplatform.portal.pom.config.POMSession;
 import org.exoplatform.portal.pom.config.POMSessionManager;
 
@@ -42,7 +49,7 @@ import java.util.TimeZone;
  * Created by The eXo Platform SARL Author : Tung Pham thanhtungty@gmail.com Nov
  * 13, 2007
  */
-public class TestLoadedPOM extends AbstractPortalTest
+public class TestLoadedPOM extends AbstractConfigTest
 {
 
    /** . */
@@ -57,6 +64,9 @@ public class TestLoadedPOM extends AbstractPortalTest
    /** . */
    private POMSession session;
 
+   /** . */
+   private NavigationService navService;
+
    public TestLoadedPOM(String name)
    {
       super(name);
@@ -70,6 +80,7 @@ public class TestLoadedPOM extends AbstractPortalTest
       portalConfigService = (UserPortalConfigService)container.getComponentInstanceOfType(UserPortalConfigService.class);
       storage = (DataStorage)container.getComponentInstanceOfType(DataStorage.class);
       mgr = (POMSessionManager)container.getComponentInstanceOfType(POMSessionManager.class);
+      navService = (NavigationService)container.getComponentInstanceOfType(NavigationService.class);
       session = mgr.openSession();
    }
 
@@ -82,71 +93,73 @@ public class TestLoadedPOM extends AbstractPortalTest
 
    public void testLegacyGroupWithNormalizedName() throws Exception
    {
-      PageNavigation nav = storage.getPageNavigation("group::/platform/test/legacy");
+      SiteKey key = SiteKey.group("/test/legacy");
+      NavigationContext nav = navService.loadNavigation(key);
       assertNotNull(nav);
-      assertEquals("/platform/test/legacy", nav.getOwnerId());
-      PageNode node = nav.getNodes().get(0);
-      assertEquals("group::/platform/test/legacy::register", node.getPageReference());
+      NodeContext<?> root = navService.loadNode(NodeModel.SELF_MODEL, nav, Scope.ALL, null);
+      NodeContext<?> node = root.get(0);
+      assertEquals("group::/test/legacy::register", node.getState().getPageRef());
 
-      Page page = storage.getPage("group::/platform/test/legacy::register");
+      Page page = storage.getPage("group::/test/legacy::register");
       assertNotNull(page);
-      assertEquals("group::/platform/test/legacy::register", page.getPageId());
-      assertEquals("/platform/test/legacy", page.getOwnerId());
+      assertEquals("group::/test/legacy::register", page.getPageId());
+      assertEquals("/test/legacy", page.getOwnerId());
       Application app = (Application)page.getChildren().get(0);
-      //    assertEquals("group#/platform/test/legacy:/web/IFramePortlet/blog", app.getInstanceState().getWeakReference());
+      //    assertEquals("group#/test/legacy:/web/IFramePortlet/blog", app.getInstanceState().getWeakReference());
 
-      PortletPreferences prefs = storage.getPortletPreferences("group#/platform/test/legacy:/web/IFramePortlet/blog");
+      PortletPreferences prefs = storage.getPortletPreferences("group#/test/legacy:/web/IFramePortlet/blog");
       assertNotNull(prefs);
-      assertEquals("group#/platform/test/legacy:/web/IFramePortlet/blog", prefs.getWindowId());
+      assertEquals("group#/test/legacy:/web/IFramePortlet/blog", prefs.getWindowId());
    }
 
    public void testGroupWithNormalizedName() throws Exception
    {
-      PageNavigation nav = storage.getPageNavigation("group::/platform/test/normalized");
+      SiteKey key = SiteKey.group("/test/normalized");
+      NavigationContext nav = navService.loadNavigation(key);
       assertNotNull(nav);
-      assertEquals("/platform/test/normalized", nav.getOwnerId());
-      PageNode node = nav.getNodes().get(0);
-      assertEquals("group::/platform/test/normalized::register", node.getPageReference());
+      NodeContext<?> root = navService.loadNode(NodeModel.SELF_MODEL, nav, Scope.ALL, null);
+      NodeContext<?> node = root.get(0);
+      assertEquals("group::/test/normalized::register", node.getState().getPageRef());
 
-      Page page = storage.getPage("group::/platform/test/normalized::register");
+      Page page = storage.getPage("group::/test/normalized::register");
       assertNotNull(page);
-      assertEquals("group::/platform/test/normalized::register", page.getPageId());
-      assertEquals("/platform/test/normalized", page.getOwnerId());
+      assertEquals("group::/test/normalized::register", page.getPageId());
+      assertEquals("/test/normalized", page.getOwnerId());
       Application app = (Application)page.getChildren().get(0);
-      //    assertEquals("group#/platform/test/normalized:/exoadmin/AccountPortlet/Account", app.getInstanceState().getWeakReference());
+      //    assertEquals("group#/test/normalized:/exoadmin/AccountPortlet/Account", app.getInstanceState().getWeakReference());
 
       PortletPreferences prefs =
-         storage.getPortletPreferences("group#/platform/test/normalized:/exoadmin/AccountPortlet/Account");
+         storage.getPortletPreferences("group#/test/normalized:/exoadmin/AccountPortlet/Account");
       assertNotNull(prefs);
-      assertEquals("group#/platform/test/normalized:/exoadmin/AccountPortlet/Account", prefs.getWindowId());
+      assertEquals("group#/test/normalized:/exoadmin/AccountPortlet/Account", prefs.getWindowId());
    }
 
    public void testNavigation() throws Exception
    {
-      PageNavigation nav = storage.getPageNavigation("portal::test");
+      SiteKey key = SiteKey.portal("test");
+      NavigationContext nav = navService.loadNavigation(key);
       assertNotNull(nav);
 
       //
-      assertEquals(1, nav.getPriority());
+      assertEquals(1, (int) nav.getState().getPriority());
 
       //
-      assertEquals(2, nav.getNodes().size());
+      NodeContext<?> root = navService.loadNode(NodeModel.SELF_MODEL, nav, Scope.ALL, null);
+      assertEquals(5, root.getNodeCount());
 
       //
-      PageNode nodeNavigation = nav.getNodes().get(0);
-      assertEquals(0, nodeNavigation.getChildren().size());
+      NodeContext<?> nodeNavigation = root.get(0);
+      assertEquals(0, nodeNavigation.getNodeCount());
       assertEquals("node_name", nodeNavigation.getName());
-      assertEquals("node_uri", nodeNavigation.getUri());
-      assertEquals("node_label", nodeNavigation.getLabel());
-      assertEquals("node_icon", nodeNavigation.getIcon());
+      assertEquals("node_label", nodeNavigation.getState().getLabel());
+      assertEquals("node_icon", nodeNavigation.getState().getIcon());
       GregorianCalendar start = new GregorianCalendar(2000, 2, 21, 1, 33, 0);
       start.setTimeZone(TimeZone.getTimeZone("UTC"));
-      assertEquals(start.getTime(), nodeNavigation.getStartPublicationDate());
+      assertEquals(start.getTime().getTime(), nodeNavigation.getState().getStartPublicationTime());
       GregorianCalendar end = new GregorianCalendar(2009, 2, 21, 1, 33, 0);
       end.setTimeZone(TimeZone.getTimeZone("UTC"));
-      assertEquals(end.getTime(), nodeNavigation.getEndPublicationDate());
-      assertEquals(true, nodeNavigation.isShowPublicationDate());
-      assertEquals(true, nodeNavigation.isVisible());
+      assertEquals(end.getTime().getTime(), nodeNavigation.getState().getEndPublicationTime());
+      assertEquals(Visibility.TEMPORAL, nodeNavigation.getState().getVisibility());
    }
 
    public void testPortal() throws Exception
@@ -224,29 +237,11 @@ public class TestLoadedPOM extends AbstractPortalTest
       assertEquals("Expected two result instead of " + list, 2, list.size());
       Set<String> ids = new HashSet<String>(Arrays.asList(list.get(0).getPageId(), list.get(1).getPageId()));
       HashSet<String> expectedIds =
-         new HashSet<String>(Arrays.asList("group::/platform/test/legacy::register",
-            "group::/platform/test/normalized::register"));
+         new HashSet<String>(Arrays.asList("group::/test/legacy::register",
+            "group::/test/normalized::register"));
       assertEquals(expectedIds, ids);
    }
 */
-
-   public void testFindNavigation() throws Exception
-   {
-      Query<PageNavigation> query = new Query<PageNavigation>("group", null, null, null, PageNavigation.class);
-      List<PageNavigation> list = storage.find(query).getAll();
-      assertEquals("Expected 6 results instead of " + list, 6, list.size());
-      Set<String> names = new HashSet<String>();
-      for (PageNavigation navigation : list)
-      {
-         assertEquals("group", navigation.getOwnerType());
-         names.add(navigation.getOwnerId());
-      }
-      HashSet<String> expectedNames =
-         new HashSet<String>(Arrays.asList("/platform/test/legacy", "/platform/test/normalized",
-            "/platform/administrators", "/platform/guests", "/platform/users",
-            "/organization/management/executive-board"));
-      assertEquals(expectedNames, names);
-   }
 
 /*
    public void testFindPageByName() throws Exception

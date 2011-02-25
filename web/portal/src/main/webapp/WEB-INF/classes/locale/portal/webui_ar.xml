@@ -836,7 +836,7 @@
 		# org.exoplatform.portal.component.customization.UIPageSelector#
 		#############################################################################
 	-->
-	<UIPageSelector2>
+	<UIPageSelector>
 		<header>
 			<name> اسم</name>
 			<id> صفحة رقم</id>
@@ -853,7 +853,7 @@
 			<name> #{word.name}</name>
 			<accessGroups> مجموعات الوصول</accessGroups>
 		</label>
-	</UIPageSelector2>
+	</UIPageSelector>
 	<UIPageBrowser>
 		<msg>
 			<NoPermission> لا يوجد لديك إذن لدخول هذه الصفحة.</NoPermission>
@@ -1052,7 +1052,7 @@
 			<label>
 				<PageNodeSetting>عقدة إعداد الصفحة </PageNodeSetting>
 				<Icon>#{word.icon} </Icon>
-				<UIPageSelector2>تحديد الصفحة  </UIPageSelector2>
+				<UIPageSelector>تحديد الصفحة  </UIPageSelector>
 			</label>
 		</tab>
 		<action>
@@ -2325,27 +2325,7 @@
 			<empty>بيانات فارغة </empty>
 			<user-required> يرجى التحقق من مستخدم واحد على الأقل.</user-required>
 		</msg>
-	</UIUserSelector>
-	<!--
-		################################################################################
-		# org.exoplatform.portal.webui.application.UIAddNewApplication
-		################################################################################
-	-->
-	<UIAddNewApplication>
-		<label>
-			<AddApplication>إضافة التطبيق </AddApplication>
-			<Categories>الفئات</Categories>
-			<Select>حدد التطبيقات </Select>
-			<NoneApp> لا يوجد تطبيق في هذا الموقع. انتقل إلى مدخل التطبيق التسجيل
-				لاستيراد التطبيقات.</NoneApp>
-			<Type> النوع :</Type>
-			<Created> التي أنشأتها :</Created>
-			<Description> الوصف :</Description>
-			<Close> أغلق</Close>
-			<Add>إضافة والحفاظ على هذا الطلب في صفحة </Add>
-			<AddToStartup>إضافة وتشغيل هذا التطبيق على الفور </AddToStartup>
-		</label>
-	</UIAddNewApplication>
+	</UIUserSelector>	
 	<!--
 		#############################################################################
 		#org.exoplatform.portal.webui.component.UIPortalNavigation #

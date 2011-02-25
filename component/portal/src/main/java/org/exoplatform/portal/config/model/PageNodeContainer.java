@@ -19,51 +19,45 @@
 
 package org.exoplatform.portal.config.model;
 
-import org.exoplatform.portal.pom.data.NavigationNodeContainerData;
-import org.exoplatform.portal.pom.data.NavigationNodeData;
-
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
-public abstract class PageNodeContainer extends ModelObject
+public abstract class PageNodeContainer
 {
 
-   public PageNodeContainer(String storageId)
-   {
-      super(storageId);
-   }
+   /** . */
+   private ArrayList<PageNode> nodes;
 
    public PageNodeContainer()
    {
+      this.nodes = new ArrayList<PageNode>();
    }
 
-   public abstract List<PageNode> getNodes();
-
-   protected List<NavigationNodeData> buildNavigationChildren()
+   public ArrayList<PageNode> getNodes()
    {
-      List<PageNode> nodes = getNodes();
+      return nodes;
+   }
+
+   public void setNodes(ArrayList<PageNode> nodes)
+   {
+      this.nodes = nodes;
+   }
+
+   public PageNode getNode(String name)
+   {
       if (nodes != null)
       {
-         ArrayList<NavigationNodeData> children = new ArrayList<NavigationNodeData>();
-         for (int i = 0;i < nodes.size();i++)
+         for (PageNode node : getNodes())
          {
-            PageNode node = nodes.get(i);
-            NavigationNodeData child = node.build();
-            children.add(child);
+            if (node.getName().equals(name))
+            {
+               return node;
+            }
          }
-         return Collections.unmodifiableList(children);
       }
-      else
-      {
-         return Collections.emptyList();
-      }
+      return null;
    }
-
-   public abstract NavigationNodeContainerData build();
-
 }
