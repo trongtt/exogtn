@@ -129,6 +129,7 @@
       <module>examples</module>
       <module>starter</module>
       <module>wsrp-integration</module>
+      <module>openid</module>
       <module>packaging</module>
       <module>testsuite</module>
   </modules>

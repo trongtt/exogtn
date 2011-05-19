@@ -137,8 +137,8 @@ function getModule(params)
       addDependency(new Project("org.reflext", "reflext.spi", "jar", reflextVersion)).
       addDependency(new Project("org.reflext", "reflext.jlr", "jar", reflextVersion)).
       addDependency(new Project("org.reflext", "reflext.api", "jar", reflextVersion)).
-      addDependency(module.component.web.security);
-
+      addDependency(module.component.web.security).
+      addDependency(new Project("org.openid4java", "openid4java-nodeps", "jar", "0.9.5"));
    module.component.identity =
    new Project("org.exoplatform.portal", "exo.portal.component.identity", "jar", module.version).
       addDependency(new Project("org.picketlink.idm", "picketlink-idm-core", "jar", idmVersion)).
@@ -271,6 +271,21 @@ function getModule(params)
    new Project("org.exoplatform.portal", "exo.portal.web.portal", "exo-portal", module.version).
       addDependency(jcr.frameworks.web).
       addDependency(jcr.frameworks.command);
+
+   module.extension = {}
+   module.extension.openid = {}
+
+   module.extension.openid.portlet =
+   new Project("org.exoplatform.portal", "exo.portal.openid.extension.portlet", "war", module.version);
+   module.extension.openid.portlet.deployName="openid-portlet"
+
+   module.extension.openid.war =
+   new Project("org.exoplatform.portal", "exo.portal.openid.extension.war", "war", module.version).
+      addDependency(module.extension.openid.portlet).
+      addDependency(new Project("org.exoplatform.portal", "exo.portal.openid.config", "jar", module.version)).
+      addDependency(new Project("org.exoplatform.portal", "exo.portal.openid.extension.jar", "jar", module.version));
+   module.extension.openid.war.deployName="openid"
+
 
    module.server = {}
 
