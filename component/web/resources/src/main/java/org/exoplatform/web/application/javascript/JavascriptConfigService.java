@@ -23,7 +23,6 @@ import org.exoplatform.commons.utils.Safe;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.portal.resource.compressor.ResourceCompressor;
 import org.exoplatform.portal.resource.compressor.ResourceType;
-import org.exoplatform.portal.resource.compressor.impl.ResourceCompressorService;
 import org.gatein.common.logging.Logger;
 import org.gatein.common.logging.LoggerFactory;
 import org.gatein.wci.impl.DefaultServletContainerFactory;
@@ -157,6 +156,7 @@ public class JavascriptConfigService implements Startable
       availableScripts_.clear();
       availableScriptsPaths_.clear();
       object_view_of_merged_JS.clear();
+      jsBytes = null;
 
       //
       for (Javascript script : availableScriptsKey_) {
@@ -262,6 +262,7 @@ public class JavascriptConfigService implements Startable
    public void refreshMergedJavascript()
    {
       mergedJavascript = "";
+      jsBytes = null;
       StringBuffer buffer = new StringBuffer();
       for (String webApp : object_view_of_merged_JS.keySet())
       {
@@ -369,6 +370,8 @@ public class JavascriptConfigService implements Startable
       extendedJavascripts.remove(path);
       jsBytes = null;
    }
+   
+   
 
    /**
     * Start service.
