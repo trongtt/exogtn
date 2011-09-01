@@ -58,12 +58,12 @@
 </tr>
 <tr>
 	<td>waitForElementPresent</td>
-	<td>//ul[@id='PortalNavigationTopContainer']/li[2]/span/a</td>
+	<td>//div[@class='UISiteBody']//a[text()='SiteMap']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//ul[@id='PortalNavigationTopContainer']/li[2]/span/a</td>
+	<td>//div[@class='UISiteBody']//a[text()='SiteMap']</td>
 	<td></td>
 </tr>
 <tr>
@@ -73,7 +73,7 @@
 </tr>
 <tr>
 	<td>waitForElementPresent</td>
-	<td>//div[@id='UISiteMap']/div[2]/div/div[4]/div[1]/a</td>
+	<td>//div[@id='UISiteMap']//a[text()='Organization']</td>
 	<td></td>
 </tr>
 <tr>
@@ -89,6 +89,11 @@
 <tr>
 	<td>clickAndWait</td>
 	<td>//a[@href='/portal/private/classic/organization/management']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>-- Check position of page --</td>
 	<td></td>
 </tr>
 <tr>

@@ -144,7 +144,7 @@ public class UserDAOImpl implements UserHandler
 
       try
       {
-         orgService.commitTransaction();
+         orgService.flush();
 
          session.getPersistenceManager().createUser(user.getUserName());
       }
@@ -215,7 +215,7 @@ public class UserDAOImpl implements UserHandler
 
       try
       {
-         orgService.commitTransaction();
+         orgService.flush();
 
          foundUser = session.getPersistenceManager().findUser(userName);
       }
@@ -257,6 +257,11 @@ public class UserDAOImpl implements UserHandler
       {
          log.info("Cannot remove user: " + userName + "; ", e);
 
+      }
+
+      if (getIntegrationCache() != null)
+      {
+         getIntegrationCache().invalidateAll();
       }
 
       if (broadcast)
@@ -364,7 +369,7 @@ public class UserDAOImpl implements UserHandler
       {
          try
          {
-            orgService.commitTransaction();
+            orgService.flush();
 
             IdentitySession session = service_.getIdentitySession();
             org.picketlink.idm.api.User idmUser = session.getPersistenceManager().findUser(user.getUserName());
@@ -468,7 +473,7 @@ public class UserDAOImpl implements UserHandler
          }
       }
 
-      orgService.commitTransaction();
+      orgService.flush();
 
       UserQueryBuilder qb = service_.getIdentitySession().createUserQueryBuilder();
 
@@ -575,7 +580,7 @@ public class UserDAOImpl implements UserHandler
 
       try
       {
-         orgService.commitTransaction();
+         orgService.flush();
 
          plUser = session.getAttributesManager().findUserByUniqueAttribute(USER_EMAIL, email);
       }
@@ -648,7 +653,7 @@ public class UserDAOImpl implements UserHandler
 
    public void persistUserInfo(User user, IdentitySession session) throws Exception
    {
-      orgService.commitTransaction();
+      orgService.flush();
 
       AttributesManager am = session.getAttributesManager();
 
@@ -717,7 +722,7 @@ public class UserDAOImpl implements UserHandler
    {
       Object u = null;
 
-      orgService.commitTransaction();
+      orgService.flush();
 
       try
       {
@@ -744,7 +749,7 @@ public class UserDAOImpl implements UserHandler
 
    public void populateUser(User user, IdentitySession session) throws Exception
    {
-      orgService.commitTransaction();
+      orgService.flush();
 
       AttributesManager am = session.getAttributesManager();
 

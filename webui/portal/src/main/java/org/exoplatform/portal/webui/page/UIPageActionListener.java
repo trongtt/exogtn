@@ -83,15 +83,14 @@ public class UIPageActionListener
                   // If unauthenticated users have no permission on PORTAL node and URL is valid, they will be required to login
                   if (pcontext.getRemoteUser() == null && siteKey.getType().equals(SiteType.PORTAL))
                   {
-                     targetNode = userPortal.resolvePath(navigation, builder.withAuthMode(UserNodeFilterConfig.AUTH_NO_CHECK).build(), nodePath); 
+                     targetNode = userPortal.resolvePath(navigation, null, nodePath); 
                      if (targetNode != null)
                      {
                         uiPortalApp.setLastRequestURI(null);
-                        String doLoginPath = pcontext.getRequest().getContextPath() + "/dologin?initialURI=" + pcontext.getRequestURI();
-                        pcontext.sendRedirect(doLoginPath);
+                        pcontext.requestAuthenticationLogin();
                         return;
                      }
-                  } 
+                  }
                   else
                   {
                      // If path to node is invalid, get the default node instead of.

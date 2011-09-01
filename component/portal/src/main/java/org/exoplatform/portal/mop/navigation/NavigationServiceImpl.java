@@ -195,15 +195,15 @@ public class NavigationServiceImpl implements NavigationService
    {
       if (model == null)
       {
-         throw new NullPointerException();
+         throw new NullPointerException("No null model accepted");
       }
       if (navigation == null)
       {
-         throw new NullPointerException();
+         throw new NullPointerException("No null navigation accepted");
       }
       if (scope == null)
       {
-         throw new NullPointerException();
+         throw new NullPointerException("No null scope accepted");
       }
       String nodeId = navigation.data.rootId;
       if (navigation.data.rootId != null)
@@ -611,26 +611,37 @@ public class NavigationServiceImpl implements NavigationService
          Navigation sourceNav = session.findObjectById(ObjectType.NAVIGATION, target.data.id);
 
          //
-         String objectId = sourceNav.getObjectId();
-
-         //
-         toEvict.add(objectId);
          toEvict.add(parentNav.getObjectId());
          sourceNav.destroy();
 
          //
          parent.data = new NodeData(parentNav);
-
-         //
          toUpdate.add(parent.handle);
 
          //
-         if (toPersist.values().contains(objectId))
-         {
-            toPersist.values().remove(objectId);
-         }
-         toUpdate.remove(objectId);
+         destroy(target);
       }
+
+      private void destroy(NodeContext<N> ctx)
+      {
+         toPersist.values().remove(ctx.handle);
+
+         //
+         toUpdate.remove(ctx.handle);
+
+         //
+         toEvict.add(ctx.handle);
+
+         // Recurse
+         if (ctx.isExpanded())
+         {
+            for (NodeContext<N> child = ctx.getFirst();child != null;child = child.getNext())
+            {
+               destroy(child);
+            }
+         }
+      }
+
       @Override
       public void onUpdate(NodeContext<N> source, NodeState state) throws NavigationServiceException
       {

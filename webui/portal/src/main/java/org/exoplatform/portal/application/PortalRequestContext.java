@@ -101,6 +101,8 @@ public class PortalRequestContext extends WebuiRequestContext
    final static public String REQUEST_METADATA = "portal:requestMetadata".intern();
 
    final static private String LAST_PORTAL_NAME = "prc.lastPortalName";
+   
+   final static private String DO_LOGIN_PATTERN = "dologin";
 
    /** The path decoded from the request. */
    private final String nodePath_;
@@ -297,7 +299,10 @@ public class PortalRequestContext extends WebuiRequestContext
          {
             userPortalConfig =
                service_.getUserPortalConfig(portalName, remoteUser, PortalRequestContext.USER_PORTAL_CONTEXT);
-            session.setAttribute(LAST_PORTAL_NAME, portalName);
+            if (userPortalConfig != null)
+            {
+               session.setAttribute(LAST_PORTAL_NAME, portalName);
+            }
          }
          catch (Exception e)
          {
@@ -326,6 +331,12 @@ public class PortalRequestContext extends WebuiRequestContext
    public void refreshResourceBundle() throws Exception
    {
       appRes_ = getApplication().getResourceBundle(getLocale());
+   }
+
+   public void requestAuthenticationLogin() throws Exception
+   {
+      String doLoginPath = request_.getContextPath() + "/" + DO_LOGIN_PATTERN + "?initialURI=" + request_.getRequestURI();
+      sendRedirect(doLoginPath);
    }
 
    public String getTitle() throws Exception
