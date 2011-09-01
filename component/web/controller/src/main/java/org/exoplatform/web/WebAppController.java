@@ -1,16 +1,16 @@
 /**
  * Copyright (C) 2009 eXo Platform SAS.
- * 
+ *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 2.1 of
  * the License, or (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
@@ -39,6 +39,9 @@ import org.exoplatform.web.controller.metadata.DescriptorBuilder;
 import org.exoplatform.web.controller.metadata.ControllerDescriptor;
 import org.exoplatform.web.controller.router.RouterConfigException;
 import org.exoplatform.web.controller.router.Router;
+import org.exoplatform.web.url.simple.SimpleResource;
+import org.exoplatform.web.url.simple.SimpleURL;
+import org.exoplatform.web.url.simple.SimpleURLContext;
 import org.gatein.common.http.QueryStringParser;
 import org.gatein.common.logging.Logger;
 import org.gatein.common.logging.LoggerFactory;
@@ -140,7 +143,7 @@ public class WebAppController
       for (Application app : applications_.values())
       {
          if (app.getApplicationType().equals(type))
-            applications.add(app);
+         { applications.add(app); }
       }
       return applications;
    }
@@ -277,7 +280,7 @@ public class WebAppController
    {
       handlers.put(handler.getHandlerName(), handler);
    }
-   
+
    public void onHandlersInit(ServletConfig config) throws Exception
    {
       Collection<WebRequestHandler> hls = handlers.values();
@@ -361,5 +364,33 @@ public class WebAppController
          log.error("Missing valid router configuration " + configurationPathRef.get());
          res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       }
+   }
+
+   //Need this to build SimpleURL
+   public Router getRouter()
+   {
+      //TODO: Load the configuration if the router has not been built yet
+      return routerRef.get();
+   }
+
+   @Managed
+   @ManagedDescription("Build simple URL")
+   @Impact(ImpactType.READ)
+   public String renderSimpleURL(@ManagedDescription("Scheme") @ManagedName("scheme") String scheme,
+                                 @ManagedDescription("Host") @ManagedName("host") String host,
+                                 @ManagedDescription("Port") @ManagedName("port") int port,
+                                 @ManagedDescription("Context name") @ManagedName("contextName") String contextName,
+                                 @ManagedDescription("Handler") @ManagedName("handler") String handler,
+                                 @ManagedDescription("Site type") @ManagedName("siteType") String siteType,
+                                 @ManagedDescription("Site name") @ManagedName("siteName") String siteName,
+                                 @ManagedDescription("Path") @ManagedName("path") String path)
+   {
+      SimpleURLContext simpleContext = new SimpleURLContext(scheme, host, port, contextName, routerRef.get());
+      SimpleURL simpleURL = new SimpleURL(simpleContext);
+      simpleURL.setSchemeUse(true);
+      simpleURL.setAuthorityUse(true);
+      SimpleResource resource = new SimpleResource(handler, siteType, siteName, path);
+      simpleURL.setResource(resource);
+      return simpleURL.toString();
    }
 }
