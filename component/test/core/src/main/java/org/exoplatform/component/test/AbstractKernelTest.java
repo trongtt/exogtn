@@ -100,7 +100,7 @@ public class AbstractKernelTest extends AbstractGateInTest
       //
       if (counters.get(key).decrementAndGet() == 0)
       {
-         bootstrap.dispose();
+         bootstrap.dispose(true);
 
          //
          bootstrap = null;

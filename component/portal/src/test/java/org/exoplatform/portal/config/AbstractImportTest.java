@@ -85,7 +85,7 @@ public abstract class AbstractImportTest extends AbstractGateInTest
       NodeContext<?> root = service.loadNode(Node.MODEL, nav, Scope.ALL, null);
       afterOnePhaseBoot(root);
       RequestLifeCycle.end();
-      bootstrap.dispose();
+      bootstrap.dispose(true);
    }
 
    public void testTwoPhasesOverride() throws Exception
@@ -122,7 +122,7 @@ public abstract class AbstractImportTest extends AbstractGateInTest
       root = service.loadNode(NodeModel.SELF_MODEL, nav, Scope.ALL, null);
       afterTwoPhaseOverrideReboot(root);
       RequestLifeCycle.end();
-      bootstrap.dispose();
+      bootstrap.dispose(true);
    }
 
    public void testTwoPhasesNoOverride() throws Exception
@@ -175,6 +175,6 @@ public abstract class AbstractImportTest extends AbstractGateInTest
       root = service.loadNode(NodeModel.SELF_MODEL, nav, Scope.ALL, null);
       afterTwoPhaseNoOverrideReconfigure(root);
       RequestLifeCycle.end();
-      bootstrap.dispose();
+      bootstrap.dispose(true);
    }
 }

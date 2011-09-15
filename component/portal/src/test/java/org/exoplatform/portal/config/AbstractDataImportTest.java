@@ -97,7 +97,7 @@ public abstract class AbstractDataImportTest extends AbstractGateInTest
       bootstrap.boot();
       PortalContainer container = bootstrap.getContainer();
       afterOneBootWithExtention(container);
-      bootstrap.dispose();
+      bootstrap.dispose(true);
    }
    
    public void testOneBoot() throws Exception
@@ -117,7 +117,7 @@ public abstract class AbstractDataImportTest extends AbstractGateInTest
       bootstrap.boot();
       PortalContainer container = bootstrap.getContainer();
       afterFirstBoot(container);
-      bootstrap.dispose();
+      bootstrap.dispose(true);
    }
 
    public void testTwoBoots() throws Exception
@@ -144,7 +144,7 @@ public abstract class AbstractDataImportTest extends AbstractGateInTest
       bootstrap.boot();
       container = bootstrap.getContainer();
       afterSecondBoot(container);
-      bootstrap.dispose();
+      bootstrap.dispose(true);
    }
    
    public void testTwoBootsWithOverride() throws Exception
@@ -171,7 +171,7 @@ public abstract class AbstractDataImportTest extends AbstractGateInTest
       bootstrap.boot();
       container = bootstrap.getContainer();
       afterSecondBootWithOverride(container);
-      bootstrap.dispose();
+      bootstrap.dispose(true);
    }
 
    public void testTwoBootsWithWantReimport() throws Exception
@@ -220,7 +220,7 @@ public abstract class AbstractDataImportTest extends AbstractGateInTest
       assertTrue(lastModificationTime2 > lastModificationTime1);
       mgr.getSession().save();
       RequestLifeCycle.end();
-      bootstrap.dispose();
+      bootstrap.dispose(true);
    }
    
    public void testTwoBootsWithNoMixin() throws Exception
@@ -268,6 +268,6 @@ public abstract class AbstractDataImportTest extends AbstractGateInTest
       assertTrue(creationTime2 > creationTime1);
       mgr.getSession().save();
       RequestLifeCycle.end();
-      bootstrap.dispose();
+      bootstrap.dispose(true);
    }
 }

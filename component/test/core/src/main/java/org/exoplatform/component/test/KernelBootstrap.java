@@ -20,6 +20,8 @@
 package org.exoplatform.component.test;
 
 import junit.framework.AssertionFailedError;
+
+import org.exoplatform.commons.utils.PropertyManager;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.container.RootContainer;
@@ -27,6 +29,8 @@ import org.exoplatform.container.RootContainer;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -40,6 +44,9 @@ public class KernelBootstrap
 
    /** The system property for gatein tmp dir. */
    private static final String TMP_DIR = "gatein.test.tmp.dir";
+   
+   /** The database name for test with mysql **/
+   private static final String TMP_DB = "gatein.test.database.tmp";
 
    /** . */
    private File tmpDir;
@@ -224,7 +231,10 @@ public class KernelBootstrap
 
          // Set property globally available for configuration XML
          System.setProperty(TMP_DIR, tmpDir.getCanonicalPath());
-
+         String dbName = "jdbcjcr";
+         String numberDB = tmpDir.getName().substring("gateintest-".length());
+         System.setProperty(TMP_DB, dbName + numberDB);
+         
          //
          ClassLoader testClassLoader = new GateInTestClassLoader(
             realClassLoader,
@@ -249,11 +259,34 @@ public class KernelBootstrap
 
    public void dispose()
    {
+      dispose(false);
+   }
+   
+   public void dispose(boolean cleanDB) 
+   {
       if (container != null)
       {
          RootContainer.getInstance().stop();
          container = null;
          ExoContainerContext.setCurrentContainer(null);
+      }
+      if("mysql".equals(System.getProperty(PropertyManager.RUNTIME_PROFILES)) && cleanDB)
+      {
+         String dbName = System.getProperty(TMP_DB);
+         try
+         {
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection conn = DriverManager.getConnection(
+               "jdbc:mysql://" + System.getProperty("gatein.test.jdbc.host"),
+               System.getProperty("gatein.test.jdbc.host.username"),
+               System.getProperty("gatein.test.jdbc.host.password"));
+            conn.createStatement().execute("DROP DATABASE IF EXISTS " + dbName);
+            conn.close();
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(e);
+         }
       }
    }
 }
