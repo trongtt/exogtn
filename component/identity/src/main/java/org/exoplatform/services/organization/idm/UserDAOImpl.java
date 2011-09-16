@@ -107,7 +107,20 @@ public class UserDAOImpl implements UserHandler
 
    public void addUserEventListener(UserEventListener listener)
    {
+      if (listener == null)
+      {
+         throw new IllegalArgumentException("Listener cannot be null");
+      }
       listeners_.add(listener);
+   }
+
+   public void removeUserEventListener(UserEventListener listener)
+   {
+      if (listener == null)
+      {
+         throw new IllegalArgumentException("Listener cannot be null");
+      }
+      listeners_.remove(listener);
    }
 
    public User createUserInstance()
@@ -152,6 +165,11 @@ public class UserDAOImpl implements UserHandler
       {
          log.info("Identity operation error: ", e);
 
+      }
+
+      if (getIntegrationCache() != null)
+      {
+         getIntegrationCache().invalidateAll();
       }
 
       persistUserInfo(user, session);
@@ -324,7 +342,19 @@ public class UserDAOImpl implements UserHandler
 
    public ListAccess<User> findAllUsers() throws Exception
    {
-      throw new UnsupportedOperationException();
+      if (log.isTraceEnabled())
+      {
+         Tools.logMethodIn(
+            log,
+            LogLevel.TRACE,
+            "findAllUsers",
+            null
+         );
+      }
+
+      UserQueryBuilder qb = service_.getIdentitySession().createUserQueryBuilder();
+
+      return new IDMUserListAccess(this, service_, qb, 20, true);
    }
 
 //
@@ -417,6 +447,27 @@ public class UserDAOImpl implements UserHandler
          );
       }
 
+      ListAccess list = findUsersByQuery(q);
+
+      return new LazyPageList(list, 20);
+   }
+
+   //
+
+   public ListAccess<User> findUsersByQuery(Query q) throws Exception
+   {
+      if (log.isTraceEnabled())
+      {
+         Tools.logMethodIn(
+            log,
+            LogLevel.TRACE,
+            "findUsersByQuery",
+            new Object[]{
+               "q", q
+            }
+         );
+      }
+
       // if only condition is email which is unique then delegate to other method as it will be more efficient
       if (q.getUserName() == null &&
          q.getEmail() != null &&
@@ -427,7 +478,7 @@ public class UserDAOImpl implements UserHandler
 
          if (uniqueUser != null)
          {
-            return new LazyPageList<User>( new ListAccess<User>()
+            return new ListAccess<User>()
             {
                public User[] load(int index, int length) throws Exception, IllegalArgumentException
                {
@@ -438,7 +489,7 @@ public class UserDAOImpl implements UserHandler
                {
                   return 1;
                }
-            }, 1);
+            };
          }
       }
 
@@ -454,7 +505,7 @@ public class UserDAOImpl implements UserHandler
          list = cache.getGtnUserLazyPageList(getCacheNS(), q);
          if (list != null)
          {
-            return new LazyPageList(list, 20);
+            return list;
          }
       }
 
@@ -501,14 +552,7 @@ public class UserDAOImpl implements UserHandler
          cache.putGtnUserLazyPageList(getCacheNS(), q, list);
       }
 
-      return new LazyPageList(list, 20);
-   }
-
-   //
-
-   public ListAccess<User> findUsersByQuery(Query query) throws Exception
-   {
-      throw new UnsupportedOperationException();
+      return list;
    }
 
    public LazyPageList findUsersByGroup(String groupId) throws Exception
@@ -525,23 +569,7 @@ public class UserDAOImpl implements UserHandler
          );
       }
 
-
-      UserQueryBuilder qb = service_.getIdentitySession().createUserQueryBuilder();
-
-      org.picketlink.idm.api.Group jbidGroup = null;
-      try
-      {
-         jbidGroup = orgService.getJBIDMGroup(groupId);
-      }
-      catch (Exception e)
-      {
-         log.info("Cannot obtain group: " + groupId + "; ", e);
-
-      }
-
-      qb.addRelatedGroup(jbidGroup);
-
-      return new LazyPageList(new IDMUserListAccess(this, service_, qb, 20, false), 20);
+      return new LazyPageList(findUsersByGroupId(groupId), 20);
    }
 
    public User findUserByEmail(String email) throws Exception
@@ -599,7 +627,35 @@ public class UserDAOImpl implements UserHandler
 
    public ListAccess<User> findUsersByGroupId(String groupId) throws Exception
    {
-      throw new UnsupportedOperationException();
+      if (log.isTraceEnabled())
+      {
+         Tools.logMethodIn(
+            log,
+            LogLevel.TRACE,
+            "findUsersByGroupId",
+            new Object[]{
+               "groupId", groupId
+            }
+         );
+      }
+
+
+      UserQueryBuilder qb = service_.getIdentitySession().createUserQueryBuilder();
+
+      org.picketlink.idm.api.Group jbidGroup = null;
+      try
+      {
+         jbidGroup = orgService.getJBIDMGroup(groupId);
+      }
+      catch (Exception e)
+      {
+         log.info("Cannot obtain group: " + groupId + "; ", e);
+
+      }
+
+      qb.addRelatedGroup(jbidGroup);
+
+      return new IDMUserListAccess(this, service_, qb, 20, false);
    }
 
 //

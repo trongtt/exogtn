@@ -37,25 +37,25 @@
    <name>GateIn - Portal</name>
 
    <properties>
-      <org.exoplatform.kernel.version>2.3.0-CR4-CP01</org.exoplatform.kernel.version>
-      <org.exoplatform.core.version>2.4.0-CR4</org.exoplatform.core.version>
-      <org.exoplatform.ws.version>2.2.0-CR4</org.exoplatform.ws.version>
-      <org.exoplatform.jcr.version>1.14.0-CR4-CP01</org.exoplatform.jcr.version>
+      <org.exoplatform.kernel.version>2.3.0-GA</org.exoplatform.kernel.version>
+      <org.exoplatform.core.version>2.4.0-GA-CP02</org.exoplatform.core.version>
+      <org.exoplatform.ws.version>2.2.0-GA</org.exoplatform.ws.version>
+      <org.exoplatform.jcr.version>1.14.0-GA</org.exoplatform.jcr.version>
       <org.shindig.version>2.0.2-Beta02</org.shindig.version>
       <nl.captcha.simplecaptcha.version>1.1.1-GA-Patch01</nl.captcha.simplecaptcha.version>
       <org.gatein.common.version>2.0.4-Beta03</org.gatein.common.version>
       <org.gatein.wci.version>2.1.0-Beta06</org.gatein.wci.version>
       <org.gatein.pc.version>2.3.0-Beta05</org.gatein.pc.version>
-      <org.picketlink.idm>1.3.0.Alpha03</org.picketlink.idm>
+      <org.picketlink.idm>1.3.0.Alpha04</org.picketlink.idm>
       <org.gatein.wsrp.version>2.1.0-Beta05</org.gatein.wsrp.version>
-      <org.gatein.mop.version>1.1.0-Beta05</org.gatein.mop.version>
-      <org.gatein.mgmt.version>1.0.0-Beta02</org.gatein.mgmt.version>
+      <org.gatein.mop.version>1.1.0-Beta06</org.gatein.mop.version>
+      <org.gatein.mgmt.version>1.0.0-Beta03</org.gatein.mgmt.version>
       <org.slf4j.version>1.5.8</org.slf4j.version>
       <commons-pool.version>1.5.5</commons-pool.version>
       <rhino.version>1.6R5</rhino.version>
       <org.codehaus.groovy.version>1.7.6</org.codehaus.groovy.version>
       <javax.servlet.version>2.5</javax.servlet.version>
-      <version.chromattic>1.1.0-beta6</version.chromattic>
+      <version.chromattic>1.1.0-beta7</version.chromattic>
       <version.reflext>1.1.0-beta12</version.reflext>
       <org.staxnav.version>0.9.4</org.staxnav.version>
       <jcip.version>1.0</jcip.version>
@@ -561,6 +561,12 @@
          </dependency>
          <dependency>
             <groupId>org.exoplatform.portal</groupId>
+            <artifactId>exo.portal.gwtGadgets</artifactId>
+            <version>3.2.0-M02-SNAPSHOT</version>
+            <type>war</type>
+         </dependency>
+         <dependency>
+            <groupId>org.exoplatform.portal</groupId>
             <artifactId>exo.portal.portlet.web</artifactId>
             <version>3.2.0-M02-SNAPSHOT</version>
             <type>war</type>
@@ -639,6 +645,13 @@
             <groupId>org.chromattic</groupId>
             <artifactId>chromattic.core</artifactId>
             <version>${version.chromattic}</version>
+            <!-- GTNPORTAL-2095: temporary exclusion for missing dependency -->
+            <exclusions>
+               <exclusion>
+                  <groupId>com.google.code.javaparser</groupId>
+                  <artifactId>javaparser</artifactId>
+               </exclusion>
+            </exclusions>
          </dependency>
          <dependency>
             <groupId>org.chromattic</groupId>
