@@ -51,7 +51,8 @@
    height: 24px;
    width: 23px;
    background: url("background/AddTab.gif") no-repeat left top;
-   float: left;
+   float: left; /* orientation=lt */
+   float: right; /* orientation=rt */
    cursor: pointer;
 }
 
