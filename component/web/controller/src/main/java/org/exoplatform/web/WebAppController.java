@@ -33,19 +33,19 @@ import org.exoplatform.management.annotations.ManagedName;
 import org.exoplatform.management.jmx.annotations.NameTemplate;
 import org.exoplatform.management.jmx.annotations.Property;
 import org.exoplatform.management.rest.annotations.RESTEndpoint;
+import org.exoplatform.portal.mop.SiteType;
 import org.exoplatform.web.application.Application;
 import org.exoplatform.web.controller.QualifiedName;
-import org.exoplatform.web.controller.metadata.DescriptorBuilder;
 import org.exoplatform.web.controller.metadata.ControllerDescriptor;
-import org.exoplatform.web.controller.router.RouterConfigException;
+import org.exoplatform.web.controller.metadata.DescriptorBuilder;
 import org.exoplatform.web.controller.router.Router;
-import org.exoplatform.web.url.simple.SimpleResource;
+import org.exoplatform.web.controller.router.RouterConfigException;
+import org.exoplatform.web.url.navigation.NavigationResource;
 import org.exoplatform.web.url.simple.SimpleURL;
 import org.exoplatform.web.url.simple.SimpleURLContext;
 import org.gatein.common.http.QueryStringParser;
 import org.gatein.common.logging.Logger;
 import org.gatein.common.logging.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,7 +59,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -369,27 +368,33 @@ public class WebAppController
    //Need this to build SimpleURL
    public Router getRouter()
    {
-      //TODO: Load the configuration if the router has not been built yet
+      if(routerRef.get() == null)
+      {
+         try
+         {
+            reloadConfiguration();
+         }
+         catch (Exception ex)
+         {
+
+         }
+      }
       return routerRef.get();
    }
 
    @Managed
    @ManagedDescription("Build simple URL")
    @Impact(ImpactType.READ)
-   public String renderSimpleURL(@ManagedDescription("Scheme") @ManagedName("scheme") String scheme,
-                                 @ManagedDescription("Host") @ManagedName("host") String host,
-                                 @ManagedDescription("Port") @ManagedName("port") int port,
-                                 @ManagedDescription("Context name") @ManagedName("contextName") String contextName,
-                                 @ManagedDescription("Handler") @ManagedName("handler") String handler,
+   public String buildSimpleURL(@ManagedDescription("Context name") @ManagedName("contextName") String contextName,
                                  @ManagedDescription("Site type") @ManagedName("siteType") String siteType,
                                  @ManagedDescription("Site name") @ManagedName("siteName") String siteName,
                                  @ManagedDescription("Path") @ManagedName("path") String path)
    {
-      SimpleURLContext simpleContext = new SimpleURLContext(scheme, host, port, contextName, routerRef.get());
+      SimpleURLContext simpleContext = new SimpleURLContext(contextName, routerRef.get());
       SimpleURL simpleURL = new SimpleURL(simpleContext);
       simpleURL.setSchemeUse(true);
       simpleURL.setAuthorityUse(true);
-      SimpleResource resource = new SimpleResource(handler, siteType, siteName, path);
+      NavigationResource resource = new NavigationResource(SiteType.valueOf(siteType.toUpperCase()), siteName, path);
       simpleURL.setResource(resource);
       return simpleURL.toString();
    }

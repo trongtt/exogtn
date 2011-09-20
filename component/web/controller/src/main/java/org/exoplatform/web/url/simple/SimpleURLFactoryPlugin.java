@@ -21,15 +21,16 @@ package org.exoplatform.web.url.simple;
 import org.exoplatform.web.url.ResourceType;
 import org.exoplatform.web.url.URLContext;
 import org.exoplatform.web.url.URLFactoryPlugin;
+import org.exoplatform.web.url.navigation.NavigationResource;
 
 /**
  * @author <a href="hoang281283@gmail.com">Minh Hoang TO</a>
  * @date 9/1/11
  */
-public class SimpleURLFactoryPlugin extends URLFactoryPlugin<SimpleResource, SimpleURL>
+public class SimpleURLFactoryPlugin extends URLFactoryPlugin<NavigationResource, SimpleURL>
 {
    @Override
-   protected ResourceType<SimpleResource, SimpleURL> getResourceType()
+   protected ResourceType<NavigationResource, SimpleURL> getResourceType()
    {
       return SimpleURL.TYPE;
    }

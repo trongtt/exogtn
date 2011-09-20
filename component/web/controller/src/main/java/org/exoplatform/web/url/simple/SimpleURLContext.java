@@ -18,6 +18,9 @@
  */
 package org.exoplatform.web.url.simple;
 
+import org.exoplatform.commons.utils.I18N;
+import org.exoplatform.container.PortalContainer;
+import org.exoplatform.web.WebAppController;
 import org.exoplatform.web.controller.QualifiedName;
 import org.exoplatform.web.controller.router.Router;
 import org.exoplatform.web.controller.router.URIWriter;
@@ -26,6 +29,7 @@ import org.exoplatform.web.url.URLContext;
 import org.gatein.common.io.UndeclaredIOException;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
@@ -36,39 +40,61 @@ import javax.servlet.http.HttpServletRequest;
 public class SimpleURLContext implements URLContext
 {
 
-   //Use URIWriter to take care XML escape in returned URL
+   private static final String HTTP_SCHEME = "http";
+
+   private static final String DEFAULT_HOST = "localhost";
+
+   private static final int DEFAULT_PORT = 8080;
+
+   private static final String DEFAULT_SERVLET_CONTEXT = "portal";
+
+   private static final String DEFAULT_REQUEST_HANDLER = "portal";
+
    private URIWriter writer;
 
    private StringBuilder buffer;
 
-   private final String scheme;
+   protected String scheme;
 
-   private final String host;
+   protected String host;
 
-   private final int port;
+   protected int port;
 
-   private final String contextName;
+   protected String servletContext;
 
-   private final Router router;
+   protected String requestHandler;
 
-   public SimpleURLContext(String scheme, String host, int port, String contextName, Router router)
+   private Router router;
+
+   public SimpleURLContext(String scheme, String host, int port, String servletContext, String requestHandler, Router router)
    {
       if(router == null)
       {
-         throw new IllegalArgumentException("Router or any of {siteType, siteName, handler} could not be null");
+         throw new IllegalArgumentException("Router could not be null");
       }
       this.router = router;
       this.scheme = scheme;
       this.host = host;
       this.port = port;
-      this.contextName = contextName;
+      this.servletContext = servletContext;
+      this.requestHandler = requestHandler;
       this.buffer = new StringBuilder();
       this.writer = new URIWriter(buffer);
    }
 
-   public SimpleURLContext(HttpServletRequest req, Router router)
+   public SimpleURLContext(String servletContext, Router router)
    {
-      this(req.getScheme(), req.getRemoteHost(), req.getServerPort(), req.getContextPath(), router);
+      this(HTTP_SCHEME, DEFAULT_HOST, DEFAULT_PORT, servletContext, DEFAULT_REQUEST_HANDLER, router);
+   }
+
+   public SimpleURLContext(HttpServletRequest httpRequest, PortalContainer container, WebAppController controller)
+   {
+      this(httpRequest.getScheme(), httpRequest.getRemoteHost(), httpRequest.getServerPort(), container.getName(), DEFAULT_REQUEST_HANDLER, controller.getRouter());
+   }
+
+   public SimpleURLContext(PortalContainer container, WebAppController controller)
+   {
+      this(container.getName(), controller.getRouter());
    }
 
    public <R, U extends PortalURL<R, U>> String render(U url)
@@ -104,6 +130,8 @@ public class SimpleURLContext implements URLContext
          }
       }
 
+      writer.setMimeType(url.getMimeType());
+
       String confirm = url.getConfirm();
       boolean hasConfirm = confirm != null && confirm.length() > 0;
       boolean ajax = url.getAjax() != null && url.getAjax();
@@ -131,7 +159,19 @@ public class SimpleURLContext implements URLContext
       }
 
       Map<QualifiedName, String> parameters = new HashMap<QualifiedName, String>();
-      //Inject params from resource of url to the parameters map, that might override the 4 preceding 'put' statement
+
+      parameters.put(WebAppController.HANDLER_PARAM, requestHandler);
+
+      Locale locale = url.getLocale();
+      if(locale != null && locale.getLanguage().length() > 0)
+      {
+         parameters.put(SimpleURL.LANG, I18N.toTagIdentifier(locale));
+      }
+      else
+      {
+         parameters.put(SimpleURL.LANG, "");
+      }
+
       for(QualifiedName param : url.getParameterNames())
       {
          String paramValue = url.getParameterValue(param);
@@ -142,9 +182,8 @@ public class SimpleURLContext implements URLContext
       }
 
       writer.append("/");
-      writer.appendSegment(contextName);
-      writer.setMimeType(url.getMimeType());
-      //Rearrange parameters map might make URL rendering faster
+      writer.appendSegment(servletContext);
+
       router.render(parameters, writer);
 
       //Append http request params at the end

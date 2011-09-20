@@ -22,6 +22,7 @@ import org.exoplatform.web.controller.QualifiedName;
 import org.exoplatform.web.url.PortalURL;
 import org.exoplatform.web.url.ResourceType;
 import org.exoplatform.web.url.URLContext;
+import org.exoplatform.web.url.navigation.NavigationResource;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,33 +30,29 @@ import java.util.Set;
  * @author <a href="hoang281283@gmail.com">Minh Hoang TO</a>
  * @date 9/1/11
  */
-public class SimpleURL extends PortalURL<SimpleResource, SimpleURL>
+public class SimpleURL extends PortalURL<NavigationResource, SimpleURL>
 {
 
-   public static final ResourceType<SimpleResource, SimpleURL> TYPE = new ResourceType<SimpleResource, SimpleURL>(){};
+   public static final ResourceType<NavigationResource, SimpleURL> TYPE = new ResourceType<NavigationResource, SimpleURL>(){};
 
-   public static final QualifiedName INPUT_HANDLER = QualifiedName.create("gtn", "handler");
+   public static final QualifiedName SITE_TYPE = QualifiedName.create("gtn", "sitetype");
 
-   public static final QualifiedName INPUT_SITE_TYPE = QualifiedName.create("gtn", "sitetype");
+   public static final QualifiedName SITE_NAME = QualifiedName.create("gtn", "sitename");
 
-   public static final QualifiedName INPUT_SITE_NAME = QualifiedName.create("gtn", "sitename");
+   public static final QualifiedName LANG = QualifiedName.create("gtn", "lang");
 
-   public static final QualifiedName INPUT_PATH = QualifiedName.create("gtn", "path");
-
-   public static final QualifiedName INPUT_LANG = QualifiedName.create("gtn", "lang");
+   public static final QualifiedName PATH = QualifiedName.create("gtn", "path");
 
    public static final Set<QualifiedName> PARAMETER_NAMES = new HashSet<QualifiedName>();
 
    static
    {
-      PARAMETER_NAMES.add(INPUT_HANDLER);
-      PARAMETER_NAMES.add(INPUT_SITE_TYPE);
-      PARAMETER_NAMES.add(INPUT_SITE_NAME);
-      PARAMETER_NAMES.add(INPUT_PATH);
-      PARAMETER_NAMES.add(INPUT_LANG);
+      PARAMETER_NAMES.add(SITE_TYPE);
+      PARAMETER_NAMES.add(SITE_NAME);
+      PARAMETER_NAMES.add(PATH);
    }
 
-   private SimpleResource resource;
+   private NavigationResource resource;
 
    public SimpleURL(URLContext context) throws NullPointerException
    {
@@ -63,13 +60,13 @@ public class SimpleURL extends PortalURL<SimpleResource, SimpleURL>
    }
 
    @Override
-   public SimpleResource getResource()
+   public NavigationResource getResource()
    {
       return resource;
    }
 
    @Override
-   public SimpleURL setResource(SimpleResource resource)
+   public SimpleURL setResource(NavigationResource resource)
    {
       this.resource = resource;
       return this;
@@ -84,6 +81,21 @@ public class SimpleURL extends PortalURL<SimpleResource, SimpleURL>
    @Override
    public String getParameterValue(QualifiedName parameterName)
    {
-      return resource.getParameterValue(parameterName);
+      if(SITE_TYPE.equals(parameterName))
+      {
+         return resource.getSiteType().getName();
+      }
+      else if(SITE_NAME.equals(parameterName))
+      {
+         return resource.getSiteName();
+      }
+      else if(PATH.equals(parameterName))
+      {
+         return resource.getNodeURI();
+      }
+      else
+      {
+         return null;
+      }
    }
 }
