@@ -388,6 +388,22 @@ UIPortal.prototype.toggleComposer = function(clickedEle) {
 	ajaxAsyncGetRequest(requestStr);
 };
 
+UIPortal.prototype.composerTabChanged = function(tabId) {
+	var toolPanel = document.getElementById("UIPortalToolPanel");
+	if (!tabId || !toolPanel) return;
+	
+	var removeCls, addCls;
+	if (tabId === "UIApplicationList") {
+		addCls = "ApplicationMode";
+		removeCls = "ContainerMode";
+	} else {
+		addCls = "ContainerMode"; 
+		removeCls = "ApplicationMode";
+	}
+	eXo.core.DOMUtil.removeClass(toolPanel, removeCls);
+	eXo.core.DOMUtil.addClass(toolPanel, addCls);
+}
+
 /**
  * Clollapse or expand an element (all its children) of tree
  * @param {Object} element object to collapse or expand
