@@ -244,11 +244,7 @@ public class UINavigationNodeSelector extends UIContainer
             TreeNode node = findNode(treeNodeId);
             if (node != null)
             {
-               Map<Locale, State> labels = i18nizedLabels.get(treeNodeId);
-               if (labels != null && labels.size() > 0)
-               {
-                  descriptionService.setDescriptions(node.getNode().getId(), labels);
-               }
+               descriptionService.setDescriptions(node.getNode().getId(), i18nizedLabels.get(treeNodeId));
             }
             
          }

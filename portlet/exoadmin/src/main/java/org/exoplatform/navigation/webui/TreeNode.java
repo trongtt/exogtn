@@ -219,16 +219,18 @@ public class TreeNode implements NodeChangeListener<UserNode>
                if (key.equals(locale))
                {
                   String label = i18nizedLabels.get(key).getName();
-                  if (label == null || label.trim().length() == 0)
+                  if (label != null && label.trim().length() != 0)
                   {
-                     return node.getName();
+                     return label;
                   }
 
-                  return label;
+                  break;
                }
             }
+            return node.getName();
          }
       }
+
       String encodedLabel = node.getEncodedResolvedLabel();
       return encodedLabel == null ? "" : encodedLabel;
    }

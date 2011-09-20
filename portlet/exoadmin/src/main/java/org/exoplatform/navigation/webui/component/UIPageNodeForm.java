@@ -19,6 +19,7 @@
 
 package org.exoplatform.navigation.webui.component;
 
+import org.exoplatform.commons.utils.ExpressionUtil;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.navigation.webui.TreeNode;
@@ -27,7 +28,6 @@ import org.exoplatform.portal.config.DataStorage;
 import org.exoplatform.portal.config.UserACL;
 import org.exoplatform.portal.config.model.ModelObject;
 import org.exoplatform.portal.config.model.Page;
-import org.exoplatform.portal.config.model.PortalConfig;
 import org.exoplatform.portal.mop.Described;
 import org.exoplatform.portal.mop.SiteType;
 import org.exoplatform.portal.mop.Visibility;
@@ -39,6 +39,7 @@ import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.portal.webui.workspace.UIPortalApplication;
 import org.exoplatform.services.resources.LocaleConfig;
 import org.exoplatform.services.resources.LocaleConfigService;
+import org.exoplatform.services.resources.ResourceBundleManager;
 import org.exoplatform.services.resources.ResourceBundleService;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.application.WebuiRequestContext;
@@ -56,6 +57,8 @@ import org.exoplatform.webui.form.UIFormDateTimeInput;
 import org.exoplatform.webui.form.UIFormInputBase;
 import org.exoplatform.webui.form.UIFormInputIconSelector;
 import org.exoplatform.webui.form.UIFormInputSet;
+import org.exoplatform.webui.form.UIFormInputWithActions;
+import org.exoplatform.webui.form.UIFormInputWithActions.ActionData;
 import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.form.UIFormTabPane;
@@ -112,25 +115,30 @@ public class UIPageNodeForm extends UIFormTabPane
    
    private static final String LANGUAGES_ONCHANGE = "ChangeLanguage";
 
-   private static final String SWITCH_MODE = "switchmode";
-
-   private static final String SWITCH_MODE_ONCHANGE = "SwitchLabelMode";
-
    private static final String LABEL = "label";
+
+   private boolean isExtendedMode;
 
    public UIPageNodeForm() throws Exception
    {
       super("UIPageNodeForm");
       
-      UIFormInputSet uiSettingSet = new UIFormInputSet("PageNodeSetting");
+      UIFormInputWithActions uiSettingSet = new UIFormInputWithActions("PageNodeSetting");
+      List<ActionData> actions = new ArrayList<ActionData>();
+      ActionData convertAction = new ActionData();
+      convertAction.setActionListener(ConvertLabelActionListener.ACTION_NAME);
+      convertAction.setActionName(ConvertLabelActionListener.ACTION_NAME);
+      convertAction.setActionType(ActionData.TYPE_ICON);
+      convertAction.setCssIconClass("Refresh16x16Icon");
+      actions.add(convertAction);
+      uiSettingSet.setActionField(LABEL, actions);
+
       UIFormCheckBoxInput<Boolean> uiDateInputCheck =
          new UIFormCheckBoxInput<Boolean>(SHOW_PUBLICATION_DATE, null, false);
       UIFormCheckBoxInput<Boolean> uiVisibleCheck = new UIFormCheckBoxInput<Boolean>(VISIBLE, null, true);
-      UIFormCheckBoxInput<Boolean> uiSwitchLabelMode = new UIFormCheckBoxInput<Boolean>(SWITCH_MODE, null, true);
       
       uiDateInputCheck.setOnChange("SwitchPublicationDate");
       uiVisibleCheck.setOnChange("SwitchVisible");
-      uiSwitchLabelMode.setOnChange(SWITCH_MODE_ONCHANGE);
       
       UIFormSelectBox uiFormLanguagesSelectBox = new UIFormSelectBox(LANGUAGES, null, null);
       initLanguageSelectBox(uiFormLanguagesSelectBox);
@@ -138,8 +146,7 @@ public class UIPageNodeForm extends UIFormTabPane
       
       uiSettingSet.addUIFormInput(new UIFormStringInput("URI", "URI", null).setEditable(false))
       				.addUIFormInput(new UIFormStringInput("name", "name", null).addValidator(MandatoryValidator.class).addValidator(StringLengthValidator.class, 3, 30).addValidator(IdentifierValidator.class))
-      				.addUIFormInput(uiSwitchLabelMode)
-      				.addUIFormInput(new UIFormStringInput(LABEL, LABEL, null).addValidator(StringLengthValidator.class, 3, 120))
+                    .addUIFormInput(new UIFormStringInput(LABEL, LABEL, null).setEditable(false).addValidator(StringLengthValidator.class, 3, 120))
       				.addUIFormInput(uiFormLanguagesSelectBox)
       				.addUIFormInput(new UIFormStringInput(I18N_LABEL, null, null).setMaxLength(255).addValidator(StringLengthValidator.class, 3, 120))
       				.addUIFormInput(uiVisibleCheck.setChecked(true))
@@ -174,7 +181,7 @@ public class UIPageNodeForm extends UIFormTabPane
          getUIStringInput("name").setEditable(UIFormStringInput.ENABLE);
          getChild(UIFormInputIconSelector.class).setSelectedIcon("Default");
          setShowPublicationDate(false);
-         switchLabelMode(false);
+         switchExtendedMode(true);
          return;
       }
       getUIStringInput("name").setEditable(UIFormStringInput.DISABLE);
@@ -333,8 +340,7 @@ public class UIPageNodeForm extends UIFormTabPane
          isExtendedMode = false;
       }
       
-      getUIFormCheckBoxInput(SWITCH_MODE).setChecked(isExtendedMode);
-      this.switchLabelMode(isExtendedMode);
+      this.switchExtendedMode(isExtendedMode);
    }
 
    public void invokeSetBindingBean(Object bean) throws Exception
@@ -364,37 +370,41 @@ public class UIPageNodeForm extends UIFormTabPane
          node.setEndPublicationTime(date == null ? -1 : date.getTime());
       }
 
-
-      cachedLabels.put(getUIFormSelectBox(LANGUAGES).getValue(), new Described.State(getUIStringInput(I18N_LABEL).getValue(), null));
+      updateCachedLabels(getUIFormSelectBox(LANGUAGES).getValue(), getUIStringInput(I18N_LABEL).getValue());
       Map<Locale, Described.State> labels = new HashMap<Locale, Described.State>(cachedLabels.size());
       getUIFormSelectBox(LANGUAGES).getValue();
       for (String strLocale : cachedLabels.keySet())
       {
-         Locale locale;
-         if (strLocale.contains("_"))
+         String label = cachedLabels.get(strLocale).getName();
+         if (label != null && label.trim().length() > 0)
          {
-            String[] arr = strLocale.split("_");
-            if (arr.length > 2)
+            Locale locale;
+            if (strLocale.contains("_"))
             {
-               locale = new Locale(arr[0], arr[1], arr[2]);
+               String[] arr = strLocale.split("_");
+               if (arr.length > 2)
+               {
+                  locale = new Locale(arr[0], arr[1], arr[2]);
+               }
+               else
+               {
+                  locale = new Locale(arr[0], arr[1]);
+               }
             }
             else
             {
-               locale = new Locale(arr[0], arr[1]);
+               locale = new Locale(strLocale);
             }
+
+            labels.put(locale, cachedLabels.get(strLocale));
          }
-         else
-         {
-            locale = new Locale(strLocale);
-         }
-         
-         labels.put(locale, cachedLabels.get(strLocale));
       }
-      
+
       node.setI18nizedLabels(labels);
-      
-      if (getUIFormCheckBoxInput(SWITCH_MODE).getValue().toString().equals("true"))
+      if (isExtendedMode)
+      {
          node.setLabel(null);
+      }
    }
 
    public void setShowCheckPublicationDate(boolean show)
@@ -585,7 +595,10 @@ public class UIPageNodeForm extends UIFormTabPane
    
    private void updateCachedLabels(String locale, String label)
    {
-      cachedLabels.put(locale, new Described.State(label, null));
+      if (cachedLabels.containsKey(locale) || (label != null && label.trim().length() != 0))
+      {
+         cachedLabels.put(locale, new Described.State(label, null));
+      }
    }
 
 
@@ -622,18 +635,6 @@ public class UIPageNodeForm extends UIFormTabPane
 		}
    }
    
-   static public class SwitchLabelModeActionListener extends EventListener<UIPageNodeForm>
-   {
-      @Override
-      public void execute(Event<UIPageNodeForm> event) throws Exception
-      {
-         UIPageNodeForm uiForm = event.getSource();
-         boolean isExtendedMode = uiForm.getUIFormCheckBoxInput(SWITCH_MODE).isChecked();
-         uiForm.switchLabelMode(isExtendedMode);
-         event.getRequestContext().addUIComponentToUpdateByAjax(uiForm);
-      }
-   }
-
    static public class ClearPageActionListener extends EventListener<UIPageNodeForm>
    {
       public void execute(Event<UIPageNodeForm> event) throws Exception
@@ -738,10 +739,51 @@ public class UIPageNodeForm extends UIFormTabPane
       }
    }
    
-   private void switchLabelMode(boolean isExtendedMode)
+   private void switchExtendedMode(boolean isExtendedMode)
    {
       getUIStringInput(LABEL).setRendered(!isExtendedMode);
       getUIStringInput(I18N_LABEL).setRendered(isExtendedMode);
       getUIFormSelectBox(LANGUAGES).setRendered(isExtendedMode);
+      this.isExtendedMode = isExtendedMode;
+   }
+
+   static public class ConvertLabelActionListener extends EventListener<UIPageNodeForm>
+   {
+      private static final String ACTION_NAME = "ConvertLabel";
+      @Override
+      public void execute(Event<UIPageNodeForm> event) throws Exception
+      {
+         UIPageNodeForm uiForm = event.getSource();
+         LocaleConfigService localeService = uiForm.getApplicationComponent(LocaleConfigService.class);
+         ResourceBundleManager manager = uiForm.getApplicationComponent(ResourceBundleManager.class);
+
+         String label = uiForm.getPageNode().getLabel();
+         String ownerType = uiForm.getPageNode().getPageNavigation().getKey().getTypeName();
+         String ownerId = uiForm.getPageNode().getPageNavigation().getKey().getName();
+
+         if (ExpressionUtil.isResourceBindingExpression(label))
+         {
+            for (LocaleConfig localeConfig : localeService.getLocalConfigs())
+            {
+               Locale locale = localeConfig.getLocale();
+               String strLocale = locale.getCountry() != "" ? locale.getLanguage() + "_" + locale.getCountry() : locale.getLanguage();
+               ResourceBundle resourceBundle = manager.getNavigationResourceBundle(strLocale, ownerType, ownerId);
+               String value = ExpressionUtil.getExpressionValue(resourceBundle, label);
+               uiForm.updateCachedLabels(strLocale, value);
+            }
+         }
+         else
+         {
+            Locale defaultLocale = localeService.getDefaultLocaleConfig().getLocale();
+            String strLocale = defaultLocale.getCountry() != "" ? defaultLocale.getLanguage() + "_" + defaultLocale.getCountry() : defaultLocale.getLanguage();
+            uiForm.updateCachedLabels(strLocale, label);
+            uiForm.getUIFormSelectBox(LANGUAGES).setValue(strLocale);
+            uiForm.setSelectedLocale(strLocale);
+         }
+
+         uiForm.switchExtendedMode(true);
+         UIFormStringInput uiLabel = uiForm.getUIStringInput(I18N_LABEL);
+         uiLabel.setValue(uiForm.getLabelOnLocale(uiForm.getSelectedLocale()));
+      }
    }
 }

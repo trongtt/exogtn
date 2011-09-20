@@ -21,7 +21,6 @@ package org.exoplatform.portal.webui.page;
 
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.portal.config.model.PortalConfig;
 import org.exoplatform.portal.mop.SiteType;
 import org.exoplatform.portal.mop.Visibility;
 import org.exoplatform.portal.mop.navigation.NavigationServiceException;
@@ -74,16 +73,13 @@ import java.util.ResourceBundle;
    @EventConfig(listeners = UIWizardPageSetInfo.ChangeNodeActionListener.class, phase = Phase.DECODE),
    @EventConfig(listeners = UIWizardPageSetInfo.SwitchVisibleActionListener.class, phase = Phase.DECODE),
    @EventConfig(listeners = UIWizardPageSetInfo.SwitchPublicationDateActionListener.class, phase = Phase.DECODE),
-   @EventConfig(listeners = UIWizardPageSetInfo.ChangeLanguageActionListener.class, phase = Phase.DECODE),
-   @EventConfig(listeners = UIWizardPageSetInfo.SwitchLabelModeActionListener.class, phase = Phase.DECODE)
+   @EventConfig(listeners = UIWizardPageSetInfo.ChangeLanguageActionListener.class, phase = Phase.DECODE)
 })
 public class UIWizardPageSetInfo extends UIForm
 {
 
    
    final public static String PAGE_NAME = "pageName";
-
-   final public static String PAGE_DISPLAY_NAME = "pageDisplayName";
 
    final public static String VISIBLE = "visible";
 
@@ -99,10 +95,6 @@ public class UIWizardPageSetInfo extends UIForm
    
    private static final String LANGUAGES_ONCHANGE = "ChangeLanguage";
 
-   private static final String SWITCH_MODE = "switchmode";
-
-   private static final String SWITCH_MODE_ONCHANGE = "SwitchLabelMode";
-
    private boolean isEditMode = false;
 
    private boolean firstTime = true;
@@ -116,10 +108,8 @@ public class UIWizardPageSetInfo extends UIForm
       UICheckBoxInput uiDateInputCheck =
          new UICheckBoxInput(SHOW_PUBLICATION_DATE, null, false);
       UICheckBoxInput uiVisibleCheck = new UICheckBoxInput(VISIBLE, null, false);
-      UICheckBoxInput uiSwitchLabelMode = new UICheckBoxInput(SWITCH_MODE, null, true);
       uiDateInputCheck.setOnChange("SwitchPublicationDate");
       uiVisibleCheck.setOnChange("SwitchVisible");
-      uiSwitchLabelMode.setOnChange(SWITCH_MODE_ONCHANGE);
       
       UIFormSelectBox uiFormLanguagesSelectBox = new UIFormSelectBox(LANGUAGES, null, null);
       initLanguageSelectBox(uiFormLanguagesSelectBox);
@@ -128,9 +118,6 @@ public class UIWizardPageSetInfo extends UIForm
       addChild(UIPageNodeSelector.class, null, null);
       addUIFormInput(new UIFormStringInput(PAGE_NAME, "name", null).addValidator(MandatoryValidator.class)
          .addValidator(StringLengthValidator.class, 3, 30).addValidator(IdentifierValidator.class));
-      addUIFormInput(uiSwitchLabelMode);
-      addUIFormInput(new UIFormStringInput(PAGE_DISPLAY_NAME, "label", null).setMaxLength(255).addValidator(
-         StringLengthValidator.class, 3, 120));
       addUIFormInput(uiFormLanguagesSelectBox);
       addUIFormInput(new UIFormStringInput(I18N_LABEL, null, null).setMaxLength(255).addValidator(StringLengthValidator.class, 3, 120));
       addUIFormInput(uiVisibleCheck.setChecked(true));
@@ -151,7 +138,6 @@ public class UIWizardPageSetInfo extends UIForm
       
       this.selectedLocale = getUIFormSelectBox(LANGUAGES).getValue();
       cachedLabels = new HashMap<String, String>();
-      switchLabelMode(true);
    }
 
    //TODO: it looks like this method is not used
@@ -185,17 +171,10 @@ public class UIWizardPageSetInfo extends UIForm
       super.invokeSetBindingBean(bean);
       nameTextBox.setEditable(true);
 
-      UserNode node = (UserNode)bean;
-      
-      if ((getUICheckBoxInput(SWITCH_MODE)).isChecked())
-      {
-         node.setLabel(null);
-      }
-      else if (node.getLabel() == null || node.getLabel().trim().length() == 0)
-      {
-         node.setLabel(node.getName());
-      }
-      
+      UserNode node = (UserNode) bean;
+
+      node.setLabel(node.getName());
+
       Visibility visibility;
       if ((getUICheckBoxInput(VISIBLE)).isChecked())
       {
@@ -352,13 +331,6 @@ public class UIWizardPageSetInfo extends UIForm
       }
    }
    
-   private void switchLabelMode(boolean isExtendedMode)
-   {
-      getUIStringInput(PAGE_DISPLAY_NAME).setRendered(!isExtendedMode);
-      getUIStringInput(I18N_LABEL).setRendered(isExtendedMode);
-      getUIFormSelectBox(LANGUAGES).setRendered(isExtendedMode);
-   }
-   
    private String getLabelOnLocale(String locale)
    {
       return cachedLabels.get(locale);
@@ -442,21 +414,6 @@ public class UIWizardPageSetInfo extends UIForm
          
          uiForm.selectedLocale = languageSelection.getValue();
          label.setValue(uiForm.getLabelOnLocale(uiForm.selectedLocale));
-         event.getRequestContext().addUIComponentToUpdateByAjax(uiForm);
-      }
-   }
-   
-   /**
-    * Change between simple and extended mode of label.
-    */
-   static public class SwitchLabelModeActionListener extends EventListener<UIWizardPageSetInfo>
-   {
-      @Override
-      public void execute(Event<UIWizardPageSetInfo> event) throws Exception
-      {
-         UIWizardPageSetInfo uiForm = event.getSource();
-         boolean isExtendedMode = uiForm.getUICheckBoxInput(SWITCH_MODE).isChecked();
-         uiForm.switchLabelMode(isExtendedMode);
          event.getRequestContext().addUIComponentToUpdateByAjax(uiForm);
       }
    }
