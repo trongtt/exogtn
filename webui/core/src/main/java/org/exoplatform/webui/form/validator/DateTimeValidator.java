@@ -40,8 +40,6 @@ import org.exoplatform.webui.form.UIFormInput;
 
 public class DateTimeValidator implements Validator
 {
-   static private final String SPLIT_REGEX = "/|\\s+|:";
-
    static private final String DATETIME_REGEX =
       "^(\\d{1,2}\\/\\d{1,2}\\/\\d{1,4})\\s*(\\s+\\d{1,2}:\\d{1,2}:\\d{1,2})?$";
 
@@ -50,7 +48,6 @@ public class DateTimeValidator implements Validator
       if (uiInput.getValue() == null || ((String)uiInput.getValue()).trim().length() == 0)
          return;
       String s = (String)uiInput.getValue();
-      DateFormat stFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
       UIFormDateTimeInput uiDateInput = (UIFormDateTimeInput)uiInput;
       SimpleDateFormat sdf = new SimpleDateFormat(uiDateInput.getDatePattern_().trim());
 
