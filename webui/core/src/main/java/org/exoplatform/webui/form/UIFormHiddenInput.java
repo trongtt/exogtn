@@ -19,7 +19,6 @@
 
 package org.exoplatform.webui.form;
 
-import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.webui.application.WebuiRequestContext;
 
 import java.io.Writer;
@@ -63,12 +62,10 @@ public class UIFormHiddenInput extends UIFormInputBase<String>
       print.write(" id='");
       print.write(getId());
       print.write("'");
-      String value = getValue();
-      if (value != null && value.length() > 0)
+      if (value_ != null && value_.length() > 0)
       {
          print.write(" value='");
-         value = HTMLEntityEncoder.getInstance().encodeHTMLAttribute(value);
-         print.write(value);
+         print.write(value_);
          print.write("'");
       }
       print.write(" />");

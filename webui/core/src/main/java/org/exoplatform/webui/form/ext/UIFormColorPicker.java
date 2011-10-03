@@ -19,7 +19,6 @@
 
 package org.exoplatform.webui.form.ext;
 
-import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormInput;
@@ -197,17 +196,12 @@ public class UIFormColorPicker extends UIFormInputBase<String>
 
    public void processRender(WebuiRequestContext context) throws Exception
    {
-      String value = getValue();
-      if (value != null)
-      {
-         value = HTMLEntityEncoder.getInstance().encode(value);
-      }
       Writer w = context.getWriter();
       w.write("<div class='UIFormColorPicker'>");
       w.write("<div class=\"UIColorPickerInput\" onclick=\"eXo.webui.UIColorPicker.show(this)\">");
-      w.write("<span class=\" DisplayValue " + value + "\"></span>");
+      w.write("<span class=\" DisplayValue " + encodeValue(value_).toString() + "\"></span>");
       w.write("</div>");
-      w.write("<div class=\"CalendarTableColor\" selectedColor=\"" + value + " \">");
+      w.write("<div class=\"CalendarTableColor\" selectedColor=\"" + encodeValue(value_).toString() + " \">");
       int i = 0;
       int count = 0;
       while (i <= size() / items())
@@ -233,9 +227,9 @@ public class UIFormColorPicker extends UIFormInputBase<String>
       w.write("</div>");
       w.write("<input class='UIColorPickerValue' name='" + getId() + "' type='hidden'" + " id='" + getId() + "' "
          + renderJsActions());
-      if (value != null && value.trim().length() > 0)
+      if (value_ != null && value_.trim().length() > 0)
       {
-         w.write(" value='" + value + "'");
+         w.write(" value='" + value_ + "'");
       }
       w.write(" />");
       w.write("</div>");
@@ -247,6 +241,36 @@ public class UIFormColorPicker extends UIFormInputBase<String>
       if (arg0 == null)
          arg0 = colors_[0].getName();
       return super.setValue(arg0);
+   }
+
+   private StringBuilder encodeValue(String value)
+   {
+      char[] chars = {'\'', '"'};
+      String[] refs = {"&#39;", "&#34;"};
+      StringBuilder builder = new StringBuilder(value);
+      int idx;
+      for (int i = 0; i < chars.length; i++)
+      {
+         idx = indexOf(builder, chars[i], 0);
+         while (idx > -1)
+         {
+            builder = builder.replace(idx, idx + 1, refs[i]);
+            idx = indexOf(builder, chars[i], idx);
+         }
+      }
+      return builder;
+   }
+
+   private int indexOf(StringBuilder builder, char c, int from)
+   {
+      int i = from;
+      while (i < builder.length())
+      {
+         if (builder.charAt(i) == c)
+            return i;
+         i++;
+      }
+      return -1;
    }
 
    static public class Colors

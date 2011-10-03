@@ -4,7 +4,6 @@
    import java.text.DateFormat;
    import java.text.SimpleDateFormat;
    import org.gatein.common.text.EntityEncoder;
-   import org.exoplatform.commons.utils.HTMLEntityEncoder;
 
    String[] beanFields = uicomponent.getBeanFields();
    String[] beanActions = uicomponent.getBeanActions();
@@ -66,7 +65,7 @@
       %>
       <tr class="$rowClass">
          <%
-               EntityEncoder encoder = HTMLEntityEncoder.getInstance();
+               EntityEncoder encoder = EntityEncoder.FULL;
                for (field in beanFields)
                {
 			      def fieldValue = uicomponent.getFieldValue(bean, field);

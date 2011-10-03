@@ -184,23 +184,6 @@ public class Utils
     */
    public static String queryEscape(String s)
    {
-      StringBuilder buffer = new StringBuilder();
-      for (int i = 0; i < s.length(); i++)
-      {
-         char ch = s.charAt(i);
-         if (ch == '%' || ch == '"' || ch == '_' || ch == '\\')
-         {
-            buffer.append('\\').append(ch);
-         }
-         else if (ch == '\'')
-         {
-            buffer.append("''");
-         }
-         else
-         {
-            buffer.append(ch);
-         }
-      }
-      return buffer.toString();
+      return s.replaceAll("[\\\\%_'\"]", "\\\\$0");
    }
 }

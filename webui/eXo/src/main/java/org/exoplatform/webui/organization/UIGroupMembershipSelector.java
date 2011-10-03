@@ -68,7 +68,6 @@ public class UIGroupMembershipSelector extends UIContainer
       tree.setSelectedIcon("PortalIcon");
       tree.setBeanIdField("id");
       tree.setBeanLabelField("label");
-      tree.setEscapeHTML(true);
       uiBreadcumbs.setBreadcumbsStyle("UIExplorerHistoryPath");
    }
 

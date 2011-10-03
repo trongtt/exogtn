@@ -27,7 +27,6 @@ import org.exoplatform.upload.UploadService;
 import org.exoplatform.web.ControllerContext;
 import org.exoplatform.web.WebAppController;
 import org.exoplatform.web.WebRequestHandler;
-import org.gatein.common.text.EntityEncoder;
 
 import java.io.Writer;
 import java.net.URLEncoder;
@@ -87,6 +86,7 @@ public class UploadHandler extends WebRequestHandler
                continue;
             if (upResource.getStatus() == UploadResource.FAILED_STATUS)
             {
+               
                int limitMB = service.getUploadLimitsMB().get(uploadIds[i]).intValue();
                value.append("\n    \"").append(uploadIds[i]).append("\": {");
                value.append("\n      \"status\":").append('\"').append("failed").append("\",");

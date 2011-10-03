@@ -1,8 +1,7 @@
 <%	
 	import org.exoplatform.web.application.JavascriptManager;
 	import org.exoplatform.portal.webui.util.Util ;
-  import org.gatein.common.text.EntityEncoder;
-	import org.exoplatform.commons.utils.HTMLEntityEncoder;
+	import org.gatein.common.text.EntityEncoder;
 	import org.exoplatform.portal.mop.user.UserNode;
 	import javax.portlet.MimeResponse;
 	import javax.portlet.ResourceURL;
@@ -42,7 +41,7 @@
 				else clazz = "";
 				
 				href = nodeURL.toString();
-                EntityEncoder entityEncoder = HTMLEntityEncoder.getInstance();
+                EntityEncoder entityEncoder = EntityEncoder.FULL;
                 label = uicomponent.getPortalLabel(portalName);
                 label = entityEncoder.encode(label);
 				print """

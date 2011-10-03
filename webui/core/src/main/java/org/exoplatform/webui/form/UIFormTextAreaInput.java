@@ -19,9 +19,8 @@
 
 package org.exoplatform.webui.form;
 
-import org.exoplatform.commons.serialization.api.annotations.Serialized;
-import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.webui.application.WebuiRequestContext;
+import org.exoplatform.commons.serialization.api.annotations.Serialized;
 
 import java.io.Writer;
 
@@ -51,6 +50,7 @@ public class UIFormTextAreaInput extends UIFormInputBase<String>
       this.value_ = value ; 
    }
    
+   @SuppressWarnings("unused")
    public void decode(Object input, WebuiRequestContext context) throws Exception {
      String val = (String) input ;
      value_ = val ;
@@ -72,10 +72,9 @@ public class UIFormTextAreaInput extends UIFormInputBase<String>
       w.append(" cols=\"").append(String.valueOf(columns)).append("\"");
       w.write(">");
       if (value != null)
-      {
-         value = HTMLEntityEncoder.getInstance().encode(value);
+         //TODO: remove from other components and than encode here
+         //w.write(org.gatein.common.text.EntityEncoder.FULL.encode(value));
          w.write(value);
-      }
       w.write("</textarea>");
       if (this.isMandatory())
          w.write(" *");

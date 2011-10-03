@@ -1,6 +1,5 @@
 package org.exoplatform.navigation.webui;
 
-import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.portal.mop.Described.State;
 import org.exoplatform.portal.mop.Visibility;
 import org.exoplatform.portal.mop.navigation.NodeChangeListener;
@@ -225,7 +224,7 @@ public class TreeNode implements NodeChangeListener<UserNode>
                      return node.getName();
                   }
 
-                  return HTMLEntityEncoder.getInstance().encode(label);
+                  return label;
                }
             }
          }

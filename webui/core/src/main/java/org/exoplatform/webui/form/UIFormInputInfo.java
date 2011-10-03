@@ -19,9 +19,8 @@
 
 package org.exoplatform.webui.form;
 
-import org.exoplatform.commons.serialization.api.annotations.Serialized;
-import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.webui.application.WebuiRequestContext;
+import org.exoplatform.commons.serialization.api.annotations.Serialized;
 
 import java.io.Writer;
 
@@ -53,12 +52,8 @@ public class UIFormInputInfo extends UIFormInputBase<String>
    {
       Writer w = context.getWriter();
       w.append("<span id=\"").append(getId()).append("\" class=\"").append(getId()).append("\">");
-      String value = getValue();
-      if (value != null)
-      {
-         value = HTMLEntityEncoder.getInstance().encode(value);
-         w.write(value);
-      }
+      if (value_ != null)
+         w.write(value_);
       w.write("</span>");
    }
 

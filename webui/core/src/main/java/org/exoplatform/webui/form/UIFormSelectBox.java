@@ -19,9 +19,8 @@
 
 package org.exoplatform.webui.form;
 
-import org.exoplatform.commons.serialization.api.annotations.Serialized;
-import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.webui.application.WebuiRequestContext;
+import org.exoplatform.commons.serialization.api.annotations.Serialized;
 import org.exoplatform.webui.core.UIComponent;
 import org.exoplatform.webui.core.model.SelectItemOption;
 
@@ -255,12 +254,10 @@ public class UIFormSelectBox extends UIFormStringInput
          {
          }
 
-         String value = item.getValue();
-         value = HTMLEntityEncoder.getInstance().encodeHTMLAttribute(value);
          if (item.isSelected())
          {
             w.write("<option selected=\"selected\" value=\"");
-            w.write(value);
+            w.write(item.getValue());
             w.write("\">");
          }
          else

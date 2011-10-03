@@ -1,7 +1,6 @@
 <%	
 	import org.exoplatform.services.organization.User;
-  import org.gatein.common.text.EntityEncoder;
-	import org.exoplatform.commons.utils.HTMLEntityEncoder;
+	import org.gatein.common.text.EntityEncoder;
 	
 	def rcontext = _ctx.getRequestContext();
 	
@@ -10,7 +9,7 @@
 <ul class="UIUserInfoPortlet" id="$uicomponent.id">
 	<li class="Name">
 	<% if(rcontext.getRemoteUser() != null) { 
-	   	EntityEncoder encoder = HTMLEntityEncoder.getInstance();
+	   	EntityEncoder encoder = EntityEncoder.FULL;
       	fullName = encoder.encode(uicomponent.getUser().getFullName());
 	%>
 		<a href="$accountSetting"><%=fullName%></a>

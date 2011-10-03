@@ -64,11 +64,13 @@ public class ExpressionValidator implements Validator
       {
          return;
       }
-      
-      String value = ((String)uiInput.getValue()).trim();
-      if (value.matches(expression_))
+      if (uiInput.getValue() != null)
       {
-         return;
+         String value = ((String)uiInput.getValue()).trim();
+         if (value.matches(expression_))
+         {
+            return;
+         }
       }
 
       //  modified by Pham Dinh Tan
