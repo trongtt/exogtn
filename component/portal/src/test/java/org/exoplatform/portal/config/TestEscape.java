@@ -32,7 +32,7 @@ public class TestEscape extends AbstractGateInTest
    public void testQueryEscape()
    {
       assertEquals("\\%", Utils.queryEscape("%"));
-      assertEquals("\\'", Utils.queryEscape("'"));
+      assertEquals("''", Utils.queryEscape("'"));
       assertEquals("\\\"", Utils.queryEscape("\""));
       assertEquals("\\_", Utils.queryEscape("_"));
       assertEquals("\\\\", Utils.queryEscape("\\"));
