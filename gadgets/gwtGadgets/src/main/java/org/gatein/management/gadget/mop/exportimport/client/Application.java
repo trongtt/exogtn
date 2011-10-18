@@ -23,6 +23,8 @@
 package org.gatein.management.gadget.mop.exportimport.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.OpenEvent;
@@ -40,7 +42,6 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -50,11 +51,13 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.NamedFrame;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
+import gwtupload.client.IUploadStatus;
 import gwtupload.client.IUploader;
 import gwtupload.client.MultiUploader;
 
@@ -73,7 +76,7 @@ import java.util.List;
  * @version 1.0
  */
 @ModulePrefs(title = "Export/Import Tool", author = "Nabil Benothman", author_email = "nbenothm@redhat.com",
-   description = "This gadget allows the administrator to export/import sites")
+   description = "This gadget allows the administrator to export/import sites", width = 870, height = 480)
 @Gadget.AllowHtmlQuirksMode(false)
 @Gadget.UseLongManifestName(false)
 public class Application extends Gadget<UserPreferences>
@@ -105,9 +108,6 @@ public class Application extends Gadget<UserPreferences>
       TreeImages images = GWT.create(TreeImages.class);
 
       RootPanel rootPanel = RootPanel.get();
-      rootPanel.setSize("885px", "490px");
-      rootPanel.addStyleName("rootpanelstyle");
-
       DecoratedTabPanel decoratedTabPanel = new DecoratedTabPanel();
       decoratedTabPanel.setAnimationEnabled(true);
       rootPanel.add(decoratedTabPanel, 10, 10);
@@ -222,7 +222,14 @@ public class Application extends Gadget<UserPreferences>
       absolutePanel.setSize("400px", "220px");
 
       final Button importButton = new Button("Import");
-      final CheckBox overwriteBox = new CheckBox("Overwrite the existing site");
+      final Label importModeLabel = new Label("Import Mode:");
+      final ListBox importModeListBox = new ListBox(false);
+      importModeListBox.addItem("Conserve", "conserve");
+      importModeListBox.addItem("Insert", "insert");
+      importModeListBox.addItem("Merge", "merge");
+      importModeListBox.addItem("Overwrite", "overwrite");
+      importModeListBox.setSelectedIndex(2); // set default to 'merge'
+
       final HTML statusImg = new HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;", true);
       final Label statusLabel = new Label("status label");
       final Label headerLabel = new Label("Select file to import :");
@@ -280,7 +287,7 @@ public class Application extends Gadget<UserPreferences>
                   break;
             }
 
-            overwriteBox.setEnabled(true);
+            importModeListBox.setEnabled(true);
             importButton.setEnabled(true);
          }
       });
@@ -292,37 +299,40 @@ public class Application extends Gadget<UserPreferences>
 
          public void onStart(IUploader uploader)
          {
-            statusLabel.setText("Process in progress...");
-            statusLabel.setStyleName("progress-style");
-            statusImg.setStyleName("progress-style-icon");
-            overwriteBox.setEnabled(false);
-            importButton.setEnabled(false);
-            if (!isShwon)
+            if (uploader.getStatus() == IUploadStatus.Status.INPROGRESS)
             {
-               statusPanel.setStyleName("status-panel");
-               statusPanel.setSize("380px", "0px");
-               absolutePanel.add(statusPanel, 10, 120);
-
-               Timer t = new Timer()
+               statusLabel.setText("Process in progress...");
+               statusLabel.setStyleName("progress-style");
+               statusImg.setStyleName("progress-style-icon");
+               importModeListBox.setEnabled(false);
+               importButton.setEnabled(false);
+               if (!isShwon)
                {
+                  statusPanel.setStyleName("status-panel");
+                  statusPanel.setSize("380px", "0px");
+                  absolutePanel.add(statusPanel, 10, 120);
 
-                  int dx = 5;
-                  int height = 0;
-
-                  public void run()
+                  Timer t = new Timer()
                   {
-                     height += dx;
-                     statusPanel.setHeight(height + "px");
-                     if (height >= 45)
-                     {
-                        cancel(); // Stop the timer
-                     }
-                  }
-               };
 
-               // Schedule the timer to run once in 100 milliseconds.
-               t.scheduleRepeating(100);
-               isShwon = true;
+                     int dx = 5;
+                     int height = 0;
+
+                     public void run()
+                     {
+                        height += dx;
+                        statusPanel.setHeight(height + "px");
+                        if (height >= 45)
+                        {
+                           cancel(); // Stop the timer
+                        }
+                     }
+                  };
+
+                  // Schedule the timer to run once in 100 milliseconds.
+                  t.scheduleRepeating(100);
+                  isShwon = true;
+               }
             }
          }
       });
@@ -331,18 +341,19 @@ public class Application extends Gadget<UserPreferences>
       // You can add customized parameters to servlet call
       uploader.setServletPath(UPLOAD_ACTION_URL + "?pc=" + getPortalContainerName());
 
-      overwriteBox.setTitle("If you want to force overwriting an existing site, check this checkbox");
-      overwriteBox.addClickHandler(new ClickHandler()
+      importModeListBox.setTitle("The import mode to use during import.");
+      importModeListBox.addChangeHandler(new ChangeHandler()
       {
-
-         public void onClick(ClickEvent event)
+         @Override
+         public void onChange(ChangeEvent changeEvent)
          {
-            String url = UPLOAD_ACTION_URL + "?pc=" + getPortalContainerName() + "&overwrite=" + overwriteBox.getValue();
+            String url = UPLOAD_ACTION_URL + "?pc=" + getPortalContainerName() + "&importMode=" + importModeListBox.getValue(importModeListBox.getSelectedIndex());
             uploader.setServletPath(url);
          }
       });
 
-      absolutePanel.add(overwriteBox, 10, 84);
+      absolutePanel.add(importModeLabel, 10, 88);
+      absolutePanel.add(importModeListBox, 95, 84);
       Button closeButton = new Button("Close", new ClickHandler()
       {
 
