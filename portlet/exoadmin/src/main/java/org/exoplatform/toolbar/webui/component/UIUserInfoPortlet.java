@@ -23,10 +23,14 @@ import org.exoplatform.services.organization.User;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.web.CacheUserProfileFilter;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
+import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.UIPortletApplication;
 import org.exoplatform.webui.core.lifecycle.UIApplicationLifecycle;
+import org.exoplatform.webui.event.Event;
+import org.exoplatform.webui.event.EventListener;
 
-@ComponentConfig(lifecycle = UIApplicationLifecycle.class, template = "app:/groovy/admintoolbar/webui/component/UIUserInfoPortlet.gtmpl")
+@ComponentConfig(lifecycle = UIApplicationLifecycle.class, template = "app:/groovy/admintoolbar/webui/component/UIUserInfoPortlet.gtmpl", events = {
+   @EventConfig(listeners = UIUserInfoPortlet.UserInfoChangeActionListener.class)})
 public class UIUserInfoPortlet extends UIPortletApplication
 {
 
@@ -38,5 +42,13 @@ public class UIUserInfoPortlet extends UIPortletApplication
    {
       ConversationState state = ConversationState.getCurrent();
       return (User)state.getAttribute(CacheUserProfileFilter.USER_PROFILE);
+   }
+   
+   public static class UserInfoChangeActionListener extends EventListener<UIUserInfoPortlet> 
+   {
+      @Override
+      public void execute(Event<UIUserInfoPortlet> event) throws Exception
+      {
+      }
    }
 }

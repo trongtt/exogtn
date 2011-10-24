@@ -19,6 +19,9 @@
 
 package org.exoplatform.organization.webui.component;
 
+import javax.portlet.ActionResponse;
+import javax.xml.namespace.QName;
+
 import org.exoplatform.commons.serialization.api.annotations.Serialized;
 import org.exoplatform.portal.Constants;
 import org.exoplatform.portal.application.PortalRequestContext;
@@ -130,7 +133,9 @@ public class UIUserInfo extends UIFormTabPane
             User user = service.getUserHandler().findUserByName(uiUserInfo.getUserName());
             ConversationState state = ConversationState.getCurrent();
             state.setAttribute(CacheUserProfileFilter.USER_PROFILE, user);
-
+            ActionResponse actResponse = event.getRequestContext().getResponse();
+            actResponse.setEvent(new QName("UserInfoChange"), null);
+            
             String language = userProfile.getAttribute(Constants.USER_LANGUAGE);
             UIPortalApplication uiApp = Util.getUIPortalApplication();            
             if (language != null && !language.isEmpty()) 
@@ -142,11 +147,15 @@ public class UIUserInfo extends UIFormTabPane
                   localeConfig = localeConfigService.getDefaultLocaleConfig();
                PortalRequestContext prqCtx = Util.getPortalRequestContext();
                prqCtx.setLocale(localeConfig.getLocale());
+               
+               Util.getPortalRequestContext().addUIComponentToUpdateByAjax(
+                  uiApp.findFirstComponentOfType(UIWorkingWorkspace.class));
+               Util.getPortalRequestContext().setFullRender(true);
             }
-
-            Util.getPortalRequestContext().addUIComponentToUpdateByAjax(
-               uiApp.findFirstComponentOfType(UIWorkingWorkspace.class));
-            Util.getPortalRequestContext().setFullRender(true);
+            else
+            {
+               return ;
+            }
          }
          
          UIUserManagement userManagement = uiUserInfo.getParent();

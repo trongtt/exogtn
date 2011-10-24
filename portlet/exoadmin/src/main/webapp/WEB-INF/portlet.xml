@@ -53,6 +53,9 @@
       <supported-processing-event>
          <name>NewAccountAdded</name>
       </supported-processing-event>
+      <supported-publishing-event>
+         <name>UserInfoChange</name>
+      </supported-publishing-event>
    </portlet>
 
    <portlet>
@@ -304,6 +307,9 @@
          <role-name>admin</role-name>
          <role-link>admin</role-link>
       </security-role-ref>
+      <supported-processing-event>
+         <name>UserInfoChange</name>
+      </supported-processing-event>
    </portlet>
 
    <portlet>
@@ -446,5 +452,8 @@
    </event-definition>
    <event-definition>
       <name>NavigationChange</name>
+   </event-definition>
+   <event-definition>
+      <name>UserInfoChange</name>	   	
    </event-definition>
 </portlet-app>
