@@ -138,7 +138,7 @@ UIRightClickPopupMenu.prototype.clickRightMouse = function(event, elemt, menuId,
 	if(tmpCustomItem) {
 		if(customItem) {
 			tmpCustomItem.innerHTML = customItem.innerHTML ;
-			tmpCustomItem.style.display = "block" ;
+			tmpCustomItem.style.display = "inline" ;
 		} else {
 			tmpCustomItem.style.display = "none" ;
 		}
@@ -181,10 +181,13 @@ UIRightClickPopupMenu.prototype.clickRightMouse = function(event, elemt, menuId,
 		case 4:
 			break;
 		default:
-			if((eXo.core.Mouse.mouseyInClient + ctxMenuContainer.offsetHeight) > eXo.core.Browser.getBrowserHeight()) {
-				intTop -= ctxMenuContainer.offsetHeight ;
-			}
-			break;
+      // if it isn't fit to be showed down BUT is fit to to be showed up
+      if((eXo.core.Mouse.mouseyInClient + ctxMenuContainer.offsetHeight) > eXo.core.Browser.getBrowserHeight()
+          && (intTop > ctxMenuContainer.offsetHeight))
+      {
+        intTop -= ctxMenuContainer.offsetHeight ;
+      }
+      break;
 	}
 	
 	if(eXo.core.I18n.isLT()) {

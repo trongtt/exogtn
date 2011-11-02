@@ -108,20 +108,17 @@ public class UIPageBrowser extends UIContainer
 
    protected String pageSelectedId_;
 
-   private static List<SelectItemOption<String>> OPTIONS = new ArrayList<SelectItemOption<String>>(2);
-
-   static
-   {
-      WebuiRequestContext contextui = WebuiRequestContext.getCurrentInstance();
-      ResourceBundle res = contextui.getApplicationResourceBundle();
-      OPTIONS.add(new SelectItemOption<String>(res.getString("UIPageSearchForm.label.option.portal"), "portal"));
-      OPTIONS.add(new SelectItemOption<String>(res.getString("UIPageSearchForm.label.option.group"), "group"));
-   }
+   private List<SelectItemOption<String>> OPTIONS = new ArrayList<SelectItemOption<String>>(2);
 
    private Query<Page> lastQuery_;
 
    public UIPageBrowser() throws Exception
    {
+      WebuiRequestContext contextui = WebuiRequestContext.getCurrentInstance();
+      ResourceBundle res = contextui.getApplicationResourceBundle();
+      OPTIONS.add(new SelectItemOption<String>(res.getString("UIPageSearchForm.label.option.portal"), "portal"));
+      OPTIONS.add(new SelectItemOption<String>(res.getString("UIPageSearchForm.label.option.group"), "group"));
+      
       UIPageSearchForm uiSearchForm = addChild(UIPageSearchForm.class, null, null);
       uiSearchForm.setOptions(OPTIONS);
       uiSearchForm.setId("UIPageSearchForm");
@@ -151,11 +148,11 @@ public class UIPageBrowser extends UIContainer
       String siteName = siteNameInput.getValue();
       String title = titleInput.getValue();
       String ownerType = select.getValue();      
-      if (title != null && title != "")
+      if (title != null)
       {
          query.setTitle(title.trim());
       }
-      if (siteName != null && siteName != "")
+      if (siteName != null && !siteName.trim().equals(""))
       {
          query.setOwnerId(siteName.trim());
       }
@@ -206,7 +203,6 @@ public class UIPageBrowser extends UIContainer
    {
       UIApplication uiApp = Util.getPortalRequestContext().getUIApplication();
       uiApp.addMessage(new ApplicationMessage("UISearchForm.msg.empty", null));
-      Util.getPortalRequestContext().addUIComponentToUpdateByAjax(uiApp.getUIPopupMessages());
    }
 
    public void quickSearch(UIFormInputSet quickSearchInput) throws Exception
@@ -273,7 +269,6 @@ public class UIPageBrowser extends UIContainer
          if (service.getPage(id) == null)
          {
             uiApp.addMessage(new ApplicationMessage("UIPageBrowser.msg.PageNotExist", new String[]{id}, 1));
-            context.addUIComponentToUpdateByAjax(uiApp.getUIPopupMessages());
             return;
          }
          Page page = service.getPage(id, context.getRemoteUser());
@@ -282,7 +277,6 @@ public class UIPageBrowser extends UIContainer
             (page.getOwnerType().equals(SiteType.USER.getName()) && !page.getOwnerId().equals(context.getRemoteUser())))
          {
             uiApp.addMessage(new ApplicationMessage("UIPageBrowser.msg.delete.NotDelete", new String[]{id}, 1));
-            context.addUIComponentToUpdateByAjax(uiApp.getUIPopupMessages());
             return;
          }
          
@@ -399,7 +393,6 @@ public class UIPageBrowser extends UIContainer
          if (page == null)
          {
             uiPortalApp.addMessage(new ApplicationMessage("UIPageBrowser.msg.PageNotExist", new String[]{id}, 1));
-            context.addUIComponentToUpdateByAjax(uiPortalApp.getUIPopupMessages());
             return;
          }
 
@@ -408,7 +401,6 @@ public class UIPageBrowser extends UIContainer
          if (!userACL.hasEditPermission(page))
          {
             uiPortalApp.addMessage(new ApplicationMessage("UIPageBrowser.msg.edit.NotEditPage", new String[]{id}, 1));
-            context.addUIComponentToUpdateByAjax(uiPortalApp.getUIPopupMessages());
             return;
          }
          
@@ -467,7 +459,6 @@ public class UIPageBrowser extends UIContainer
             if (existPage != null)
             {
                uiPortalApp.addMessage(new ApplicationMessage("UIPageForm.msg.sameName", null));
-               pcontext.addUIComponentToUpdateByAjax(uiPortalApp.getUIPopupMessages());
                return;
             }
             page.setModifiable(true);
