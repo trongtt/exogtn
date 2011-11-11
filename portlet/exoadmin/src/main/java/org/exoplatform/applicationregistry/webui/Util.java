@@ -47,7 +47,7 @@ public class Util
 
       public int compare(ApplicationCategory cate1, ApplicationCategory cate2)
       {
-         return cate1.getDisplayName().compareToIgnoreCase(cate2.getDisplayName());
+         return cate1.getDisplayName(true).compareToIgnoreCase(cate2.getDisplayName(true));
       }
 
    }
@@ -57,7 +57,17 @@ public class Util
 
       public int compare(Application app1, Application app2)
       {
-         return app1.getDisplayName().compareToIgnoreCase(app2.getDisplayName());
+         String firstDisplayName = app1.getDisplayName();
+         if(firstDisplayName == null)
+         {
+            firstDisplayName = "";
+         }
+         String secondDisplayName = app2.getDisplayName();
+         if(secondDisplayName == null)
+         {
+            secondDisplayName = "";
+         }
+         return firstDisplayName.compareToIgnoreCase(secondDisplayName);
       }
 
    }
@@ -67,7 +77,17 @@ public class Util
 
       public int compare(Gadget gadget1, Gadget gadget2)
       {
-         return gadget1.getTitle().compareToIgnoreCase(gadget2.getTitle());
+         String firstTitle = gadget1.getTitle();
+         if(firstTitle == null)
+         {
+            firstTitle = "";
+         }
+         String secondTitle = gadget2.getTitle();
+         if(secondTitle == null)
+         {
+            secondTitle = "";
+         }
+         return firstTitle.compareToIgnoreCase(secondTitle);
       }
 
    }

@@ -78,7 +78,8 @@ import java.util.UUID;
       @EventConfig(listeners = UIPageNodeForm.SwitchPublicationDateActionListener.class, phase = Phase.DECODE),
       @EventConfig(listeners = UIPageNodeForm.SwitchVisibleActionListener.class, phase = Phase.DECODE),
       @EventConfig(listeners = UIPageNodeForm.ClearPageActionListener.class, phase = Phase.DECODE),
-      @EventConfig(listeners = UIPageNodeForm.CreatePageActionListener.class, phase = Phase.DECODE)}),
+      @EventConfig(listeners = UIPageNodeForm.CreatePageActionListener.class, phase = Phase.DECODE),
+      @EventConfig(listeners = UIPageNodeForm.SelectTabActionListener.class, phase = Phase.DECODE)}),
    @ComponentConfig(type = UIPopupWindow.class, template = "system:/groovy/webui/core/UIPopupWindow.gtmpl",
       events = @EventConfig(listeners = UIGroupNavigationManagement.CloseActionListener.class, name = "ClosePopup"))})
 public class UIGroupNavigationManagement extends UIContainer
@@ -115,6 +116,7 @@ public class UIGroupNavigationManagement extends UIContainer
 
       UIVirtualList virtualList = getChild(UIVirtualList.class);                  
       virtualList.dataBind(new ObjectPageList<UserNavigation>(groupNav, groupNav.size()));
+      virtualList.setAutoAdjustHeight(true);
    }
 
    public void setScope(Scope scope)
