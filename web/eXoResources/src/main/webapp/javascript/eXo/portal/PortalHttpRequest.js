@@ -598,7 +598,9 @@ function HttpResponseHandler(){
 	        */
 	        var parentBlock =  document.getElementById(portletResponse.portletId) ;
 	        var target = eXo.core.DOMUtil.findFirstDescendantByClass(parentBlock, "div", "PORTLET-FRAGMENT") ;
-	        target.innerHTML = portletResponse.portletData;
+	        if (target) {
+	        	target.innerHTML = portletResponse.portletData;	        	
+	        }
 	        
 	        //update embedded scripts 
 	        if(portletResponse.scripts) {
@@ -606,7 +608,7 @@ function HttpResponseHandler(){
 		          for(var k = 0 ; k < portletResponse.scripts.length; k++) {
 		            var encodedName = 'script_' + k + '_' +  portletResponse.portletId;
 		            appendScriptToHead(encodedName, portletResponse.scripts[k]);
-		          }
+		          	}
 			      }              
 	        }
             

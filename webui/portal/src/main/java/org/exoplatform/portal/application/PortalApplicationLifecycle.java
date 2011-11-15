@@ -19,18 +19,33 @@
 
 package org.exoplatform.portal.application;
 
+import javax.xml.namespace.QName;
+
+import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.SessionContainer;
 import org.exoplatform.container.SessionManagerContainer;
+import org.exoplatform.portal.webui.application.EventsWrapper;
+import org.exoplatform.portal.webui.application.UIPortlet;
+import org.exoplatform.portal.webui.application.UIPortletActionListener;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.web.application.Application;
-import org.exoplatform.web.application.ApplicationLifecycle;
+import org.exoplatform.web.application.ApplicationRequestPhaseLifecycle;
+import org.exoplatform.web.application.Phase;
 import org.exoplatform.web.application.RequestFailure;
 import org.exoplatform.webui.application.WebuiRequestContext;
 
-public class PortalApplicationLifecycle implements ApplicationLifecycle<WebuiRequestContext>
-{
-
+public class PortalApplicationLifecycle implements ApplicationRequestPhaseLifecycle<WebuiRequestContext>
+{   
+   public static final QName BEFORE_RENDER = new QName("http://www.gatein.org/xml/ns/ep", "BeforeRender");
+   
+   protected static Log log = ExoLogger.getLogger(PortalApplicationLifecycle.class);
+   
    @SuppressWarnings("unused")
    public void onInit(Application app)
    {
@@ -57,6 +72,69 @@ public class PortalApplicationLifecycle implements ApplicationLifecycle<WebuiReq
       ExoContainerContext.setCurrentContainer(null);
    }
 
+   @Override
+   public void onStartRequestPhase(Application app, WebuiRequestContext context, Phase phase)
+   {      
+   }   
+
+   @Override
+   public void onEndRequestPhase(Application app, WebuiRequestContext context, Phase phase)
+   {
+      if (!Phase.ACTION.equals(phase) || context.getUIApplication() == null)
+      {
+         return;
+      }
+
+      UIPortlet uiPortlet = context.getUIApplication().findFirstComponentOfType(UIPortlet.class);
+      if (uiPortlet == null)
+      {
+         log.warn("No portlet to dispatch BEFORE_RENDER event");
+         return;
+      }
+      
+      class PortletEvent implements javax.portlet.Event
+      {
+         QName qName;
+
+         Serializable value;
+
+         public PortletEvent(QName qName, Serializable value)
+         {
+            this.qName = qName;
+            this.value = value;
+         }
+
+         public String getName()
+         {
+            return qName.getLocalPart();
+         }
+
+         public QName getQName()
+         {
+            return qName;
+         }
+
+         public Serializable getValue()
+         {
+            return value;
+         }
+      }
+      
+      javax.portlet.Event portletEvent = new PortletEvent(BEFORE_RENDER, null);
+      List<javax.portlet.Event> events = new LinkedList<javax.portlet.Event>();
+      events.add(portletEvent);
+
+      context.setAttribute(UIPortletActionListener.PORTLET_EVENTS, new EventsWrapper(events));
+      try
+      {
+         uiPortlet.createEvent("ProcessEvents", org.exoplatform.webui.event.Event.Phase.PROCESS, context).broadcast();
+      }
+      catch (Exception e)
+      {
+         log.error("Problem while creating event for the portlet: " + uiPortlet.getState(), e);
+      }
+   }
+   
    @SuppressWarnings("unused")
    public void onDestroy(Application app)
    {
