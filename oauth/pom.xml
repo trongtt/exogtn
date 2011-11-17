@@ -1,0 +1,36 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>org.exoplatform.oauth</groupId>
+   <artifactId>parent-pom</artifactId>
+   <packaging>pom</packaging>
+   <version>3.2.0-PLF</version>
+   <name>OAuth::Examples::Parent POM</name>
+   <modules>
+      <module>exo-oauth-provider-service</module>
+      <module>exo-oauth-provider-webapp</module>
+      <module>exo-oauth-consumer-service</module>
+      <module>example-oauth-consumer</module>
+      <module>example-oauth-gadget</module>
+      <module>example-rest-service</module>
+   </modules>
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+               <source>1.5</source>
+               <target>1.5</target>
+            </configuration>
+         </plugin>
+      </plugins>
+   </build>
+   <repositories>
+      <repository>
+         <id>oauth</id>
+         <name>oAuth Repository</name>
+         <url>http://oauth.googlecode.com/svn/code/maven</url>
+      </repository>
+   </repositories>
+</project>
