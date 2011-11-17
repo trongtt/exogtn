@@ -125,6 +125,7 @@
       <module>webui</module>
       <module>portlet</module>
       <module>web</module>
+      <module>oauth</module>
       <module>server</module>
       <module>examples</module>
       <module>starter</module>

@@ -4,12 +4,12 @@
    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <modelVersion>4.0.0</modelVersion>
    <parent>
-      <groupId>org.exoplatform.oauth</groupId>
-      <artifactId>parent-pom</artifactId>
+      <groupId>org.exoplatform.portal</groupId>
+      <artifactId>exo.portal.oauth</artifactId>
       <version>3.2.0-PLF</version>
    </parent>
    <artifactId>example-oauth-gadget</artifactId>
-   <version>3.2.0-PLF</version>
+   <name>OAuth Gadget Example</name>
    <url>http://maven.apache.org</url>
    <packaging>war</packaging>
    

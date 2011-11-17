@@ -260,6 +260,25 @@ function getModule(params)
    module.eXoGadgets = new Project("org.exoplatform.portal", "exo.portal.eXoGadgets", "war", module.version);
    module.eXoGadgets.deployName = "eXoGadgets";
 
+   module.oauth = {}
+   module.oauth.oauthProviderService =
+   new Project("org.exoplatform.portal", "exo-oauth-provider-service", "jar", module.version);
+
+   module.oauth.oauthProviderWebapp =
+   new Project("org.exoplatform.portal", "exo-oauth-provider", "war", module.version);
+
+   module.oauth.oauthConsumerService =
+   new Project("org.exoplatform.portal", "exo-oauth-consumer-service", "jar", module.version);
+
+   module.oauth.exampleConsumer =
+   new Project("org.exoplatform.portal", "example-oauth-consumer", "war", module.version);
+
+   module.oauth.exampleGadget =
+   new Project("org.exoplatform.portal", "example-oauth-gadget", "war", module.version);
+
+   module.oauth.exampleRest =
+   new Project("org.exoplatform.portal", "example-rest-service", "jar", module.version);
+
    module.web = {}
    module.web.eXoResources =
    new Project("org.exoplatform.portal", "exo.portal.web.eXoResources", "war", module.version);

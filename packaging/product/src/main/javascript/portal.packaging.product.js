@@ -48,6 +48,13 @@ function getProduct(version) {
   product.addDependencies(portal.sample.extension) ;
   product.addDependencies(portal.sample.skin) ;
 
+  product.addDependencies(portal.oauth.oauthProviderService);  
+  product.addDependencies(portal.oauth.oauthProviderWebapp);
+  product.addDependencies(portal.oauth.oauthConsumerService) ;
+  product.addDependencies(portal.oauth.exampleConsumer) ;
+  product.addDependencies(portal.oauth.exampleGadget) ;
+  product.addDependencies(portal.oauth.exampleRest) ;
+
   if(eXo.server.Jboss || eXo.server.JbossEar)
   {
     product.addDependencies(portal.wsrp.extension);
