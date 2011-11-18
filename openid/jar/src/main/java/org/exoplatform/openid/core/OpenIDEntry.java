@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2011 eXo Platform SAS.
- *
+ * 
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 2.1 of
@@ -16,29 +16,24 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.exoplatform.openid;
+package org.exoplatform.openid.core;
 
-import org.exoplatform.services.organization.User;
-
-import java.util.List;
+import org.chromattic.api.annotations.Name;
+import org.chromattic.api.annotations.PrimaryType;
+import org.chromattic.api.annotations.Property;
 
 /**
- * @author <a href="kien.nguyen@exoplatform.com">Kien Nguyen</a>
- * @version $Revision$
+ * @author <a href="mailto:ndkhoi168@gmail.com">Nguyen Duc Khoi</a>
+ * Nov 18, 2011
  */
-public interface OpenIDService
+@PrimaryType(name = "nt:openidentry")
+public abstract class OpenIDEntry
 {
-   public User findUserByOpenID(String openid);
-
-   public List<String> findOpenIdsByUser(String username);
-
-   public List<String> getAllOpenIds();
-
-   public User createUser(User user, String openid) throws Exception;
-
-   public String findUsernameByOpenID(String openid);
-
-   public void mapToUser(String openId, String username);
-
-   public void removeOpenID(String openId);
+   @Name
+   public abstract String getId();
+   
+   @Property(name = "username")
+   public abstract String getUsername();
+   
+   public abstract void setUsername(String username);
 }

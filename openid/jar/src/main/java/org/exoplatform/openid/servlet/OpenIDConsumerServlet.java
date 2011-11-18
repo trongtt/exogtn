@@ -18,6 +18,8 @@
  */
 package org.exoplatform.openid.servlet;
 
+import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.container.web.AbstractHttpServlet;
 import org.exoplatform.openid.OpenIDService;
 import org.exoplatform.openid.OpenIDUtils;
@@ -108,12 +110,12 @@ public class OpenIDConsumerServlet extends AbstractHttpServlet
     */
    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
    {
-      if(req.getRemoteUser() != null)
+      if (req.getRemoteUser() != null)
       {
          //Authenticated
          resp.sendRedirect("/portal");
       }
-      
+
       if ("true".equals(req.getParameter("is_return")))
       {
          processReturn(req, resp);
@@ -139,7 +141,7 @@ public class OpenIDConsumerServlet extends AbstractHttpServlet
       if (token == null)
       {
          req.setAttribute("error", "There is error during login processing");
-         
+
          this.getServletContext().getRequestDispatcher("/login/openid/openid.jsp").forward(req, resp);
       }
       else
@@ -151,7 +153,7 @@ public class OpenIDConsumerServlet extends AbstractHttpServlet
 
    // --- placing the authentication request ---
    private String authRequest(String userSuppliedString, HttpServletRequest httpReq, HttpServletResponse httpResp)
-      throws IOException, ServletException
+         throws IOException, ServletException
    {
       try
       {
@@ -185,7 +187,8 @@ public class OpenIDConsumerServlet extends AbstractHttpServlet
          {
             // Option 2: HTML FORM Redirection (Allows payloads >2048 bytes)
 
-            RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/login/openid/formredirection.jsp");
+            RequestDispatcher dispatcher = getServletContext()
+                  .getRequestDispatcher("/login/openid/formredirection.jsp");
             httpReq.setAttribute("message", authReq);
             dispatcher.forward(httpReq, httpResp);
          }
@@ -194,7 +197,8 @@ public class OpenIDConsumerServlet extends AbstractHttpServlet
       {
          // Go back OpenID Login page
          RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/login/openid/openid.jsp");
-         httpReq.setAttribute("error", userSuppliedString + " OpenID provider is invalid. Or your OpenID provider is down");
+         httpReq.setAttribute("error", userSuppliedString
+               + " OpenID provider is invalid. Or your OpenID provider is down");
          dispatcher.forward(httpReq, httpResp);
       }
 
@@ -215,7 +219,7 @@ public class OpenIDConsumerServlet extends AbstractHttpServlet
          ParameterList response = new ParameterList(httpReq.getParameterMap());
 
          // retrieve the previously stored discovery information
-         DiscoveryInformation discovered = (DiscoveryInformation)httpReq.getSession().getAttribute("openid-disc");
+         DiscoveryInformation discovered = (DiscoveryInformation) httpReq.getSession().getAttribute("openid-disc");
 
          // extract the receiving URL from the HTTP request
          StringBuffer receivingURL = httpReq.getRequestURL();
@@ -232,17 +236,17 @@ public class OpenIDConsumerServlet extends AbstractHttpServlet
          Identifier verified = verification.getVerifiedId();
          if (verified != null)
          {
-            AuthSuccess authSuccess = (AuthSuccess)verification.getAuthResponse();
+            AuthSuccess authSuccess = (AuthSuccess) verification.getAuthResponse();
 
             if (authSuccess.hasExtension(SRegMessage.OPENID_NS_SREG))
             {
                MessageExtension ext = authSuccess.getExtension(SRegMessage.OPENID_NS_SREG);
                if (ext instanceof SRegResponse)
                {
-                  SRegResponse sregResp = (SRegResponse)ext;
+                  SRegResponse sregResp = (SRegResponse) ext;
                   for (Iterator iter = sregResp.getAttributeNames().iterator(); iter.hasNext();)
                   {
-                     String name = (String)iter.next();
+                     String name = (String) iter.next();
                      String value = sregResp.getParameterValue(name);
                      httpReq.setAttribute(name, value);
                   }
@@ -250,7 +254,7 @@ public class OpenIDConsumerServlet extends AbstractHttpServlet
             }
 
             log.info("Your OpenID: " + verified.getIdentifier() + "\nQuery String:" + httpReq.getQueryString());
-            
+
             //We need to store information into token for security purpose
             TransientTokenService tokenService = AbstractTokenService.getInstance(TransientTokenService.class);
             Credentials credentials = new Credentials(verified.getIdentifier(), authSuccess.getSignature());
@@ -265,46 +269,51 @@ public class OpenIDConsumerServlet extends AbstractHttpServlet
 
       return null;
    }
-   
-   private void processOpenIDAccount(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException
+
+   private void processOpenIDAccount(HttpServletRequest req, HttpServletResponse resp) throws IOException,
+         ServletException
    {
-      if(req.getRemoteUser() != null)
+      if (req.getRemoteUser() != null)
       {
          //Authenticated
          resp.sendRedirect("/portal");
       }
-      
-      String token = (String)req.getSession().getAttribute("openid.token");
+
+      String token = (String) req.getSession().getAttribute("openid.token");
       TransientTokenService tokenService = AbstractTokenService.getInstance(TransientTokenService.class);
       Credentials tCredentials = tokenService.validateToken(token, false);
 
       if (tCredentials != null)
       {
-         String identifier = tCredentials.getUsername();
-         OpenIDService service = OpenIDUtils.getOpenIDService();
-         User user = service.findUserByOpenID(identifier);
-         if (user != null)
+         try
          {
-            try
+            RequestLifeCycle.begin(ExoContainerContext.getCurrentContainer());
+            String identifier = tCredentials.getUsername();
+            OpenIDService service = OpenIDUtils.getOpenIDService();
+            User user = service.findUserByOpenID(identifier);
+            if (user != null)
             {
                //Auto Login
                log.info("Make auto login");
                user.setPassword(token);
-               OpenIDUtils.autoLogin(user, req, resp);               
+               OpenIDUtils.autoLogin(user, req, resp);
             }
-            catch (Exception e)
+            else
             {
-               log.error("authentication unsuccessful");
-               e.printStackTrace();
+               //ask user create account
+               log.info("Go to register new account");
+               req.setAttribute("identifier", identifier);
+               req.setAttribute("user", user);
+               this.getServletContext().getRequestDispatcher("/login/openid/register.jsp").include(req, resp);
             }
          }
-         else
+         catch (Exception e)
          {
-            //ask user create account
-            log.info("Go to register new account");
-            req.setAttribute("identifier", identifier);
-            req.setAttribute("user", user);
-            this.getServletContext().getRequestDispatcher("/login/openid/register.jsp").include(req, resp);
+            log.error("authentication unsuccessful");
+         }
+         finally
+         {
+            RequestLifeCycle.end();
          }
       }
       else

@@ -46,41 +46,4 @@
    <listener>
       <listener-class>org.exoplatform.container.web.PortalContainerConfigOwner</listener-class>
    </listener>
-   <!-- ================================================================== -->
-   <!-- SERVLET -->
-   <!-- ================================================================== -->
-   <!-- OpenID authentication -->
-   <servlet>
-      <servlet-name>OpenIDConsumerServlet</servlet-name>
-      <servlet-class>org.exoplatform.openid.servlet.OpenIDConsumerServlet</servlet-class>
-   </servlet>
-   <servlet>
-      <servlet-name>OpenIDAccountServlet</servlet-name>
-      <servlet-class>org.exoplatform.openid.servlet.OpenIDAccountServlet</servlet-class>
-   </servlet>
-   <servlet>
-      <servlet-name>OpenIDRegisterServlet</servlet-name>
-      <servlet-class>org.exoplatform.openid.servlet.OpenIDRegisterServlet</servlet-class>
-   </servlet>
-   <servlet>
-      <servlet-name>OpenIDMapServlet</servlet-name>
-      <servlet-class>org.exoplatform.openid.servlet.OpenIDMapServlet</servlet-class>
-   </servlet>
-   <!-- ================================================================= -->
-   <servlet-mapping>
-      <servlet-name>OpenIDConsumerServlet</servlet-name>
-      <url-pattern>/openidconsumer</url-pattern>
-   </servlet-mapping>
-   <servlet-mapping>
-      <servlet-name>OpenIDAccountServlet</servlet-name>
-      <url-pattern>/openidaccount</url-pattern>
-   </servlet-mapping>
-   <servlet-mapping>
-      <servlet-name>OpenIDRegisterServlet</servlet-name>
-      <url-pattern>/openidregister</url-pattern>
-   </servlet-mapping>
-   <servlet-mapping>
-      <servlet-name>OpenIDMapServlet</servlet-name>
-      <url-pattern>/openidmap</url-pattern>
-   </servlet-mapping>
 </web-app>

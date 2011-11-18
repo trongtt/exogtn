@@ -18,21 +18,22 @@
  */
 package org.exoplatform.openid;
 
-import java.util.List;
+import org.exoplatform.component.test.AbstractKernelTest;
+import org.exoplatform.component.test.ConfigurationUnit;
+import org.exoplatform.component.test.ConfiguredBy;
+import org.exoplatform.component.test.ContainerScope;
 
 /**
  * @author <a href="mailto:ndkhoi168@gmail.com">Nguyen Duc Khoi</a>
- * Jul 5, 2011
+ * Nov 18, 2011
  */
-public interface OpenIDDAO
+@ConfiguredBy({
+      @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.test.jcr-configuration.xml"),
+      @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.identity-configuration.xml"),
+      @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.openid.service.openid-configuration.xml"),
+      @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.portal-configuration.xml")
+})
+public abstract class AbstractOpenIDServiceTest extends AbstractKernelTest
 {
-   public String getUser(String openId);
-   
-   public void addOpenID(String openId, String username);
-   
-   public void removeOpenId(String openId);
-   
-   public List<String> getOpenIds(String username);
-   
-   public List<String> getAllOpenIds();
+
 }

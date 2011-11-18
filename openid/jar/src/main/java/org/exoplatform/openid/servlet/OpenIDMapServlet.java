@@ -18,7 +18,10 @@
  */
 package org.exoplatform.openid.servlet;
 
+import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.container.web.AbstractHttpServlet;
+import org.exoplatform.openid.OpenIDService;
 import org.exoplatform.openid.OpenIDUtils;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -55,6 +58,7 @@ public class OpenIDMapServlet extends AbstractHttpServlet
 
    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
    {
+      RequestLifeCycle.begin(ExoContainerContext.getCurrentContainer());
       String token = (String)req.getSession().getAttribute("openid.token");
       TransientTokenService tokenService = AbstractTokenService.getInstance(TransientTokenService.class);
       Credentials tCredentials = tokenService.validateToken(token, false);
@@ -91,8 +95,8 @@ public class OpenIDMapServlet extends AbstractHttpServlet
          String userId = authenticator.validateUser(credentials);
          
          //Map openID and user
-         OpenIDUtils.getOpenIDService().mapToUser(identifier, userId);
-         
+         OpenIDService service = OpenIDUtils.getOpenIDService();
+         service.mapToUser(identifier, userId);
          //Auto login
          User user = new UserImpl(userId);
          user.setPassword(token);
@@ -100,11 +104,16 @@ public class OpenIDMapServlet extends AbstractHttpServlet
       }
       catch (Exception e)
       {
+         e.printStackTrace();
          log.error("Username or Password is invalid: " + e.getMessage());
          
          //Go back to mapuser screen
          req.setAttribute("error", "Username or Password is invalid");
          this.getServletContext().getRequestDispatcher("/login/openid/mapuser.jsp").include(req, resp);
+      }
+      finally
+      {
+         RequestLifeCycle.end();
       }
       return;
    }

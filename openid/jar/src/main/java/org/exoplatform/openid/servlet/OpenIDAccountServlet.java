@@ -19,6 +19,21 @@
 package org.exoplatform.openid.servlet;
 
 import org.exoplatform.container.web.AbstractHttpServlet;
+import org.exoplatform.openid.OpenIDService;
+import org.exoplatform.openid.OpenIDUtils;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
+import org.exoplatform.services.organization.User;
+import org.exoplatform.web.security.security.AbstractTokenService;
+import org.exoplatform.web.security.security.TransientTokenService;
+import org.gatein.wci.security.Credentials;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author <a href="kienna@exoplatform.com">Kien Nguyen</a>
@@ -26,7 +41,7 @@ import org.exoplatform.container.web.AbstractHttpServlet;
  */
 public class OpenIDAccountServlet extends AbstractHttpServlet
 {
-   /*private static final long serialVersionUID = -631150770085187794L;
+   private static final long serialVersionUID = -631150770085187794L;
 
    private final Log log = ExoLogger.getLogger("openid:OpenIDAccountServlet");
 
@@ -82,5 +97,5 @@ public class OpenIDAccountServlet extends AbstractHttpServlet
          out.println("You don't have permission");
          out.close();
       }
-   }*/
+   }
 }

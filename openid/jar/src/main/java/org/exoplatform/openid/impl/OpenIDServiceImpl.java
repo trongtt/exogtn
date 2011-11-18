@@ -30,12 +30,8 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.organization.UserHandler;
 import org.exoplatform.services.organization.impl.UserImpl;
-import org.exoplatform.services.security.Credential;
-import org.exoplatform.services.security.PasswordCredential;
-import org.exoplatform.services.security.UsernameCredential;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author <a href="kien.nguyen@exoplatform.com">Kien Nguyen</a>
@@ -44,99 +40,77 @@ import java.util.Map;
 public class OpenIDServiceImpl implements OpenIDService
 {
    private final Log log = ExoLogger.getLogger("openid:OpenIDService");
-   
+
    public OpenIDDAO openIdDao;
-   
+
    public OpenIDServiceImpl(OpenIDDAO openIDDAO)
    {
       openIdDao = openIDDAO;
    }
-   
+
    public User findUserByOpenID(String openid)
    {
       try
       {
-         String username = openIdDao.getUser(openid);
+         String username = findUsernameByOpenID(openid);
          PortalContainer container = OpenIDUtils.getContainer();
-         OrganizationService orgService = (OrganizationService)container.getComponentInstanceOfType(OrganizationService.class);
+         OrganizationService orgService = (OrganizationService) container.getComponentInstanceOfType(OrganizationService.class);
          User user = null;
-         if(username != null)
+         if (username != null)
          {
             begin(orgService);
             user = orgService.getUserHandler().findUserByName(username);
             end(orgService);
-            
+
             return user;
          }
       }
       catch (Exception e)
       {
-         log.warn("Error during find user from database: " + e.getMessage());
+         log.error("Error during find user from database: " + e.getMessage());
       }
       return null;
    }
-   
+
    public User createUser(User user, String openid) throws Exception
-   {      
+   {
       //TODO Need implement validator for register input fields
       //Save account into database
       PortalContainer container = OpenIDUtils.getContainer();
-      OrganizationService orgService = (OrganizationService)container.getComponentInstanceOfType(OrganizationService.class);
-      
+      OrganizationService orgService = (OrganizationService) container
+            .getComponentInstanceOfType(OrganizationService.class);
+
       begin(orgService);
       UserHandler userHandler = orgService.getUserHandler();
       userHandler.createUser(user, true);
       end(orgService);
-      
+
       this.mapToUser(openid, user.getUserName());
 
       return new UserImpl(user.getUserName());
    }
    
-   public String validateUser(Credential[] credentials) throws Exception
+   public String findUsernameByOpenID(String openid)
    {
-      String user = null;
-      String password = null;
-      for (Credential cred : credentials)
-      {
-         if (cred instanceof UsernameCredential)
-            user = ((UsernameCredential)cred).getUsername();
-         if (cred instanceof PasswordCredential)
-            password = ((PasswordCredential)cred).getPassword();
-      }
-      if (user == null || password == null)
-         throw new Exception("Username or Password is not defined");
-
-      PortalContainer container = OpenIDUtils.getContainer();
-      OrganizationService orgService = (OrganizationService)container.getComponentInstanceOfType(OrganizationService.class);
- 
-      begin(orgService);
-      boolean success = orgService.getUserHandler().authenticate(user, password);
-      end(orgService);
-
-      if (!success)
-         throw new Exception("Username and Password is incorrect");
-
-      return user;
+      return openIdDao.getUser(openid);
    }
-   
+
    public void mapToUser(String openid, String username)
    {
-      //Map openID with a user, temporarily saving into memory
       openIdDao.addOpenID(openid, username);
    }
-   
+
    public void removeOpenID(String openId)
    {
       openIdDao.removeOpenId(openId);
    }
-   
+
    public List<String> findOpenIdsByUser(String username)
    {
       return openIdDao.getOpenIds(username);
    }
-   
-   public Map<String, String> getAllOpenIds()
+
+   public List<String> getAllOpenIds()
    {
       return openIdDao.getAllOpenIds();
    }
@@ -145,7 +119,7 @@ public class OpenIDServiceImpl implements OpenIDService
    {
       if (orgService instanceof ComponentRequestLifecycle)
       {
-          RequestLifeCycle.begin((ComponentRequestLifecycle)orgService);
+         RequestLifeCycle.begin((ComponentRequestLifecycle) orgService);
       }
    }
 
@@ -153,7 +127,7 @@ public class OpenIDServiceImpl implements OpenIDService
    {
       if (orgService instanceof ComponentRequestLifecycle)
       {
-          RequestLifeCycle.end();
+         RequestLifeCycle.end();
       }
    }
 
