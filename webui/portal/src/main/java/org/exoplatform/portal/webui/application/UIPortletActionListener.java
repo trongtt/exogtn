@@ -24,8 +24,8 @@
 package org.exoplatform.portal.webui.application;
 
 import org.exoplatform.portal.Constants;
+import org.exoplatform.portal.application.EventProtocolUtils;
 import org.exoplatform.portal.application.PortalRequestContext;
-import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.portal.webui.page.UIPage;
 import org.exoplatform.portal.webui.page.UIPageBody;
 import org.exoplatform.portal.webui.portal.UIPortal;
@@ -35,8 +35,6 @@ import org.exoplatform.portal.webui.workspace.UIPortalApplication;
 import org.exoplatform.portal.webui.workspace.UIWorkingWorkspace;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.web.url.navigation.NavigationResource;
-import org.exoplatform.web.url.navigation.NodeURL;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.core.UIComponent;
 import org.exoplatform.webui.event.Event;
@@ -77,17 +75,10 @@ import java.util.Map;
 /** May 29, 2006 */
 public class UIPortletActionListener
 {
-
    public static final String PORTLET_EVENTS = "PortletEvents";
    
    public static final String CHANGE_WINDOW_STATE_EVENT = "PortletChangeWindowStateEvent";
-   public static final String CHANGE_PORTLET_MODE_EVENT = "ChangePortletModeEvent";
-
-   //Event protocol
-   public static final QName CHANGE_NAVIGATION = new QName("http://www.gatein.org/xml/ns/ep", "ChangeNavigation");
-   private static final String SITE_TYPE = "site_type";
-   private static final String SITE_NAME = "site_name";
-   private static final String NAVIGATION_URI = "navigation_uri";
+   public static final String CHANGE_PORTLET_MODE_EVENT = "ChangePortletModeEvent";   
    
    protected static Log log = ExoLogger.getLogger("portal:UIPortletActionListener");
 
@@ -264,13 +255,11 @@ public class UIPortletActionListener
                {
                   javax.portlet.Event portletEvent = new PortletEvent(nsEvent.getName(), nsEvent.getPayload());
                   
-                  boolean completed = handleEventProtocol(portletEvent);
-                  if (completed)
+                  EventProtocolUtils.handlePortletEvents(portletEvent);
+                  if (prcontext.isResponseComplete())
                   {
-                     prcontext.setResponseComplete(true);
                      return;
-                  }
-                  
+                  }                  
                   events.add(portletEvent);
                }
             }
@@ -527,10 +516,9 @@ public class UIPortletActionListener
          while (events.size() > 0)
          {
             javax.portlet.Event nativeEvent = events.remove(0);
-            boolean completed = handleEventProtocol(nativeEvent);
-            if (completed)
+            EventProtocolUtils.handlePortletEvents(nativeEvent);
+            if (context.isResponseComplete())
             {
-               context.setResponseComplete(true);
                return;
             }
             
@@ -766,44 +754,7 @@ public class UIPortletActionListener
          }
       }
 
-   }
-
-   private static boolean handleEventProtocol(javax.portlet.Event event) throws Exception
-   {
-      if (CHANGE_NAVIGATION.equals(event.getQName()))
-      {
-         handleChangeNavigationEvent(event);
-         return true;
-      }
-      return false;
-   }
-
-   private static void handleChangeNavigationEvent(javax.portlet.Event event) throws Exception
-   {
-      PortalRequestContext prcontext = Util.getPortalRequestContext();            
-      String siteType = prcontext.getSiteType().getName();
-      String siteName = prcontext.getSiteName();
-      String nodePath = prcontext.getNodePath();
-
-      if (event.getValue() instanceof Map)
-      {
-         Map payLoad = (Map)event.getValue();
-         if (payLoad.get(SITE_TYPE) != null)
-         {            
-            siteType = payLoad.get(SITE_TYPE).toString();
-         }         
-         if (payLoad.get(SITE_NAME) != null)
-         {
-            siteName = payLoad.get(SITE_NAME).toString();
-         }
-         if (payLoad.get(NAVIGATION_URI) != null)
-         {
-            nodePath = payLoad.get(NAVIGATION_URI).toString();
-         }
-      }
-      NavigationResource navRes = new NavigationResource(new SiteKey(siteType.toString(), siteName.toString()), nodePath.toString());
-      prcontext.sendRedirect(prcontext.createURL(NodeURL.TYPE, navRes).toString());
-   }
+   }   
    
    static public class ChangeWindowStateActionListener extends EventListener<UIPortlet>
    {
