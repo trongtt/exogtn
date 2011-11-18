@@ -72,6 +72,37 @@
     </portlet-info>
   </portlet>
 
+  <portlet>
+    <description xml:lang="EN">Event Protocol Portlet</description>
+    <portlet-name>EventProtocolPortlet</portlet-name>
+    <display-name xml:lang="EN">A Portlet example demonstrating event protocol</display-name>
+    <portlet-class>org.gatein.portal.samples.api.EventProtocolPortlet</portlet-class>
+
+    <supports>
+      <mime-type>text/html</mime-type>
+    </supports>
+
+    <portlet-info>
+      <title>Event Protocol Portlet</title>
+      <short-title>Event Protocol Portlet</short-title>
+      <keywords>Sample</keywords>
+    </portlet-info>
+    <supported-processing-event>
+    	<qname xmlns:ep='http://www.gatein.org/xml/ns/ep'>ep:BeforeRender</qname>
+    </supported-processing-event>
+    <supported-publishing-event>
+      <qname xmlns:ep='http://www.gatein.org/xml/ns/ep'>ep:ChangeNavigation</qname>
+    </supported-publishing-event>
+  </portlet>
+
+  <event-definition>
+  	<qname xmlns:ep='http://www.gatein.org/xml/ns/ep'>ep:BeforeRender</qname>
+  </event-definition>
+
+  <event-definition>
+  	<qname xmlns:ep='http://www.gatein.org/xml/ns/ep'>ep:ChangeNavigation</qname>
+  </event-definition>
+  
   <public-render-parameter>
      <identifier>navigation_uri</identifier>
      <qname xmlns:prp='http://www.gatein.org/xml/ns/prp_1_0'>prp:navigation_uri</qname>
@@ -100,5 +131,5 @@
      <identifier>window_show_info_bar</identifier>
      <qname xmlns:prp='http://www.gatein.org/xml/ns/prp_1_0'>prp:window_show_info_bar</qname>
   </public-render-parameter>
-
+  
 </portlet-app>
