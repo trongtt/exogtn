@@ -75,7 +75,7 @@
   <portlet>
     <description xml:lang="EN">Event Protocol Portlet</description>
     <portlet-name>EventProtocolPortlet</portlet-name>
-    <display-name xml:lang="EN">A Portlet example demonstrating event protocol</display-name>
+    <display-name xml:lang="EN">GateIn Event Protocol example</display-name>
     <portlet-class>org.gatein.portal.samples.api.EventProtocolPortlet</portlet-class>
 
     <supports>
@@ -93,6 +93,12 @@
     <supported-publishing-event>
       <qname xmlns:ep='http://www.gatein.org/xml/ns/ep'>ep:ChangeNavigation</qname>
     </supported-publishing-event>
+    <supported-publishing-event>
+      <qname xmlns:ep='http://www.gatein.org/xml/ns/ep'>ep:Login</qname>
+    </supported-publishing-event>
+    <supported-publishing-event>
+      <qname xmlns:ep='http://www.gatein.org/xml/ns/ep'>ep:Logout</qname>
+    </supported-publishing-event>
   </portlet>
 
   <event-definition>
@@ -101,6 +107,14 @@
 
   <event-definition>
   	<qname xmlns:ep='http://www.gatein.org/xml/ns/ep'>ep:ChangeNavigation</qname>
+  </event-definition>
+  
+  <event-definition>
+  	<qname xmlns:ep='http://www.gatein.org/xml/ns/ep'>ep:Login</qname>
+  </event-definition>
+  
+  <event-definition>
+  	<qname xmlns:ep='http://www.gatein.org/xml/ns/ep'>ep:Logout</qname>
   </event-definition>
   
   <public-render-parameter>

@@ -51,29 +51,53 @@ public class EventProtocolPortlet extends GenericPortlet
    
    private static final QName BEFORE_RENDER = new QName("http://www.gatein.org/xml/ns/ep", "BeforeRender");
    private static final QName CHANGE_NAV = new QName("http://www.gatein.org/xml/ns/ep", "ChangeNavigation");   
+   private static final QName LOGIN = new QName("http://www.gatein.org/xml/ns/ep", "Login");
+   private static final QName LOGOUT = new QName("http://www.gatein.org/xml/ns/ep", "Logout");
    
    @Override
    protected void doView(RenderRequest req, RenderResponse resp) throws PortletException, IOException
-   {
-      PortletURL actURL = resp.createActionURL();
-      actURL.setParameter(ActionRequest.ACTION_NAME, "ChangeState");
-      
+   {             
       resp.setContentType("text/html");            
       PrintWriter writer = resp.getWriter();
 
       String currentState = req.getParameter(CURRENT_STATE);
       String mode = req.getParameter(MODE);
       
+      PortletURL changeStateURL = resp.createActionURL();
+      changeStateURL.setParameter(ActionRequest.ACTION_NAME, "ChangeState");      
+      
       writer.print("<p>Current render parameter: " + currentState + "</p>");
-      writer.print("<form action='" + actURL.toString() + "' method='POST'>");
+      writer.print("<form action='" + changeStateURL.toString() + "' method='POST'>");
       writer.print("New State: <input type='text' name='" + CURRENT_STATE  + "'/>");
       writer.print("<select name='" + MODE + "'>");
       writer.print("<option value='" + NORMAL_MODE + "'>Normal</option>");
       writer.print("<option value='" + EP_MODE + "' " + (EP_MODE.equals(mode) ? "selected" : "") + ">Use Event Protocol</option>");
       writer.print("</select>");
       writer.print("<input type='submit' value='Change state'/>");
-      writer.print("</form>");
-
+      writer.print("</form>");      
+      
+      writer.print("<hr/>");
+      if (req.getRemoteUser() != null)
+      {
+         PortletURL logoutURL = resp.createActionURL();
+         logoutURL.setParameter(ActionRequest.ACTION_NAME, "Logout");
+         
+         writer.print("<h3 align='center'>Current user: " + req.getRemoteUser() + "</h3>");
+         writer.print("<h4 align='center'><a href='" + logoutURL.toString() + "'>Logout</a></h4>");
+      } 
+      else 
+      {
+         PortletURL loginURL = resp.createActionURL();
+         loginURL.setParameter(ActionRequest.ACTION_NAME, "Login");
+         
+         writer.print("<h3>Login Form</h3>");
+         writer.print("<form action='" + loginURL.toString() + "' method='POST'>");
+         writer.print("User Name: <input type='text' name='username'/>");
+         writer.print("Password: <input type='password' name='password'/>");
+         writer.print("<input type='submit' value='Login'/>");
+         writer.print("</form>");         
+      }
+      
       //
       writer.close();
    }
@@ -81,12 +105,27 @@ public class EventProtocolPortlet extends GenericPortlet
    @Override
    public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException
    {
-      System.out.println("Processing action : " + request.getParameter(ActionRequest.ACTION_NAME));
-      handleState(request, response);
-      if (EP_MODE.equals(request.getParameter(MODE)))
+      String action = request.getParameter(ActionRequest.ACTION_NAME);      
+      System.out.println("Processing action : " + action);
+      
+      if (EP_MODE.equals(request.getParameter(MODE)) && "ChangeState".equals(action))
       {
          response.setRenderParameter(SEND_REDIRECT, "true");         
+      } 
+      else if ("Login".equals(action))
+      {
+         StringBuilder payload = new StringBuilder("{\"username\":\"");
+         payload.append(request.getParameter("username"));
+         payload.append("\",\"password\":\"");
+         payload.append(request.getParameter("password") + "\"}");
+         response.setEvent(LOGIN, payload.toString());
       }
+      else if ("Logout".equals(action))
+      {
+         response.setEvent(LOGOUT, null);
+      }
+      
+      handleState(request, response);
    }
 
    @Override
@@ -97,7 +136,7 @@ public class EventProtocolPortlet extends GenericPortlet
       {
          if (Boolean.parseBoolean(request.getParameter(SEND_REDIRECT)))
          {
-            response.setEvent(CHANGE_NAV, "test");
+            response.setEvent(CHANGE_NAV, null);
          }
       }      
       handleState(request, response);
