@@ -38,8 +38,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * A Filter used to authorize a request that follows OAuth three legged (consumer-server-user)
- * Apps can use OAuth protection by adding this filter to their filter chain
+ * This filter is used to authorize a request that follows 3-legged OAuth (consumer-server-user)
+ * A resource can use OAuth protection by adding this filter to their filter chain
  * 
  * See OAuth 2.0 specification for more detail
  * 

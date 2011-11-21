@@ -41,8 +41,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet used to authorize request by validating username, password from user
- * this servlet will be called after OAuth request passed
+ * This Servlet is used to authorize request by validating username/password from user.
+ * It will be called after OAuth request passed
  * 
  * See OAuth 2.0 specification for more detail
  * 

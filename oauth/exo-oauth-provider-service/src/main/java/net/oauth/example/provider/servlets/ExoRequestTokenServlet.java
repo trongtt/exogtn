@@ -42,7 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * Servlet process the first request, it validate information to avoid malform request or attacking
- * After validating complete, it create a token calls Request token for authorization step later
+ * After validating completely, it create a token calls Request token for authorization step later
  * 
  * See OAuth 2.0 specification for more detail
  * 

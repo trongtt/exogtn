@@ -38,8 +38,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet is last call after authentication and authorization complete.
- * this servlet will create a access token for getting resource
+ * This Servlet will be called lastly after authentication and authorization passed successfully.
+ * It creates an access token for getting resource
  * 
  * See OAuth 2.0 specification for more information
  * 

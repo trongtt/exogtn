@@ -49,5 +49,11 @@
          <version>2.2.2</version>
          <scope>provided</scope>
       </dependency>
+      <dependency>
+         <groupId>org.exoplatform.portal</groupId>
+         <artifactId>exo.portal.component.test.core</artifactId>
+         <version>3.2.0-PLF</version>
+         <scope>provided</scope>
+      </dependency>
    </dependencies>
 </project>
