@@ -66,15 +66,19 @@ public class EventProtocolPortlet extends GenericPortlet
       PortletURL changeStateURL = resp.createActionURL();
       changeStateURL.setParameter(ActionRequest.ACTION_NAME, "ChangeState");      
       
-      writer.print("<p>Current render parameter: " + currentState + "</p>");
+      writer.print("<h3 style='text-align:center'>Current render parameter: " + currentState + "</h3>");
       writer.print("<form action='" + changeStateURL.toString() + "' method='POST'>");
-      writer.print("New State: <input type='text' name='" + CURRENT_STATE  + "'/>");
+      writer.print("&nbsp;&nbsp;New State: <input type='text' name='" + CURRENT_STATE  + "'/>");
       writer.print("<select name='" + MODE + "'>");
       writer.print("<option value='" + NORMAL_MODE + "'>Normal</option>");
-      writer.print("<option value='" + EP_MODE + "' " + (EP_MODE.equals(mode) ? "selected" : "") + ">Use Event Protocol</option>");
+      writer.print("<option value='" + EP_MODE + "' " + (EP_MODE.equals(mode) ? "selected" : "") + ">Redirect after POST</option>");
       writer.print("</select>");
       writer.print("<input type='submit' value='Change state'/>");
-      writer.print("</form>");      
+      writer.print("</form></br>");      
+      
+      writer.print("<p style='text-align:center; font-style:italic; font-weight: bold'>Change the state and then press F5 button to see the different between 2 mode </br>");
+      writer.print("At Redirect mode: Portlet's listening to BERFORE_RENDER event and dispatch CHANGE_NAVIGATION event to refresh the page");
+      writer.print("</p>");
       
       writer.print("<hr/>");
       if (req.getRemoteUser() != null)
@@ -82,20 +86,21 @@ public class EventProtocolPortlet extends GenericPortlet
          PortletURL logoutURL = resp.createActionURL();
          logoutURL.setParameter(ActionRequest.ACTION_NAME, "Logout");
          
-         writer.print("<h3 align='center'>Current user: " + req.getRemoteUser() + "</h3>");
-         writer.print("<h4 align='center'><a href='" + logoutURL.toString() + "'>Logout</a></h4>");
+         writer.print("<h3 style='text-align:center'>Current user: " + req.getRemoteUser() + "</h3>");
+         writer.print("<h4 style='text-align:center'><a href='" + logoutURL.toString() + "'>Logout</a></h4>");
       } 
       else 
       {
          PortletURL loginURL = resp.createActionURL();
          loginURL.setParameter(ActionRequest.ACTION_NAME, "Login");
          
-         writer.print("<h3>Login Form</h3>");
+         writer.print("<div style='overflow: hidden'>");
+         writer.print("<h3 style='text-align:center'>Login Form</h3>");
          writer.print("<form action='" + loginURL.toString() + "' method='POST'>");
-         writer.print("User Name: <input type='text' name='username'/>");
-         writer.print("Password: <input type='password' name='password'/>");
-         writer.print("<input type='submit' value='Login'/>");
-         writer.print("</form>");         
+         writer.print("<table style='width: 400px; left: 200px; position: relative'>");
+         writer.print("<tr><td>User Name: </td> <td><input type='text' name='username'/></td></tr>");
+         writer.print("<tr><td>Password: </td><td><input type='password' name='password'/>");
+         writer.print("<input type='submit' value='Login'/></td></tr></table></form></div>");         
       }
       
       //
