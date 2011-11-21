@@ -41,7 +41,7 @@ public class SimpleOAuthConsumerService implements OAuthConsumerService, Startab
 {
    /*store all consumers into map with consumer key as identifier*/
    private final Map<String, OAuthConsumer> ALL_CONSUMERS = Collections
-   .synchronizedMap(new HashMap<String, OAuthConsumer>(10));
+      .synchronizedMap(new HashMap<String, OAuthConsumer>(10));
 
    public void start()
    {
@@ -54,11 +54,11 @@ public class SimpleOAuthConsumerService implements OAuthConsumerService, Startab
          e.printStackTrace();
       }
    }
-   
+
    public void stop()
    {
    }
-   
+
    /**
     * Load all consumers from a file and store them into memory
     * 
@@ -82,7 +82,7 @@ public class SimpleOAuthConsumerService implements OAuthConsumerService, Startab
       {
          stream.close();
       }
-   
+
       // for each entry in the properties file create a OAuthConsumer
       for (Map.Entry<Object, Object> prop : p.entrySet())
       {
@@ -104,7 +104,7 @@ public class SimpleOAuthConsumerService implements OAuthConsumerService, Startab
          }
       }
    }
-   
+
    /**
     * Get a consumer from consumer list
     * 
@@ -113,13 +113,18 @@ public class SimpleOAuthConsumerService implements OAuthConsumerService, Startab
     * @throws IOException
     * @throws OAuthProblemException
     */
-   public OAuthConsumer getConsumer(String consumer_key) throws OAuthProblemException
+   public OAuthConsumer getConsumer(String consumer_key)
    {
       return ALL_CONSUMERS.get(consumer_key);
    }
-   
+
    public void addConsumer(String consumer_key, OAuthConsumer consumer)
    {
       ALL_CONSUMERS.put(consumer_key, consumer);
+   }
+
+   public void removeConsumer(String consumerKey)
+   {
+      ALL_CONSUMERS.remove(consumerKey);
    }
 }

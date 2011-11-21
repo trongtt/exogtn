@@ -26,23 +26,22 @@ public class TestOAuthConsumerService extends AbstractKernelTest
       super.setUp();
       this.service = (OAuthConsumerService)getContainer().getComponentInstanceOfType(OAuthConsumerService.class);
    }
-   
+
    public void testAddingConsumer()
    {
       OAuthConsumer consumer = new OAuthConsumer("http://foo.com/callbackURL", "foo_key", "foo_secret", null);
+      consumer.setProperty("description", "foo description");
       service.addConsumer("foo", consumer);
-      
-      try
-      {
-         consumer = service.getConsumer("foo");
-         assertNotNull(consumer);
-         assertEquals("http://foo.com/callbackURL", consumer.callbackURL);
-         assertEquals("foo_key", consumer.consumerKey);
-         assertEquals("foo_secret", consumer.consumerSecret);
-      }
-      catch (OAuthProblemException e)
-      {
-         fail("the foo consumer was not created");
-      }
+
+      consumer = service.getConsumer("foo");
+      assertNotNull(consumer);
+      assertEquals("http://foo.com/callbackURL", consumer.callbackURL);
+      assertEquals("foo_key", consumer.consumerKey);
+      assertEquals("foo_secret", consumer.consumerSecret);
+      assertEquals("foo description", consumer.getProperty("description"));
+
+      service.removeConsumer("foo");
+      consumer = service.getConsumer("foo");
+      assertNull(consumer);
    }
 }

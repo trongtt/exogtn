@@ -39,8 +39,8 @@ public interface OAuthConsumerService
     * @throws IOException
     * @throws OAuthProblemException
     */
-   public OAuthConsumer getConsumer(String consumerKey) throws OAuthProblemException;
-   
+   public OAuthConsumer getConsumer(String consumerKey);
+
    /**
     * Add an OAuth Consumer with specified key. If it does already contain an consumer for this key,
     * the old value will be replaced by the specified one.
@@ -49,4 +49,10 @@ public interface OAuthConsumerService
     * @param consumer
     */
    public void addConsumer(String consumerKey, OAuthConsumer consumer);
+
+   /**
+    * Remove the OAuth consumer with specified key
+    * @param consumerKey
+    */
+   public void removeConsumer(String consumerKey);
 }
