@@ -30,17 +30,17 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Manage all consumers, class will be loaded within portal startup
+ * An simple oauth consumer service which just persist in Memory
  * 
  * Created by The eXo Platform SAS
  * Author : Nguyen Anh Kien
  *          nguyenanhkien2a@gmail.com
  * Dec 9, 2010  
  */
-public class ExoOAuthConsumerStorage implements Startable
+public class SimpleOAuthConsumerService implements OAuthConsumerService, Startable
 {
    /*store all consumers into map with consumer key as identifier*/
-   private static final Map<String, OAuthConsumer> ALL_CONSUMERS = Collections
+   private final Map<String, OAuthConsumer> ALL_CONSUMERS = Collections
    .synchronizedMap(new HashMap<String, OAuthConsumer>(10));
 
    public void start()
@@ -61,13 +61,14 @@ public class ExoOAuthConsumerStorage implements Startable
    
    /**
     * Load all consumers from a file and store them into memory
+    * 
     * @throws IOException
     */
    private void loadConsumers() throws IOException
    {
       Properties p = new Properties();
       String resourceName = "consumer.properties";
-      URL resource = ExoOAuth3LeggedProviderService.class.getResource(resourceName);
+      URL resource = this.getClass().getResource(resourceName);
       if (resource == null)
       {
          throw new IOException("resource not found: " + resourceName);
@@ -98,7 +99,7 @@ public class ExoOAuthConsumerStorage implements Startable
                OAuthConsumer consumer = new OAuthConsumer(consumer_callback_url, consumer_key, consumer_secret, null);
                consumer.setProperty("name", consumer_key);
                consumer.setProperty("description", consumer_description);
-               ALL_CONSUMERS.put(consumer_key, consumer);
+               addConsumer(consumer_key, consumer);
             }
          }
       }
@@ -112,8 +113,13 @@ public class ExoOAuthConsumerStorage implements Startable
     * @throws IOException
     * @throws OAuthProblemException
     */
-   public OAuthConsumer getConsumer(String consumer_key) throws IOException, OAuthProblemException
+   public OAuthConsumer getConsumer(String consumer_key) throws OAuthProblemException
    {
-      return ExoOAuthConsumerStorage.ALL_CONSUMERS.get(consumer_key);
+      return ALL_CONSUMERS.get(consumer_key);
+   }
+   
+   public void addConsumer(String consumer_key, OAuthConsumer consumer)
+   {
+      ALL_CONSUMERS.put(consumer_key, consumer);
    }
 }

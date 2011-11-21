@@ -16,13 +16,12 @@
  */
 package net.oauth.example.provider.core;
 
+import net.oauth.server.OAuthServlet;
+
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthConsumer;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthProblemException;
-import net.oauth.server.OAuthServlet;
-
-import org.exoplatform.container.ExoContainerContext;
 
 import java.io.IOException;
 
@@ -42,35 +41,14 @@ import javax.servlet.http.HttpServletResponse;
  * Dec 1, 2010  
  */
 public class ExoOAuth2LeggedProviderService
-{    
-   public ExoOAuth2LeggedProviderService() {
-   }
-   /**
-    * Get a consumer from database, throw exception if consumer is not found
-    * @param requestMessage a request message contains consumer information
-    * @return OAuthConsumer contains consumer information as key, secret, etc
-    * @throws IOException
-    * @throws OAuthProblemException
-    */
-   public synchronized OAuthConsumer getConsumer(OAuthMessage requestMessage) throws IOException, OAuthProblemException
+{
+   private OAuthConsumerService consumerService;
+
+   public ExoOAuth2LeggedProviderService(OAuthConsumerService consumerService)
    {
-
-      OAuthConsumer consumer = null;
-      // try to load from local cache if not throw exception
-      String consumer_key = requestMessage.getConsumerKey();
-
-      ExoOAuthConsumerStorage consumerManagement = (ExoOAuthConsumerStorage) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(ExoOAuthConsumerStorage.class);
-      consumer =  consumerManagement.getConsumer(consumer_key);
-
-      if (consumer == null)
-      {
-         OAuthProblemException problem = new OAuthProblemException("token_rejected, consumer hasn't yet registered with provider");
-         throw problem;
-      }
-
-      return consumer;
+      this.consumerService = consumerService;
    }
-   
+
    /**
     * Create an accessor
     * @param requestMessage request message contains consumer information
@@ -80,11 +58,17 @@ public class ExoOAuth2LeggedProviderService
     */
    public OAuthAccessor getAccessor(OAuthMessage requestMessage) throws IOException, OAuthProblemException
    {
-      OAuthConsumer authConsumer = getConsumer(requestMessage);
-      OAuthAccessor accessor = new OAuthAccessor(authConsumer);      
+      OAuthConsumer consumer = consumerService.getConsumer(requestMessage.getConsumerKey());
+      if (consumer == null)
+      {
+         OAuthProblemException problem =
+            new OAuthProblemException("token_rejected, consumer hasn't yet registered with provider");
+         throw problem;
+      }
+      OAuthAccessor accessor = new OAuthAccessor(consumer);
       return accessor;
    }
-   
+
    /**
     * Process exception of OAuth session
     * @param e
@@ -95,10 +79,10 @@ public class ExoOAuth2LeggedProviderService
     * @throws ServletException
     */
    public static void handleException(Exception e, HttpServletRequest request, HttpServletResponse response,
-         boolean sendBody) throws IOException, ServletException
-      {
-         String realm = (request.isSecure()) ? "https://" : "http://";
-         realm += request.getLocalName();
-         OAuthServlet.handleException(response, e, realm, sendBody);
-      }
+      boolean sendBody) throws IOException, ServletException
+   {
+      String realm = (request.isSecure()) ? "https://" : "http://";
+      realm += request.getLocalName();
+      OAuthServlet.handleException(response, e, realm, sendBody);
+   }
 }

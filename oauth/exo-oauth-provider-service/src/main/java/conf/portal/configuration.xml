@@ -20,26 +20,25 @@
 
 -->
 
-<configuration
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xsi:schemaLocation="http://www.exoplaform.org/xml/ns/kernel_1_1.xsd http://www.exoplaform.org/xml/ns/kernel_1_1.xsd"
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.exoplaform.org/xml/ns/kernel_1_1.xsd http://www.exoplaform.org/xml/ns/kernel_1_1.xsd"
    xmlns="http://www.exoplaform.org/xml/ns/kernel_1_1.xsd">
 
-  <component>
-    <type>net.oauth.example.provider.core.ExoOAuth3LeggedProviderService</type>
-  </component>
-  
-  <component>
-    <type>net.oauth.example.provider.core.ExoOAuth2LeggedProviderService</type>
-  </component>
+   <component>
+      <type>net.oauth.example.provider.core.ExoOAuth3LeggedProviderService</type>
+   </component>
 
-  <component>
-    <key>net.oauth.OAuthValidator</key>
-    <type>net.oauth.SimpleOAuthValidator</type>
-  </component>
-  
-  <component>
-    <type>net.oauth.example.provider.core.ExoOAuthConsumerStorage</type>
-  </component>
-  
+   <component>
+      <type>net.oauth.example.provider.core.ExoOAuth2LeggedProviderService</type>
+   </component>
+
+   <component>
+      <key>net.oauth.OAuthValidator</key>
+      <type>net.oauth.SimpleOAuthValidator</type>
+   </component>
+
+   <component>
+      <key>net.oauth.example.provider.core.OAuthConsumerService</key>
+      <type>net.oauth.example.provider.core.SimpleOAuthConsumerService</type>
+   </component>
+
 </configuration>

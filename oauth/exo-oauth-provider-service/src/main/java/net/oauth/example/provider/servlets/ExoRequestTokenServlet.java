@@ -19,12 +19,15 @@
 
 package net.oauth.example.provider.servlets;
 
+import net.oauth.OAuthProblemException;
+
 import net.oauth.OAuth;
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthConsumer;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthValidator;
 import net.oauth.example.provider.core.ExoOAuth3LeggedProviderService;
+import net.oauth.example.provider.core.OAuthConsumerService;
 import net.oauth.server.OAuthServlet;
 
 import org.exoplatform.container.ExoContainer;
@@ -56,11 +59,19 @@ public class ExoRequestTokenServlet extends AbstractHttpServlet
    {
       try
       {
-         ExoOAuth3LeggedProviderService provider =
-            (ExoOAuth3LeggedProviderService)container.getComponentInstanceOfType(ExoOAuth3LeggedProviderService.class);
+         // generate request_token and secret
+         OAuthConsumerService consumerService =
+            (OAuthConsumerService)container.getComponentInstanceOfType(OAuthConsumerService.class);
+
          OAuthMessage requestMessage = OAuthServlet.getMessage(req, null);
 
-         OAuthConsumer consumer = provider.getConsumer(requestMessage);
+         OAuthConsumer consumer = consumerService.getConsumer(requestMessage.getConsumerKey());
+         if (consumer == null)
+         {
+            OAuthProblemException problem =
+               new OAuthProblemException("token_rejected, consumer hasn't yet registered with provider");
+            throw problem;
+         }
 
          OAuthAccessor accessor = new OAuthAccessor(consumer);
 
@@ -76,6 +87,8 @@ public class ExoRequestTokenServlet extends AbstractHttpServlet
          }
 
          // generate request_token and secret
+         ExoOAuth3LeggedProviderService provider =
+            (ExoOAuth3LeggedProviderService)container.getComponentInstanceOfType(ExoOAuth3LeggedProviderService.class);
          provider.generateRequestToken(accessor);
 
          res.setContentType("text/plain");

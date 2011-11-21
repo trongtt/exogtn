@@ -57,6 +57,7 @@ import javax.servlet.http.HttpServletResponse;
  *          nguyenanhkien2a@gmail.com
  * Dec 3, 2010  
  */
+//TODO: This is not necessary to be used as an eXo Service BUT just an utility class
 public class ExoOAuth3LeggedConsumerService extends ExoOAuth2LeggedConsumerService
 {
    public ExoOAuth3LeggedConsumerService() {}

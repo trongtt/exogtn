@@ -19,8 +19,6 @@
 
 package net.oauth.example.provider.servlets;
 
-import net.oauth.example.provider.core.ExoOAuth3LeggedProviderService;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
@@ -31,7 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * An Servlet for testing OAuth protection
+ * A simple servlet which is protected by OAuth
  * 
  * @author <a href="trongtt@gmail.com">Trong Tran</a>
  * @version $Revision$
@@ -63,7 +61,6 @@ public class OAuthProtectedServlet extends HttpServlet
       }
       catch (Exception e)
       {
-         ExoOAuth3LeggedProviderService.handleException(e, req, resp, false);
       }
    }
 }

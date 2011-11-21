@@ -18,6 +18,8 @@
  */
 package net.oauth.example.provider.core;
 
+import net.oauth.server.OAuthServlet;
+
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthException;
 import net.oauth.OAuthMessage;
@@ -31,6 +33,10 @@ import org.exoplatform.services.security.Identity;
 
 import java.io.IOException;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * Operate as GateIn service, class process three legged model as OAuth 2.0 specification
  * class manage all tokens, object accessing (accessor) of OAuth session
@@ -40,10 +46,10 @@ import java.io.IOException;
  * @version $Revision$
  */
 
-public class ExoOAuth3LeggedProviderService  extends ExoOAuth2LeggedProviderService
+public class ExoOAuth3LeggedProviderService
 {
    private ExoCache<String, OAuthAccessor> tokens;
-   
+
    public ExoOAuth3LeggedProviderService(OAuthValidator validator, CacheService cService)
    {
       tokens = cService.getCacheInstance(ExoOAuth3LeggedProviderService.class.getSimpleName());
@@ -153,5 +159,22 @@ public class ExoOAuth3LeggedProviderService  extends ExoOAuth2LeggedProviderServ
 
       // update token in local cache
       tokens.put(accessor.accessToken, accessor);
+   }
+
+   /**
+    * Process exception of OAuth session
+    * @param e
+    * @param request
+    * @param response
+    * @param sendBody
+    * @throws IOException
+    * @throws ServletException
+    */
+   public static void handleException(Exception e, HttpServletRequest request, HttpServletResponse response,
+      boolean sendBody) throws IOException, ServletException
+   {
+      String realm = (request.isSecure()) ? "https://" : "http://";
+      realm += request.getLocalName();
+      OAuthServlet.handleException(response, e, realm, sendBody);
    }
 }
