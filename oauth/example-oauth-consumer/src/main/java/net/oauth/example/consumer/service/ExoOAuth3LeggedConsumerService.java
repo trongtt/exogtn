@@ -25,8 +25,7 @@ import net.oauth.OAuthProblemException;
 import net.oauth.ParameterStyle;
 import net.oauth.example.consumer.CookieMap;
 import net.oauth.example.consumer.ExoOAuth3LeggedCallback;
-import net.oauth.example.consumer.ExoOAuthConsumerStorage;
-import net.oauth.example.consumer.ExoOAuthMessage;
+import net.oauth.example.consumer.SimpleConsumerRegistry;
 import net.oauth.example.consumer.ExoOAuthUtils;
 import net.oauth.example.consumer.RedirectException;
 import net.oauth.server.OAuthServlet;
@@ -57,11 +56,12 @@ import javax.servlet.http.HttpServletResponse;
  *          nguyenanhkien2a@gmail.com
  * Dec 3, 2010  
  */
-//TODO: This is not necessary to be used as an eXo Service BUT just an utility class
 public class ExoOAuth3LeggedConsumerService extends ExoOAuth2LeggedConsumerService
 {
-   public ExoOAuth3LeggedConsumerService() {}
-   
+   public ExoOAuth3LeggedConsumerService()
+   {
+   }
+
    /**
     * Send a request to REST endpoint
     * 
@@ -74,42 +74,31 @@ public class ExoOAuth3LeggedConsumerService extends ExoOAuth2LeggedConsumerServi
     * @thows IOException, OAuthException, URISyntaxException
     */
    @Override
-   public ExoOAuthMessage send(String consumerName, String restEndpoint, HttpServletRequest request,
+   public OAuthMessage send(String consumerName, String restEndpoint, HttpServletRequest request,
       HttpServletResponse response) throws OAuthException, IOException, URISyntaxException
    {
-      OAuthConsumer consumer = ExoOAuthConsumerStorage.getConsumer(consumerName);
+      OAuthConsumer consumer = SimpleConsumerRegistry.getConsumer(consumerName);
       OAuthAccessor accessor = getAccessor(request, response, consumer);
       OAuthMessage message = accessor.newRequestMessage(OAuthMessage.GET, restEndpoint, null);
 
       OAuthMessage responseMessage =
          ExoOAuth2LeggedConsumerService.CLIENT.invoke(message, ParameterStyle.AUTHORIZATION_HEADER);
-      return (new ExoOAuthMessage(consumerName, responseMessage));
+      return responseMessage;
    }
 
-   /**
-    * Send a request to REST endpoint
-    * 
-    * @param requestMessage An ExoOAuthMessage object that contains neccessary information of request 
-    * such as name of consumer that was stored in database, REST endpoint, http request method, etc.
-    * @param request the http servlet request
-    * @param response the http servlet response
-    * @thows IOException, OAuthException, URISyntaxException
-    * @return ExoOAuthMessage object
-    */
-   @Override
-   public ExoOAuthMessage send(ExoOAuthMessage requestMessage, HttpServletRequest request,
-         HttpServletResponse response) throws OAuthException, IOException, URISyntaxException
+   public OAuthMessage send(String consumerName, OAuthMessage requestMessage, HttpServletRequest request,
+      HttpServletResponse response) throws OAuthException, IOException, URISyntaxException
    {
-      String consumerName = requestMessage.getConsumerName();
-      OAuthConsumer consumer = ExoOAuthConsumerStorage.getConsumer(consumerName);
+      OAuthConsumer consumer = SimpleConsumerRegistry.getConsumer(consumerName);
       OAuthAccessor accessor = getAccessor(request, response, consumer);
-      OAuthMessage message = accessor.newRequestMessage(requestMessage.getHttpMethod(), requestMessage.getRestEndpoint(), requestMessage.getParameters());
+      OAuthMessage message =
+         accessor.newRequestMessage(requestMessage.method, requestMessage.URL, requestMessage.getParameters());
 
       OAuthMessage responseMessage =
          ExoOAuth2LeggedConsumerService.CLIENT.invoke(message, ParameterStyle.AUTHORIZATION_HEADER);
-      return (new ExoOAuthMessage(consumerName, responseMessage));
+      return responseMessage;
    }
-   
+
    /**
     * Get the access token and token secret for the given consumer. Get them
     * from cookies if possible; otherwise obtain them from the service
@@ -247,7 +236,7 @@ public class ExoOAuth3LeggedConsumerService extends ExoOAuth2LeggedConsumerServi
             try
             {
                CookieMap cookies = new CookieMap(request, response);
-               OAuthConsumer consumer = ExoOAuthConsumerStorage.getConsumer(consumerName);
+               OAuthConsumer consumer = SimpleConsumerRegistry.getConsumer(consumerName);
                OAuthAccessor accessor = ExoOAuthUtils.newAccessor(consumer, cookies);
                getAccessToken(request, cookies, accessor);
                // getAccessToken(request, consumer,

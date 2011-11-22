@@ -16,6 +16,11 @@
  */
 package net.oauth.example.consumer.servlet;
 
+import net.oauth.OAuthMessage;
+import net.oauth.example.consumer.ExoOAuthUtils;
+import net.oauth.example.consumer.Parameter;
+import net.oauth.example.consumer.service.ExoOAuth3LeggedConsumerService;
+
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -27,11 +32,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.oauth.example.consumer.ExoOAuthMessage;
-import net.oauth.example.consumer.ExoOAuthUtils;
-import net.oauth.example.consumer.Parameter;
-import net.oauth.example.consumer.service.ExoOAuth3LeggedConsumerService;
 
 /**
  * Created by The eXo Platform SAS
@@ -45,16 +45,16 @@ public class Twitter3LeggedConsumerServlet extends HttpServlet
    
    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
       String consumerName = "twitter";
-      String restEndpoint = "http://twitter.com/statuses/update.xml"; 
+      String restEndpoint = "https://api.twitter.com/1/statuses/update.xml"; 
       List<Parameter> parameters = new ArrayList<Parameter>();
       DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
       Date date = new Date();
       parameters.add(new Parameter("status", "Test GateIn OAuth with Twitter " + dateFormat.format(date)));
-      ExoOAuthMessage requestMessage = new ExoOAuthMessage(consumerName, restEndpoint, ExoOAuthMessage.POST, parameters);
+      OAuthMessage requestMessage = new OAuthMessage(OAuthMessage.POST, restEndpoint, parameters);
       ExoOAuth3LeggedConsumerService oauthService = new ExoOAuth3LeggedConsumerService();
       
       try {
-         ExoOAuthMessage result = oauthService.send(requestMessage, request, response);
+         OAuthMessage result = oauthService.send(consumerName, requestMessage, request, response);
          ExoOAuthUtils.copyResponse(result, response);
       } catch (Exception e) {
          oauthService.handleException(e, request, response, consumerName);

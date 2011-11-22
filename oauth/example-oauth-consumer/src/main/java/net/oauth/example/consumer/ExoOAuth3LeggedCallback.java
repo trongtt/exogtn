@@ -61,7 +61,7 @@ public class ExoOAuth3LeggedCallback extends HttpServlet {
         final String consumerName = requestMessage.getParameter("consumer");
         try {
             requestMessage.requireParameters("consumer");
-            consumer = ExoOAuthConsumerStorage.getConsumer(consumerName);
+            consumer = SimpleConsumerRegistry.getConsumer(consumerName);
             final CookieMap cookies = new CookieMap(request, response);
             final OAuthAccessor accessor = ExoOAuthUtils.newAccessor(consumer,
                     cookies);

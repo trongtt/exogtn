@@ -16,7 +16,7 @@
  */
 package net.oauth.example.consumer.servlet;
 
-import net.oauth.example.consumer.ExoOAuthMessage;
+import net.oauth.OAuthMessage;
 import net.oauth.example.consumer.ExoOAuthUtils;
 import net.oauth.example.consumer.service.ExoOAuth3LeggedConsumerService;
 
@@ -44,7 +44,7 @@ public class Yahoo3LeggedConsumerServlet extends HttpServlet
       ExoOAuth3LeggedConsumerService oauthService = new ExoOAuth3LeggedConsumerService();
       
       try {        
-        ExoOAuthMessage result = oauthService.send(consumer, restEndpointUrl, request, response);
+        OAuthMessage result = oauthService.send(consumer, restEndpointUrl, request, response);
         ExoOAuthUtils.copyResponse(result, response);
       } catch (Exception e) {
         oauthService.handleException(e, request, response, consumer);

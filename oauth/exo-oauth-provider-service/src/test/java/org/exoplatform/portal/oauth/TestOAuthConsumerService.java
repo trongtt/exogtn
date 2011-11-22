@@ -1,9 +1,6 @@
 package org.exoplatform.portal.oauth;
 
-import net.oauth.OAuthProblemException;
-
 import net.oauth.OAuthConsumer;
-
 import net.oauth.example.provider.core.OAuthConsumerService;
 
 import org.exoplatform.component.test.AbstractKernelTest;

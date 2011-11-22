@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package net.oauth.example.provider.servlets;
+package org.exoplatform.oauth.example;
 
 import java.io.IOException;
 import java.io.PrintWriter;

@@ -115,6 +115,17 @@ public class SimpleOAuthConsumerService implements OAuthConsumerService, Startab
     */
    public OAuthConsumer getConsumer(String consumer_key)
    {
+      try
+      {
+         // Try to reload consumers from the consumer.propreties.
+         // It helps to be able to edit the file at runtime for testing
+         loadConsumers();
+      }
+      catch (IOException e)
+      {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+      }
       return ALL_CONSUMERS.get(consumer_key);
    }
 

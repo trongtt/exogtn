@@ -16,6 +16,8 @@
  */
 package net.oauth.example.consumer;
 
+import net.oauth.OAuthMessage;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -50,15 +52,15 @@ public class ExoOAuthUtils
    
    /**
     * Copy data from ExoOAuthMessage object to a HttpServletResponse object
-    * @param from
+    * @param result
     * @param into
     * @throws IOException
     */
-   public static void copyResponse(ExoOAuthMessage from, HttpServletResponse into) throws IOException
+   public static void copyResponse(OAuthMessage result, HttpServletResponse into) throws IOException
    {
-      InputStream in = from.getBodyAsStream();
+      InputStream in = result.getBodyAsStream();
       OutputStream out = into.getOutputStream();
-      into.setContentType(from.getHeader("Content-Type"));
+      into.setContentType(result.getHeader("Content-Type"));
       try
       {
          ExoOAuthUtils.copyAll(in, out);

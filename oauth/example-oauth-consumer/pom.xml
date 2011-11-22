@@ -8,11 +8,12 @@
    <artifactId>example-oauth-consumer</artifactId>
    <packaging>war</packaging>
    <name>OAuth Consumer Example</name>
+
    <dependencies>
       <dependency>
-         <groupId>org.exoplatform.portal</groupId>
-         <artifactId>exo-oauth-consumer-service</artifactId>
-         <version>3.2.0-PLF</version>
+         <groupId>commons-httpclient</groupId>
+         <artifactId>commons-httpclient</artifactId>
+         <version>3.1</version>
       </dependency>
       <dependency>
          <groupId>javax.servlet</groupId>
@@ -20,8 +21,37 @@
          <version>2.5</version>
          <scope>provided</scope>
       </dependency>
+      <dependency>
+         <groupId>net.oauth.core</groupId>
+         <artifactId>oauth</artifactId>
+         <version>20100527</version>
+      </dependency>
+      <dependency>
+         <groupId>net.oauth.core</groupId>
+         <artifactId>oauth-consumer</artifactId>
+         <version>20100527</version>
+      </dependency>
+      <dependency>
+         <groupId>net.oauth.core</groupId>
+         <artifactId>oauth-httpclient4</artifactId>
+         <version>20090913</version>
+      </dependency>
+      <dependency>
+         <groupId>net.oauth.core</groupId>
+         <artifactId>oauth-provider</artifactId>
+         <version>20100527</version>
+      </dependency>
    </dependencies>
+
    <build>
       <finalName>example-oauth-consumer</finalName>
+      <resources>
+         <resource>
+            <directory>src/main/java</directory>
+            <includes>
+               <include>**/*.properties</include>
+            </includes>
+         </resource>
+      </resources>
    </build>
 </project>

@@ -23,8 +23,7 @@ import net.oauth.OAuthMessage;
 import net.oauth.ParameterStyle;
 import net.oauth.client.OAuthClient;
 import net.oauth.client.httpclient4.HttpClient4;
-import net.oauth.example.consumer.ExoOAuthConsumerStorage;
-import net.oauth.example.consumer.ExoOAuthMessage;
+import net.oauth.example.consumer.SimpleConsumerRegistry;
 import net.oauth.example.consumer.RedirectException;
 
 import java.io.IOException;
@@ -53,7 +52,6 @@ import javax.servlet.http.HttpServletResponse;
  *          nguyenanhkien2a@gmail.com
  * Dec 3, 2010 
  */
-//TODO: This is not necessary to be used as an eXo Service BUT just an utility class
 public class ExoOAuth2LeggedConsumerService
 {
    public static final OAuthClient CLIENT = new OAuthClient(new HttpClient4());
@@ -71,16 +69,16 @@ public class ExoOAuth2LeggedConsumerService
     * @param response the http servlet response
     * @thows IOException, OAuthException, URISyntaxException
     */
-   public ExoOAuthMessage send(String consumerName, String restEndpoint, HttpServletRequest request,
+   public OAuthMessage send(String consumerName, String restEndpoint, HttpServletRequest request,
       HttpServletResponse response) throws OAuthException, IOException, URISyntaxException
    {
-      OAuthConsumer consumer = ExoOAuthConsumerStorage.getConsumer(consumerName);
+      OAuthConsumer consumer = SimpleConsumerRegistry.getConsumer(consumerName);
       OAuthAccessor accessor = getAccessor(request, response, consumer);
       OAuthMessage message = accessor.newRequestMessage(OAuthMessage.GET, restEndpoint, null);
 
       OAuthMessage responseMessage =
          ExoOAuth2LeggedConsumerService.CLIENT.invoke(message, ParameterStyle.AUTHORIZATION_HEADER);
-      return (new ExoOAuthMessage(consumerName, responseMessage));
+      return responseMessage;
    }
    
    /**
@@ -93,17 +91,16 @@ public class ExoOAuth2LeggedConsumerService
     * @thows IOException, OAuthException, URISyntaxException
     * @return ExoOAuthMessage object
     */
-   public ExoOAuthMessage send(ExoOAuthMessage requestMessage, HttpServletRequest request,
+   public OAuthMessage send(String consumerName, OAuthMessage requestMessage, HttpServletRequest request,
          HttpServletResponse response) throws OAuthException, IOException, URISyntaxException
    {
-      String consumerName = requestMessage.getConsumerName();
-      OAuthConsumer consumer = ExoOAuthConsumerStorage.getConsumer(consumerName);
+      OAuthConsumer consumer = SimpleConsumerRegistry.getConsumer(consumerName);
       OAuthAccessor accessor = getAccessor(request, response, consumer);
-      OAuthMessage message = accessor.newRequestMessage(requestMessage.getHttpMethod(), requestMessage.getRestEndpoint(), requestMessage.getParameters());
+      OAuthMessage message = accessor.newRequestMessage(requestMessage.method, requestMessage.URL, requestMessage.getParameters());
 
       OAuthMessage responseMessage =
          ExoOAuth2LeggedConsumerService.CLIENT.invoke(message, ParameterStyle.AUTHORIZATION_HEADER);
-      return (new ExoOAuthMessage(consumerName, responseMessage));
+      return responseMessage;
    }
 
    /**
