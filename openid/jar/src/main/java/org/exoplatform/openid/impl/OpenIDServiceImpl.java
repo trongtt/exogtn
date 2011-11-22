@@ -23,9 +23,7 @@ import org.exoplatform.container.component.ComponentRequestLifecycle;
 import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.openid.OpenIDDAO;
 import org.exoplatform.openid.OpenIDService;
-import org.exoplatform.openid.OpenIDUtils;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
+import org.exoplatform.openid.OpenIdUtil;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.organization.UserHandler;
@@ -39,9 +37,7 @@ import java.util.List;
  */
 public class OpenIDServiceImpl implements OpenIDService
 {
-   private final Log log = ExoLogger.getLogger("openid:OpenIDService");
-
-   public OpenIDDAO openIdDao;
+   private OpenIDDAO openIdDao;
 
    public OpenIDServiceImpl(OpenIDDAO openIDDAO)
    {
@@ -53,8 +49,9 @@ public class OpenIDServiceImpl implements OpenIDService
       try
       {
          String username = findUsernameByOpenID(openid);
-         PortalContainer container = OpenIDUtils.getContainer();
-         OrganizationService orgService = (OrganizationService) container.getComponentInstanceOfType(OrganizationService.class);
+         PortalContainer container = OpenIdUtil.getContainer();
+         OrganizationService orgService = (OrganizationService) container
+               .getComponentInstanceOfType(OrganizationService.class);
          User user = null;
          if (username != null)
          {
@@ -67,7 +64,7 @@ public class OpenIDServiceImpl implements OpenIDService
       }
       catch (Exception e)
       {
-         log.error("Error during find user from database: " + e.getMessage());
+         e.printStackTrace();
       }
       return null;
    }
@@ -76,7 +73,7 @@ public class OpenIDServiceImpl implements OpenIDService
    {
       //TODO Need implement validator for register input fields
       //Save account into database
-      PortalContainer container = OpenIDUtils.getContainer();
+      PortalContainer container = OpenIdUtil.getContainer();
       OrganizationService orgService = (OrganizationService) container
             .getComponentInstanceOfType(OrganizationService.class);
 
@@ -89,7 +86,7 @@ public class OpenIDServiceImpl implements OpenIDService
 
       return new UserImpl(user.getUserName());
    }
-   
+
    public String findUsernameByOpenID(String openid)
    {
       return openIdDao.getUser(openid);

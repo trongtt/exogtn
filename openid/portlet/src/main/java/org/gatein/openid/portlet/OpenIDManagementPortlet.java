@@ -18,12 +18,11 @@
  */
 package org.gatein.openid.portlet;
 
-import com.sun.jmx.snmp.UserAcl;
-
 import org.exoplatform.openid.OpenIDService;
-import org.exoplatform.openid.OpenIDUtils;
+import org.exoplatform.openid.OpenIdUtil;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,35 +42,39 @@ import javax.portlet.RenderResponse;
 public class OpenIDManagementPortlet extends GenericPortlet
 {
    private OpenIDService openIdService;
-   
+
    public void init() throws PortletException
    {
-      setOpenIdService(OpenIDUtils.getOpenIDService());
+      this.openIdService = OpenIdUtil.getOpenIDService();
       super.init();
    }
-   
+
    @RenderMode(name = "VIEW")
    public void showList(RenderRequest request, RenderResponse response) throws PortletException, IOException
    {
-      Map<String, String> openIds = openIdService.getAllOpenIds();
-      request.setAttribute("openids", openIds);
+      List<String> openIds = openIdService.getAllOpenIds();
+      Map<String, String> mapOpenIdEntry = new HashMap<String, String>();
+      for (String openId : openIds)
+      {
+         String username = openIdService.findUsernameByOpenID(openId);
+         mapOpenIdEntry.put(openId, username);
+      }
+
+      request.setAttribute("openids", mapOpenIdEntry);
       getPortletContext().getRequestDispatcher("/jsp/view.jsp").forward(request, response);
    }
-   
+
    @ProcessAction(name = "removeOpenIdAction")
    public void removeOpenId(ActionRequest request, ActionResponse response)
    {
       String openId = request.getParameter("openId");
       openIdService.removeOpenID(openId);
    }
-
-   public void setOpenIdService(OpenIDService openIdService)
+   
+   @ProcessAction(name = "test")
+   public void test(ActionRequest request, ActionResponse response) throws Exception
    {
-      this.openIdService = openIdService;
-   }
-
-   public OpenIDService getOpenIdService()
-   {
-      return openIdService;
+      System.out.println("hahaha");
+      response.sendRedirect("http://google.com");
    }
 }

@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<portlet-app xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd"
-version="2.0"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd
+<portlet-app xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd" version="2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd
    http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd">
    <portlet>
-      <portlet-name>OpenID Management Portlet</portlet-name>
+      <portlet-name>OpenIdManagementPortlet</portlet-name>
       <portlet-class>org.gatein.openid.portlet.OpenIDManagementPortlet</portlet-class>
       <supports>
          <mime-type>text/html</mime-type>
@@ -14,5 +11,23 @@ version="2.0"
       <portlet-info>
          <title>OpenID Management Portlet</title>
       </portlet-info>
+   </portlet>
+
+   <portlet>
+      <portlet-name>OpenIdLoginPortlet</portlet-name>
+      <portlet-class>org.gatein.openid.portlet.OpenIdLoginPortlet</portlet-class>
+      <supports>
+         <mime-type>text/html</mime-type>
+         <portlet-mode>view</portlet-mode>
+      </supports>
+      <portlet-info>
+         <title>OpenID Login Portlet</title>
+      </portlet-info>
+      <container-runtime-option>
+         <name>javax.portlet.actionScopedRequestAttributes</name>
+         <value>true</value>
+         <value>numberOfCachedScopes</value>
+         <value>10</value>
+      </container-runtime-option>
    </portlet>
 </portlet-app>

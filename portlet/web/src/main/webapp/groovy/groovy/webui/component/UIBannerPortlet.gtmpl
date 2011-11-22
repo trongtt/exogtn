@@ -24,6 +24,9 @@
 						PortalURL nodeURL = nodeurl();
 						NavigationResource resource = new NavigationResource(SiteType.PORTAL, pcontext.getPortalOwner(), "register");
 						String registerURI = nodeURL.setResource(resource).toString();
+						
+						resource = new NavigationResource(SiteType.PORTAL, pcontext.getPortalOwner(), "openid");
+		            String openIdAction = nodeURL.setResource(resource).toString();
 					%>
 					<div class="MiddleBanner MiddleBannerSignin">
 						<div class="BannerTitle"><span></span></div>
@@ -31,7 +34,7 @@
 							<div class="RightLoginContainer">
 								<div class="MiddleLoginContainer Signin">
 									<a class="Login" onclick="$signInAction"><%=_ctx.appRes("UILoginForm.label.Signin")%></a>
-									<a class="Login" href="/portal/openidconsumer">OpenId</a>
+									<a class="Login" href="$openIdAction">OpenId</a>
 									<a class="Register" href="$registerURI">
 										<%=_ctx.appRes("UIBannerPortlet.action.register")%>
 									</a>						

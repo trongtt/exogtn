@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2011 eXo Platform SAS.
- *
+ * 
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 2.1 of
@@ -18,32 +18,33 @@
  */
 package org.exoplatform.openid.servlet;
 
+import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.container.web.AbstractHttpServlet;
-import org.exoplatform.openid.OpenIDService;
-import org.exoplatform.openid.OpenIDUtils;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.services.organization.UserHandler;
 import org.exoplatform.web.security.security.AbstractTokenService;
 import org.exoplatform.web.security.security.TransientTokenService;
 import org.gatein.wci.security.Credentials;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @author <a href="kienna@exoplatform.com">Kien Nguyen</a>
- * @version $Revision$
+ * @author <a href="mailto:ndkhoi168@gmail.com">Nguyen Duc Khoi</a>
+ * Nov 24, 2011
  */
-public class OpenIDAccountServlet extends AbstractHttpServlet
+public class OpenIdServlet extends AbstractHttpServlet
 {
    private static final long serialVersionUID = -631150770085187794L;
 
-   private final Log log = ExoLogger.getLogger("openid:OpenIDAccountServlet");
+   private final Log log = ExoLogger.getLogger(OpenIdServlet.class);
 
    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
    {
@@ -52,50 +53,55 @@ public class OpenIDAccountServlet extends AbstractHttpServlet
 
    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
    {
-      if(req.getRemoteUser() != null)
+      if (req.getRemoteUser() != null)
       {
-         //Authenticated
-         resp.sendRedirect("/portal/private/classic");
+         resp.sendRedirect("/portal");
       }
-      
-      String token = (String)req.getSession().getAttribute("openid.token");
+
+      String token = req.getParameter("token");
       TransientTokenService tokenService = AbstractTokenService.getInstance(TransientTokenService.class);
       Credentials tCredentials = tokenService.validateToken(token, false);
 
       if (tCredentials != null)
       {
-         String identifier = tCredentials.getUsername();
-         OpenIDService service = OpenIDUtils.getOpenIDService();
-         User user = service.findUserByOpenID(identifier);
-         if (user != null)
+         try
          {
-            try
+            RequestLifeCycle.begin(ExoContainerContext.getCurrentContainer());
+            String userName = tCredentials.getUsername();
+            Credentials credentials = new Credentials(tCredentials.getUsername(), token);
+            OrganizationService orgService = (OrganizationService) getContainer().getComponentInstanceOfType(
+                  OrganizationService.class);
+            UserHandler userHandler = orgService.getUserHandler();
+            User user = userHandler.findUserByName(userName);
+            if (user != null)
             {
-               //Auto Login
-               log.info("Make auto login");
-               user.setPassword(token);
-               OpenIDUtils.autoLogin(user, req, resp);               
+               try
+               {
+                  log.info("Make auto login");
+                  req.getSession().setAttribute(Credentials.CREDENTIALS, credentials);
+                  resp.sendRedirect("/portal/dologin");
+               }
+               catch (Exception e)
+               {
+                  log.error("authentication unsuccessful");
+                  e.printStackTrace();
+               }
             }
-            catch (Exception e)
+            else
             {
-               log.error("authentication unsuccessful");
-               e.printStackTrace();
             }
          }
-         else
+         catch (Exception e)
          {
-            //ask user create account
-            log.info("Go to register new account");
-            req.setAttribute("identifier", identifier);
-            req.setAttribute("user", user);
-            this.getServletContext().getRequestDispatcher("/login/openid/register.jsp").include(req, resp);
+            e.printStackTrace();
+         }
+         finally
+         {
+            RequestLifeCycle.end();
          }
       }
       else
       {
-         PrintWriter out = resp.getWriter();
-         out.println("You don't have permission");
-         out.close();
       }
    }
 }

@@ -37,10 +37,16 @@
                         <portlet:param name="openId" value="${openid.key}" />
                      </portlet:actionURL>
                   " onclick="javascript: return confirmRemove()">Remove</a>
+                  
 					</td>
 				</tr>
 			</c:forEach>
 		</table>
 	</c:if>
+	<a href="
+                     <portlet:actionURL>
+                        <portlet:param name="javax.portlet.action" value="test" />
+                     </portlet:actionURL>
+                  ">Test</a>
 </body>
 </html>

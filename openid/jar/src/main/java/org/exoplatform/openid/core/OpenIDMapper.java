@@ -39,7 +39,7 @@ public abstract class OpenIDMapper
 
    @OneToMany
    public abstract Map<String, OpenIDEntry> getOpenIds();
-   
+
    public Collection<OpenIDEntry> getAllOpenId()
    {
       return getOpenIds().values();
@@ -69,16 +69,25 @@ public abstract class OpenIDMapper
 
       return arrOpenIds;
    }
-   
+
    public String getUsernameByOpenId(String openId)
    {
       Map<String, OpenIDEntry> openIds = getOpenIds();
       if (openIds != null)
       {
          OpenIDEntry entry = openIds.get(openId);
-         return entry.getUsername();
+         if (entry != null)
+         {
+            return entry.getUsername();
+         }
       }
-      
+
       return null;
+   }
+
+   public void removeOpenID(String openId)
+   {
+      Map<String, OpenIDEntry> openIds = getOpenIds();
+      openIds.remove(openId);
    }
 }

@@ -60,7 +60,7 @@ public class OpenIDDAOImpl implements Startable, OpenIDDAO
    @Override
    public String getUser(String openId)
    {
-      openId = Text.escapeIllegalJcrChars(openId);
+      openId = escapeOpenId(openId);
       OpenIDMapper mapper = getOpenIDMapper();
       return mapper.getUsernameByOpenId(openId);
    }
@@ -68,7 +68,7 @@ public class OpenIDDAOImpl implements Startable, OpenIDDAO
    @Override
    public void addOpenID(String openId, String username)
    {
-      openId = Text.escapeIllegalJcrChars(openId);
+      openId = escapeOpenId(openId);
       OpenIDMapper mapper = getOpenIDMapper();
       mapper.saveOpenIdAccount(openId, username);
    }
@@ -76,7 +76,9 @@ public class OpenIDDAOImpl implements Startable, OpenIDDAO
    @Override
    public void removeOpenId(String openId)
    {
-
+      openId = escapeOpenId(openId);
+      OpenIDMapper mapper = getOpenIDMapper();
+      mapper.removeOpenID(openId);
    }
 
    @Override
@@ -94,11 +96,23 @@ public class OpenIDDAOImpl implements Startable, OpenIDDAO
       Collection<OpenIDEntry> ids = mapper.getAllOpenId();
       for (OpenIDEntry id : ids)
       {
-         String openId = Text.unescapeIllegalJcrChars(id.getId());
+         String openId = unescapeOpenId(id.getId());
          openids.add(openId);
       }
 
       return openids;
+   }
+   
+   private String escapeOpenId(String openId)
+   {
+      if (openId == null) throw new IllegalArgumentException("The value must be set");
+      return Text.escapeIllegalJcrChars(openId);
+   }
+   
+   private String unescapeOpenId(String openId)
+   {
+      if (openId == null) throw new IllegalArgumentException("The value must be set");
+      return Text.unescapeIllegalJcrChars(openId);
    }
 
    @Override
