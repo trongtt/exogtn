@@ -14,11 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  */
-package net.oauth.example.consumer.servlet;
+package org.exoplatform.example.consumer.webapp;
 
+import net.oauth.OAuthAccessor;
+import net.oauth.OAuthConsumer;
 import net.oauth.OAuthMessage;
-import net.oauth.example.consumer.ExoOAuthUtils;
-import net.oauth.example.consumer.service.ExoOAuth3LeggedConsumerService;
+import net.oauth.ParameterStyle;
+import net.oauth.example.consumer.webapp.CookieConsumer;
 
 import java.io.IOException;
 
@@ -33,21 +35,28 @@ import javax.servlet.http.HttpServletResponse;
  *          nguyenanhkien2a@gmail.com
  * Dec 4, 2010  
  */
-public class Google3LeggedConsumerServlet extends HttpServlet
+public class Orkut2LeggedConsumer extends HttpServlet
 {
    private static final long serialVersionUID = 1L;
-   
+
    @Override
-   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-    String consumer = "googleContacts";
-    String restEndpointUrl = "http://www.google.com/m8/feeds/contacts/default/base";     
-    ExoOAuth3LeggedConsumerService oauthService = new ExoOAuth3LeggedConsumerService();
-    
-    try {   
-       OAuthMessage result = oauthService.send(consumer, restEndpointUrl, request, response);
-       ExoOAuthUtils.copyResponse(result, response);
-    } catch (Exception e) {
-       oauthService.handleException(e, request, response, consumer);
-    }
+   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
+   {
+      OAuthConsumer consumer = null;
+      try
+      {
+         consumer = CookieConsumer.getConsumer("orkut", getServletContext());
+         OAuthAccessor accessor = CookieConsumer.getAccessor(request, response, consumer, true);
+         OAuthMessage message =
+            accessor.newRequestMessage(OAuthMessage.GET,
+               "http://sandbox.orkut.com/social/rest/appdata/@me/@self/@app?xoauth_requestor_id=03067092798963641994",
+               null);
+         OAuthMessage result = CookieConsumer.CLIENT.invoke(message, ParameterStyle.AUTHORIZATION_HEADER);
+         CookieConsumer.copyResponse(result, response);
+      }
+      catch (Exception e)
+      {
+         CookieConsumer.handleException(e, request, response, consumer);
+      }
    }
 }

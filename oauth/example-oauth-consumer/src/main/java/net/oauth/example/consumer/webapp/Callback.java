@@ -1,52 +1,45 @@
 /*
- * Copyright (C) 2003-2010 eXo Platform SAS.
+ * Copyright 2007 Netflix, Inc.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Affero General Public License
- * as published by the Free Software Foundation; either version 3
- * of the License, or (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, see<http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
-package net.oauth.example.consumer;
+package net.oauth.example.consumer.webapp;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Logger;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import net.oauth.OAuth;
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthConsumer;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthProblemException;
-import net.oauth.example.consumer.service.ExoOAuth3LeggedConsumerService;
 import net.oauth.server.OAuthServlet;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.logging.Logger;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 /**
- * Created by The eXo Platform SAS
- * Author : Nguyen Anh Kien
- *          nguyenanhkien2a@gmail.com
- * Dec 3, 2010 
+ * An OAuth callback handler.
+ * 
+ * @author John Kristian
  */
-public class ExoOAuth3LeggedCallback extends HttpServlet {
+public class Callback extends HttpServlet {
 
-    public static final String PATH = "/OAuth/ExoOAuth3LeggedCallback";
+    public static final String PATH = "/OAuth/Callback";
 
     protected final Logger log = Logger.getLogger(getClass().getName());
-    
-    private final ExoOAuth3LeggedConsumerService oauthService = new ExoOAuth3LeggedConsumerService();
 
     /**
      * Exchange an OAuth request token for an access token, and store the latter
@@ -56,14 +49,14 @@ public class ExoOAuth3LeggedCallback extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         OAuthConsumer consumer = null;
-        final OAuthMessage requestMessage = OAuthServlet.getMessage(
-              request, null);
-        final String consumerName = requestMessage.getParameter("consumer");
         try {
+            final OAuthMessage requestMessage = OAuthServlet.getMessage(
+                    request, null);
             requestMessage.requireParameters("consumer");
-            consumer = SimpleConsumerRegistry.getConsumer(consumerName);
+            final String consumerName = requestMessage.getParameter("consumer");
+            consumer = CookieConsumer.getConsumer(consumerName, null);
             final CookieMap cookies = new CookieMap(request, response);
-            final OAuthAccessor accessor = ExoOAuthUtils.newAccessor(consumer,
+            final OAuthAccessor accessor = CookieConsumer.newAccessor(consumer,
                     cookies);
             final String expectedToken = accessor.requestToken;
             String requestToken = requestMessage.getParameter(OAuth.OAUTH_TOKEN);
@@ -87,7 +80,7 @@ public class ExoOAuth3LeggedCallback extends HttpServlet {
             if (verifier != null) {
                 parameters = OAuth.newList(OAuth.OAUTH_VERIFIER, verifier);
             }
-            OAuthMessage result = ExoOAuth3LeggedConsumerService.CLIENT.getAccessToken(accessor, null, parameters);
+            OAuthMessage result = CookieConsumer.CLIENT.getAccessToken(accessor, null, parameters);
             if (accessor.accessToken != null) {
                 String returnTo = requestMessage.getParameter("returnTo");
                 if (returnTo == null) {
@@ -107,7 +100,7 @@ public class ExoOAuth3LeggedCallback extends HttpServlet {
             problem.getParameters().putAll(result.getDump());
             throw problem;
         } catch (Exception e) {
-            oauthService.handleException(e, request, response, consumerName);
+            CookieConsumer.handleException(e, request, response, consumer);
         }
     }
 

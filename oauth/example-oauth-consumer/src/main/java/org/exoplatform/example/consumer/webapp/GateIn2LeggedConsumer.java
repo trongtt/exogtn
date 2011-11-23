@@ -14,11 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  */
-package net.oauth.example.consumer.servlet;
+package org.exoplatform.example.consumer.webapp;
 
+import net.oauth.OAuthAccessor;
+import net.oauth.OAuthConsumer;
 import net.oauth.OAuthMessage;
-import net.oauth.example.consumer.ExoOAuthUtils;
-import net.oauth.example.consumer.service.ExoOAuth2LeggedConsumerService;
+import net.oauth.ParameterStyle;
+import net.oauth.example.consumer.webapp.CookieConsumer;
 
 import java.io.IOException;
 
@@ -33,20 +35,26 @@ import javax.servlet.http.HttpServletResponse;
  *          nguyenanhkien2a@gmail.com
  * Dec 3, 2010  
  */
-public class GateIn2LeggedConsumerServlet extends HttpServlet
+public class GateIn2LeggedConsumer extends HttpServlet
 {
    @Override
-   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-      String consumer = "gatein2";
-      String restEndpointUrl = "http://localhost:8080/exo-oauth-provider/rest/SocialRest/infos";      
-      ExoOAuth2LeggedConsumerService oauthService = new ExoOAuth2LeggedConsumerService();
-      
-      try {        
-         OAuthMessage result = oauthService.send(consumer, restEndpointUrl, request, response);
-         ExoOAuthUtils.copyResponse(result, response);
-      } catch (Exception e) {
-         oauthService.handleException(e, request, response, consumer);
+   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
+   {
+      OAuthConsumer consumer = null;
+      try
+      {
+         consumer = CookieConsumer.getConsumer("gatein2", getServletContext());
+         OAuthAccessor accessor = CookieConsumer.getAccessor(request, response, consumer, true);
+         OAuthMessage message =
+            accessor.newRequestMessage(OAuthMessage.GET,
+               "http://localhost:8080/exo-oauth-provider/rest/SocialRest/infos", null);
+         OAuthMessage result = CookieConsumer.CLIENT.invoke(message, ParameterStyle.AUTHORIZATION_HEADER);
+
+         CookieConsumer.copyResponse(result, response);
+      }
+      catch (Exception e)
+      {
+         CookieConsumer.handleException(e, request, response, consumer);
       }
    }
-   private static final long serialVersionUID = 1L;
 }

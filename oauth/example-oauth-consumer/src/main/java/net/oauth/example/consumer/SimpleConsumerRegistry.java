@@ -16,6 +16,8 @@
  */
 package net.oauth.example.consumer;
 
+import net.oauth.example.consumer.webapp.Callback;
+
 import net.oauth.ConsumerProperties;
 import net.oauth.OAuthConsumer;
 
@@ -47,21 +49,20 @@ public class SimpleConsumerRegistry
          if (value == null)
          {
             // Compute the callbackURL from the servlet context.
-            URL resource = SimpleConsumerRegistry.class.getResource(ExoOAuth3LeggedCallback.PATH);
+            URL resource = SimpleConsumerRegistry.class.getResource(Callback.PATH);
             if (resource != null)
             {
                value = resource.toExternalForm();
             }
             else
             {
-               value = ExoOAuth3LeggedCallback.PATH;
+               value = Callback.PATH;
             }
             properties.setProperty(key, value);
          }
       }
 
       OAuthConsumer consumer = consumers.getConsumer(name);
-      System.out.println(consumer);
       return consumer;
    }
 }
