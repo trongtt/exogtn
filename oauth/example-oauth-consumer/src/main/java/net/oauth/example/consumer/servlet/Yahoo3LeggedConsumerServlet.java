@@ -40,7 +40,8 @@ public class Yahoo3LeggedConsumerServlet extends HttpServlet
    @Override
    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
       String consumer = "yahoo";
-      String restEndpointUrl = "http://appstore.apps.yahooapis.com/social/rest/";     
+      //Get the last few questions from Computers & Internet > Software category of Yahoo Answer services
+      String restEndpointUrl = "http://answers.yahooapis.com/AnswersService/V1/getByCategory?appid=exotest&category_name=Computers+%26+Internet%3ESoftware";
       ExoOAuth3LeggedConsumerService oauthService = new ExoOAuth3LeggedConsumerService();
       
       try {        

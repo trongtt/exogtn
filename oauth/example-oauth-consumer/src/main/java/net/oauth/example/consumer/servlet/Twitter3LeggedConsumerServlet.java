@@ -45,7 +45,7 @@ public class Twitter3LeggedConsumerServlet extends HttpServlet
    
    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
       String consumerName = "twitter";
-      String restEndpoint = "https://api.twitter.com/1/statuses/update.xml"; 
+      String restEndpoint = "https://api.twitter.com/1/statuses/update.json"; 
       List<Parameter> parameters = new ArrayList<Parameter>();
       DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
       Date date = new Date();
