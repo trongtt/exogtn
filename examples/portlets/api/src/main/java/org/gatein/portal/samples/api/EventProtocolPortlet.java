@@ -49,10 +49,11 @@ public class EventProtocolPortlet extends GenericPortlet
    private static final String NORMAL_MODE = "0";
    private static final String EP_MODE = "1";
    
-   private static final QName BEFORE_RENDER = new QName("http://www.gatein.org/xml/ns/ep", "BeforeRender");
-   private static final QName CHANGE_NAV = new QName("http://www.gatein.org/xml/ns/ep", "ChangeNavigation");   
-   private static final QName LOGIN = new QName("http://www.gatein.org/xml/ns/ep", "Login");
-   private static final QName LOGOUT = new QName("http://www.gatein.org/xml/ns/ep", "Logout");
+   public static final String PEP_NS = "http://www.gatein.org/xml/ns/pep";
+   public static final QName PRE_RENDER_EVENT = new QName(PEP_NS, "pre_render");
+   public static final QName CHANGE_NAV_EVENT = new QName(PEP_NS, "change_navigation");   
+   public static final QName LOGIN_EVENT = new QName(PEP_NS, "login");
+   public static final QName LOGOUT_EVENT = new QName(PEP_NS, "logout");
    
    @Override
    protected void doView(RenderRequest req, RenderResponse resp) throws PortletException, IOException
@@ -77,7 +78,7 @@ public class EventProtocolPortlet extends GenericPortlet
       writer.print("</form></br>");      
       
       writer.print("<p style='text-align:center; font-style:italic; font-weight: bold'>Change the state and then press F5 button to see the different between 2 mode </br>");
-      writer.print("At Redirect mode: Portlet's listening to BERFORE_RENDER event and dispatch CHANGE_NAVIGATION event to refresh the page");
+      writer.print("At Redirect mode: Portlet's listening to PRE_RENDER event and dispatch CHANGE_NAVIGATION event to refresh the page");
       writer.print("</p>");
       
       writer.print("<hr/>");
@@ -123,11 +124,11 @@ public class EventProtocolPortlet extends GenericPortlet
          payload.append(request.getParameter("username"));
          payload.append("\",\"password\":\"");
          payload.append(request.getParameter("password") + "\"}");
-         response.setEvent(LOGIN, payload.toString());
+         response.setEvent(LOGIN_EVENT, payload.toString());
       }
       else if ("Logout".equals(action))
       {
-         response.setEvent(LOGOUT, null);
+         response.setEvent(LOGOUT_EVENT, null);
       }
       
       handleState(request, response);
@@ -137,11 +138,11 @@ public class EventProtocolPortlet extends GenericPortlet
    public void processEvent(EventRequest request, EventResponse response) throws PortletException, IOException
    {
       System.out.println("Processing event : " + request.getEvent().getName());
-      if (BEFORE_RENDER.equals(request.getEvent().getQName()))
+      if (PRE_RENDER_EVENT.equals(request.getEvent().getQName()))
       {
          if (Boolean.parseBoolean(request.getParameter(SEND_REDIRECT)))
          {
-            response.setEvent(CHANGE_NAV, null);
+            response.setEvent(CHANGE_NAV_EVENT, null);
          }
       }      
       handleState(request, response);

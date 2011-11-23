@@ -88,33 +88,33 @@
       <keywords>Sample</keywords>
     </portlet-info>
     <supported-processing-event>
-    	<qname xmlns:ep='http://www.gatein.org/xml/ns/ep'>ep:BeforeRender</qname>
+    	<qname xmlns:pep='http://www.gatein.org/xml/ns/pep'>pep:pre_render</qname>
     </supported-processing-event>
     <supported-publishing-event>
-      <qname xmlns:ep='http://www.gatein.org/xml/ns/ep'>ep:ChangeNavigation</qname>
+      <qname xmlns:pep='http://www.gatein.org/xml/ns/pep'>pep:change_navigation</qname>
     </supported-publishing-event>
     <supported-publishing-event>
-      <qname xmlns:ep='http://www.gatein.org/xml/ns/ep'>ep:Login</qname>
+      <qname xmlns:pep='http://www.gatein.org/xml/ns/pep'>pep:login</qname>
     </supported-publishing-event>
     <supported-publishing-event>
-      <qname xmlns:ep='http://www.gatein.org/xml/ns/ep'>ep:Logout</qname>
+      <qname xmlns:pep='http://www.gatein.org/xml/ns/pep'>pep:logout</qname>
     </supported-publishing-event>
   </portlet>
 
   <event-definition>
-  	<qname xmlns:ep='http://www.gatein.org/xml/ns/ep'>ep:BeforeRender</qname>
+  	<qname xmlns:pep='http://www.gatein.org/xml/ns/pep'>pep:pre_render</qname>
   </event-definition>
 
   <event-definition>
-  	<qname xmlns:ep='http://www.gatein.org/xml/ns/ep'>ep:ChangeNavigation</qname>
+  	<qname xmlns:pep='http://www.gatein.org/xml/ns/pep'>pep:change_navigation</qname>
   </event-definition>
   
   <event-definition>
-  	<qname xmlns:ep='http://www.gatein.org/xml/ns/ep'>ep:Login</qname>
+  	<qname xmlns:pep='http://www.gatein.org/xml/ns/pep'>pep:login</qname>
   </event-definition>
   
   <event-definition>
-  	<qname xmlns:ep='http://www.gatein.org/xml/ns/ep'>ep:Logout</qname>
+  	<qname xmlns:pep='http://www.gatein.org/xml/ns/pep'>pep:logout</qname>
   </event-definition>
   
   <public-render-parameter>

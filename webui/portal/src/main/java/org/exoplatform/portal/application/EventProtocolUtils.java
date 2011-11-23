@@ -53,19 +53,19 @@ import org.json.JSONObject;
  */
 public class EventProtocolUtils
 {
-   public static final String EVENT_PROTOCOL_NS = "http://www.gatein.org/xml/ns/ep";
+   public static final String EVENT_PROTOCOL_NS = "http://www.gatein.org/xml/ns/pep";
    
    //Portal to portlet event
-   public static final QName BEFORE_RENDER_EVENT = new QName(EVENT_PROTOCOL_NS, "BeforeRender");
+   public static final QName PRE_RENDER_EVENT = new QName(EVENT_PROTOCOL_NS, "pre_render");
    
    //Portlet to portal event
-   public static final QName CHANGE_NAVIGATION_EVENT = new QName(EVENT_PROTOCOL_NS, "ChangeNavigation");
+   public static final QName CHANGE_NAVIGATION_EVENT = new QName(EVENT_PROTOCOL_NS, "change_navigation");
    public static final String SITE_TYPE = "site_type";
    public static final String SITE_NAME = "site_name";
    public static final String NAVIGATION_URI = "navigation_uri";
    
-   public static final QName LOGOUT_EVENT = new QName(EVENT_PROTOCOL_NS, "Logout");
-   public static final QName LOGIN_EVENT = new QName(EVENT_PROTOCOL_NS, "Login");
+   public static final QName LOGOUT_EVENT = new QName(EVENT_PROTOCOL_NS, "logout");
+   public static final QName LOGIN_EVENT = new QName(EVENT_PROTOCOL_NS, "login");
    public static final String USERNAME = "username";
    public static final String PASSWORD = "password";
    public static final String INITIAL_URI = "initialURI";
@@ -83,7 +83,7 @@ public class EventProtocolUtils
       UIPortlet uiPortlet = context.getUIApplication().findFirstComponentOfType(UIPortlet.class);
       if (uiPortlet == null)
       {
-         log.warn("No portlet to dispatch BEFORE_RENDER event");
+         log.warn("No portlet to dispatch PRE_RENDER event");
          return;
       }
 
@@ -115,7 +115,7 @@ public class EventProtocolUtils
          }
       }
       
-      javax.portlet.Event portletEvent = new PortletEvent(BEFORE_RENDER_EVENT, null);
+      javax.portlet.Event portletEvent = new PortletEvent(PRE_RENDER_EVENT, null);
       List<javax.portlet.Event> events = new LinkedList<javax.portlet.Event>();
       events.add(portletEvent);
 
@@ -221,8 +221,7 @@ public class EventProtocolUtils
       
       HttpServletRequest req = context.getRequest();     
       HttpServletResponse res = context.getResponse();
-      
-      //Workaround: I can't use mergedContext.getRequestDispatcher to get servlet for /login path
+
       HttpServletRequest wrapper = new BaseHttpRequestWrapper(req)
       {
          @Override
