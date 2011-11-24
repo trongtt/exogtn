@@ -58,6 +58,15 @@
    </external-component-plugins>
 
    <external-component-plugins>
+      <target-component>org.exoplatform.services.organization.OrganizationService</target-component>
+      <component-plugin>
+         <name>user.openid.mapping.listener</name>
+         <set-method>addListenerPlugin</set-method>
+         <type>org.exoplatform.openid.listener.OpenIdUserListener</type>
+      </component-plugin>
+   </external-component-plugins>
+   
+   <external-component-plugins>
       <target-component>org.exoplatform.services.jcr.RepositoryService</target-component>
       <component-plugin>
          <name>add.nodeType</name>

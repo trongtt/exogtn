@@ -63,7 +63,7 @@ public abstract class OpenIDMapper
       List<String> arrOpenIds = new ArrayList<String>();
       for (String openid : openIds.keySet())
       {
-         if (openIds.get(openid).equals(username))
+         if (openIds.get(openid).getUsername().equals(username))
             arrOpenIds.add(openid);
       }
 

@@ -78,6 +78,33 @@ public class TestOpenIDService extends AbstractOpenIDServiceTest
       assertGetOpenID(yahoo_openid, username);
    }
 
+   public void testRemoveOpenId()
+   {
+      String username = "user1";
+      String openid_net = "http://foo.myopenid.com";
+      assertGetOpenID(openid_net, username);
+
+      String google_openid = "https://www.google.com/accounts/o8/id?id=AItOawmpS9ll-dxQhX_xHz4nyn2kjwsB5-SJfE8";
+      assertGetOpenID(google_openid, username);
+
+      String yahoo_openid = "https://me.yahoo.com/a/KV6f.4pkpt_6tynajIyZhWqcqBmmfJ2R6QhAPYM-#71d8b";
+      assertGetOpenID(yahoo_openid, username);
+      
+      assertEquals(3, service_.getAllOpenIds().size());
+      service_.removeOpenID(google_openid);
+      assertEquals(2, service_.getAllOpenIds().size());
+      username = service_.findUsernameByOpenID(google_openid);
+      assertNull(username);
+      
+      username = service_.findUsernameByOpenID(openid_net);
+      List<String> openids = service_.findOpenIdsByUser(username);
+      for (String openid : openids)
+      {
+         service_.removeOpenID(openid);
+      }
+      assertEquals(0, service_.getAllOpenIds().size());
+   }
+
    private void assertGetOpenID(String openid, String username)
    {
       service_.mapToUser(openid, username);

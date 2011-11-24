@@ -84,8 +84,15 @@ public class OpenIDDAOImpl implements Startable, OpenIDDAO
    @Override
    public List<String> getOpenIds(String username)
    {
+      List<String> openids = new ArrayList<String>();
       OpenIDMapper mapper = getOpenIDMapper();
-      return mapper.getOpenIdByUsername(username);
+      for (String openId : mapper.getOpenIdByUsername(username))
+      {
+         openId = unescapeOpenId(openId);
+         openids.add(openId);
+      }
+
+      return openids;
    }
 
    @Override
@@ -102,16 +109,18 @@ public class OpenIDDAOImpl implements Startable, OpenIDDAO
 
       return openids;
    }
-   
+
    private String escapeOpenId(String openId)
    {
-      if (openId == null) throw new IllegalArgumentException("The value must be set");
+      if (openId == null)
+         throw new IllegalArgumentException("The value must be set");
       return Text.escapeIllegalJcrChars(openId);
    }
-   
+
    private String unescapeOpenId(String openId)
    {
-      if (openId == null) throw new IllegalArgumentException("The value must be set");
+      if (openId == null)
+         throw new IllegalArgumentException("The value must be set");
       return Text.unescapeIllegalJcrChars(openId);
    }
 
