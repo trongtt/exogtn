@@ -10,11 +10,12 @@ import org.apache.shindig.auth.SecurityToken;
 import org.apache.shindig.gadgets.GadgetException;
 import org.apache.shindig.gadgets.oauth.BasicOAuthStoreConsumerIndex;
 import org.apache.shindig.gadgets.oauth.BasicOAuthStoreConsumerKeyAndSecret;
+import org.apache.shindig.gadgets.oauth.BasicOAuthStoreConsumerKeyAndSecret.KeyType;
 import org.apache.shindig.gadgets.oauth.BasicOAuthStoreTokenIndex;
 import org.apache.shindig.gadgets.oauth.OAuthStore;
-import org.apache.shindig.gadgets.oauth.BasicOAuthStoreConsumerKeyAndSecret.KeyType;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.PortalContainer;
+import org.exoplatform.portal.oauth.OAuthConsumerService;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -163,7 +164,12 @@ public class ExoOAuthStore implements OAuthStore {
     BasicOAuthStoreConsumerIndex pk = new BasicOAuthStoreConsumerIndex();
     pk.setGadgetUri(securityToken.getAppUrl());
     pk.setServiceName(serviceName);
-    BasicOAuthStoreConsumerKeyAndSecret cks = consumerInfos.get(pk);
+    ExoContainer container = PortalContainer.getInstance();
+    OAuthConsumerService service = (OAuthConsumerService)container.getComponentInstance(OAuthConsumerService.class);
+    BasicOAuthStoreConsumerKeyAndSecret cks = service.getConsumerInfo(pk);
+    if (cks == null) {
+       cks = consumerInfos.get(pk);
+    }
     if (cks == null) {
       cks = defaultKey;
     }
