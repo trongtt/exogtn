@@ -58,6 +58,10 @@
       <servlet-name>GateIn3LeggedConsumerServlet</servlet-name>
       <servlet-class>org.exoplatform.example.consumer.webapp.GateIn3LeggedConsumer</servlet-class>
    </servlet>
+   <servlet>
+      <servlet-name>RSA1BasedGateInConsumer</servlet-name>
+      <servlet-class>org.exoplatform.example.consumer.webapp.RSA1BasedGateInConsumer</servlet-class>
+   </servlet>
 
    <servlet-mapping>
       <servlet-name>GoogleContactsConsumer</servlet-name>
@@ -110,5 +114,9 @@
    <servlet-mapping>
       <servlet-name>GateIn3LeggedConsumerServlet</servlet-name>
       <url-pattern>/GateIn3</url-pattern>
+   </servlet-mapping>
+   <servlet-mapping>
+      <servlet-name>RSA1BasedGateInConsumer</servlet-name>
+      <url-pattern>/RSA1BasedGateInConsumer</url-pattern>
    </servlet-mapping>
 </web-app>
