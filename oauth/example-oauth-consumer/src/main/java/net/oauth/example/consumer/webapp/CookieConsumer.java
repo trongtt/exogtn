@@ -92,7 +92,6 @@ public abstract class CookieConsumer {
             }
         }
         OAuthConsumer consumer = consumers.getConsumer(name);
-        consumers = null;
         return consumer;
     }
 
