@@ -406,7 +406,6 @@ public class OpenIdLoginPortlet extends GenericPortlet
                      String name = (String) iter.next();
                      String value = sregResp.getParameterValue(name);
                      request.setAttribute(name, value);
-                     System.out.println(name + " = " + value);
                   }
                }
             }
