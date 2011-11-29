@@ -9,11 +9,11 @@
    </filter>
    <filter>
       <filter-name>ExoOAuth3LeggedFilter</filter-name>
-      <filter-class>org.exoplatform.oauth.example.ExoOAuth3LeggedFilter</filter-class>
+      <filter-class>net.oauth.example.provider.servlets.ExoOAuth3LeggedFilter</filter-class>
    </filter>
    <filter>
       <filter-name>ExoOAuth2LeggedFilter</filter-name>
-      <filter-class>org.exoplatform.oauth.example.ExoOAuth2LeggedFilter</filter-class>
+      <filter-class>net.oauth.example.provider.servlets.ExoOAuth2LeggedFilter</filter-class>
    </filter>
    <filter>
       <filter-name>RestEncodingFilter</filter-name>
@@ -51,19 +51,19 @@
 
    <servlet>
       <servlet-name>ExoRequestTokenServlet</servlet-name>
-      <servlet-class>org.exoplatform.oauth.example.ExoRequestTokenServlet</servlet-class>
+      <servlet-class>net.oauth.example.provider.servlets.ExoRequestTokenServlet</servlet-class>
    </servlet>
    <servlet>
       <servlet-name>ExoAuthorizationServlet</servlet-name>
-      <servlet-class>org.exoplatform.oauth.example.ExoAuthorizationServlet</servlet-class>
+      <servlet-class>net.oauth.example.provider.servlets.ExoAuthorizationServlet</servlet-class>
    </servlet>
    <servlet>
       <servlet-name>ExoAccessTokenServlet</servlet-name>
-      <servlet-class>org.exoplatform.oauth.example.ExoAccessTokenServlet</servlet-class>
+      <servlet-class>net.oauth.example.provider.servlets.ExoAccessTokenServlet</servlet-class>
    </servlet>
    <servlet>
       <servlet-name>OAuthProtectedServlet</servlet-name>
-      <servlet-class>org.exoplatform.oauth.example.OAuthProtectedServlet</servlet-class>
+      <servlet-class>net.oauth.example.provider.servlets.OAuthProtectedServlet</servlet-class>
    </servlet>
    <servlet>
       <servlet-name>RestServer</servlet-name>
