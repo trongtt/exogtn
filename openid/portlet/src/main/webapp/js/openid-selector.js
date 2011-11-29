@@ -17,6 +17,11 @@ var providers_large = {
 		label : 'Enter your MyOpenID username.',
 		url : 'http://{username}.myopenid.com/'
 	},
+	exo : {
+		name : 'eXo Platform',
+		label : 'Enter your eXo username.',
+		url : 'https://openid.exoplatform.org/users/{username}'
+	},
 	openid : {
 		name : 'OpenID',
 		label : 'Enter your OpenID.',

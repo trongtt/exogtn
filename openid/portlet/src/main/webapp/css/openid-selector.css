@@ -6,7 +6,7 @@
 */
 
 #openid_form {
-	width: 580px;
+	width: 661px;
 }
 
 #openid_form legend {
@@ -92,6 +92,10 @@ a.openid_large_btn:focus {
 
 #OpenIdPortlet .aol {
    background: url("../img/openid-logos.png") repeat scroll -200px 0 #FFFFFF;
+}
+
+#OpenIdPortlet .exo {
+   background: url("../img/openid-logos.png") repeat scroll -492px 0 #FFFFFF;
 }
 
 #OpenIdPortlet .myopenid {
