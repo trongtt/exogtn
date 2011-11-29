@@ -1,3 +1,4 @@
+
 /**
  * Copyright (C) 2009 eXo Platform SAS.
  * 
@@ -1564,6 +1565,10 @@
 
 .Pencil {
 	background: url('icons/ToolIcons/Pencil.gif') no-repeat center left;
+}
+
+.Remove {
+	background: url('icons/DustBin.gif') no-repeat center left;	 
 }
 
 .Raquet {
