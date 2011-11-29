@@ -43,7 +43,7 @@ public class OAuthProtectedServlet extends HttpServlet
    {
       try
       {
-         String userId = (String)req.getAttribute("OAUTH_USER_ID");
+         String userId = (String)req.getAttribute("oauth_user_id");
          resp.setContentType("text/plain");
          PrintWriter out = resp.getWriter();
          out.println("[Your UserId:" + userId + "]");

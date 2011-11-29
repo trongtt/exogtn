@@ -139,6 +139,11 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
       ALL_CONSUMERS.remove(consumerKey);
    }
    
+   public Map<String, ConsumerInfo> getAllConsumers()
+   {
+      return ALL_CONSUMERS;
+   }
+   
    public static ConsumerInfo toConsumerInfo(OAuthConsumer oauthConsumer)
    {
       ConsumerInfo consumer = new ConsumerInfo();

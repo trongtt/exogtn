@@ -267,9 +267,6 @@ function getModule(params)
    module.oauth.oauthProviderWebapp =
    new Project("org.exoplatform.portal", "exo-oauth-provider", "war", module.version);
 
-   module.oauth.oauthConsumerService =
-   new Project("org.exoplatform.portal", "exo-oauth-consumer-service", "jar", module.version);
-
    module.oauth.exampleConsumer =
    new Project("org.exoplatform.portal", "example-oauth-consumer", "war", module.version);
 
@@ -278,6 +275,9 @@ function getModule(params)
 
    module.oauth.exampleRest =
    new Project("org.exoplatform.portal", "example-rest-service", "jar", module.version);
+
+   module.oauth.oauthManagement =
+   new Project("org.exoplatform.portal", "exo-oauth-management", "war", module.version);
 
    module.web = {}
    module.web.eXoResources =

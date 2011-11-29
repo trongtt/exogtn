@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2009 eXo Platform SAS.
+
+    This is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Lesser General Public License as
+    published by the Free Software Foundation; either version 2.1 of
+    the License, or (at your option) any later version.
+
+    This software is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this software; if not, write to the Free
+    Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+    02110-1301 USA, or see the FSF site: http://www.fsf.org.
+
+-->
+
+<portlet-app version="1.0" xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd">
+
+   <portlet>
+      <description xml:lang="EN">The portlet for managing the OAuth authorized token</description>
+      <portlet-name>OAuthTokenManagementPortlet</portlet-name>
+      <display-name>OAuth Token Managemenet Portlet</display-name>
+      <portlet-class>org.exoplatform.oauth.portlet.UITokenManagementPortlet</portlet-class>
+      <supports>
+         <mime-type>text/html</mime-type>
+      </supports>
+      <supported-locale>en</supported-locale>
+      <portlet-info>
+         <title>OAuth Token</title>
+         <short-title>oToken</short-title>
+         <keywords>System</keywords>
+      </portlet-info>
+      <container-runtime-option>
+         <name>javax.portlet.actionScopedRequestAttributes</name>
+         <value>true</value>
+      </container-runtime-option>
+   </portlet>
+
+   <portlet>
+      <description xml:lang="EN">Manage consumer applications that access to GateIn OAuth provider</description>
+      <portlet-name>OAuthConsumerManagementPortlet</portlet-name>
+      <display-name>OAuth Consumer Managemenet Portlet</display-name>
+      <portlet-class>org.exoplatform.oauth.portlet.UIConsumerManagementPortlet</portlet-class>
+      <supports>
+         <mime-type>text/html</mime-type>
+      </supports>
+      <supported-locale>en</supported-locale>
+      <portlet-info>
+         <title>OAuth consumer</title>
+         <short-title>oConsumer</short-title>
+         <keywords>System</keywords>
+      </portlet-info>
+      <container-runtime-option>
+         <name>javax.portlet.actionScopedRequestAttributes</name>
+         <value>true</value>
+      </container-runtime-option>
+   </portlet>
+
+</portlet-app>

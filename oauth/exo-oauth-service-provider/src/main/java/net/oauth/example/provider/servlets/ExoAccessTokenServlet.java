@@ -65,7 +65,7 @@ public class ExoAccessTokenServlet extends AbstractHttpServlet
          validator.validateMessage(requestMessage, accessor);
 
          // make sure token is authorized
-         if (!Boolean.TRUE.equals(accessor.getProperty("authorized")))
+         if (!Boolean.TRUE.equals(accessor.getProperty("oauth_authorized")))
          {
             throw new OAuthProblemException("permission_denied");
 //            throw problem;

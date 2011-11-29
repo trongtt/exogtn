@@ -50,10 +50,10 @@ function getProduct(version) {
 
   product.addDependencies(portal.oauth.oauthProviderService);  
   product.addDependencies(portal.oauth.oauthProviderWebapp);
-  product.addDependencies(portal.oauth.oauthConsumerService) ;
   product.addDependencies(portal.oauth.exampleConsumer) ;
   product.addDependencies(portal.oauth.exampleGadget) ;
   product.addDependencies(portal.oauth.exampleRest) ;
+  product.addDependencies(portal.oauth.oauthManagement) ;
 
   if(eXo.server.Jboss || eXo.server.JbossEar)
   {

@@ -108,11 +108,19 @@ public class ConsumerInfo
 
    public Object getProperty(String name)
    {
-      return properties.get(name);
+      return getProperties().get(name);
    }
 
    public void setProperty(String name, String value)
    {
-      properties.put(name, value);
+      getProperties().put(name, value);
+   }
+
+   /**
+    * @return the properties
+    */
+   public Map<String, Object> getProperties()
+   {
+      return properties;
    }
 }

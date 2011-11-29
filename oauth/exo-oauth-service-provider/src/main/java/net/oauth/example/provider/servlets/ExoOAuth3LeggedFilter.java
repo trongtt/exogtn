@@ -62,7 +62,7 @@ public class ExoOAuth3LeggedFilter extends AbstractFilter
          
          OAuthValidator validator = (OAuthValidator)container.getComponentInstanceOfType(OAuthValidator.class);
          validator.validateMessage(requestMessage, accessor);
-         request.setAttribute("OAUTH_USER_ID", accessor.getProperty("user"));
+         request.setAttribute("oauth_user_id", accessor.getProperty("oauth_user_id"));
          chain.doFilter(request, response);
       }
       catch (Exception e)

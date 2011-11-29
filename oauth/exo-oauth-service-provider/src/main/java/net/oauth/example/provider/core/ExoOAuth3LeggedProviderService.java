@@ -32,6 +32,8 @@ import org.exoplatform.services.cache.ExoCache;
 import org.exoplatform.services.security.Identity;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -103,9 +105,9 @@ public class ExoOAuth3LeggedProviderService
     */
    public synchronized void markAsAuthorized(OAuthAccessor accessor, Identity identity) throws OAuthException
    {
-      accessor.setProperty("user", identity.getUserId());
-      accessor.setProperty("user_roles", identity.getRoles());
-      accessor.setProperty("authorized", Boolean.TRUE);
+      accessor.setProperty("oauth_user_id", identity.getUserId());
+      accessor.setProperty("oauth_user_roles", identity.getRoles());
+      accessor.setProperty("oauth_authorized", Boolean.TRUE);
    }
 
    /**
@@ -160,6 +162,18 @@ public class ExoOAuth3LeggedProviderService
       // update token in local cache
       tokens.put(accessor.accessToken, accessor);
    }
+   
+   public void revokeAccessToken(String token)
+   {
+      try
+      {
+         tokens.remove(token);
+      }
+      catch(Exception e)
+      {
+         //Should log this
+      }
+   }
 
    /**
     * Process exception of OAuth session
@@ -176,5 +190,25 @@ public class ExoOAuth3LeggedProviderService
       String realm = (request.isSecure()) ? "https://" : "http://";
       realm += request.getLocalName();
       OAuthServlet.handleException(response, e, realm, sendBody);
+   }
+   
+   public List<OAuthAccessor> getAuthorizedTokens()
+   {
+      List<OAuthAccessor> results = new ArrayList<OAuthAccessor>();
+      try
+      {
+         for(OAuthAccessor a : tokens.getCachedObjects())
+         {
+            if(a.accessToken != null)
+            {
+               results.add(a);
+            }
+         }
+      }
+      catch(Exception e)
+      {
+         //Should log this
+      }
+      return results;
    }
 }

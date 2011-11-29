@@ -19,9 +19,10 @@ package net.oauth.example.provider.core;
 import net.oauth.OAuthProblemException;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
- * The OAuth Provider serviceÕs responsibility is to allow Consumer Developers
+ * The OAuth Provider serviceï¿½s responsibility is to allow Consumer Developers
  * to establish a Consumer Key and Consumer Secret.
  * <p>
  * The process and requirements for provisioning these are entirely up to the Service Providers.
@@ -34,7 +35,7 @@ public interface OAuthServiceProvider
    /**
     * Return an OAuth ConsumerInfo which is mapped with specified consumerKey.
     * 
-    * Return <tt>null</tt> if there isno consumer associated with this key.
+    * Return <tt>null</tt> if there is no consumer associated with this key.
     * 
     * @param consumerKey key as identifier of consumer
     * @return OAuthConsumer object
@@ -57,4 +58,10 @@ public interface OAuthServiceProvider
     * @param consumerKey
     */
    public void removeConsumer(String consumerKey);
+   
+   /**
+    * Return all consumers
+    * @return
+    */
+   public Map<String, ConsumerInfo> getAllConsumers();
 }

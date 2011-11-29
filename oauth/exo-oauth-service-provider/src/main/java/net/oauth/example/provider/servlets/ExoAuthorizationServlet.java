@@ -64,7 +64,7 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
          OAuthAccessor accessor = provider.getAccessor(oauthMessage);
          // Accessor can has only request token and secret token.
          // If current accessor was marked as authorized in some other way.
-         if (Boolean.TRUE.equals(accessor.getProperty("authorized"))) {           
+         if (Boolean.TRUE.equals(accessor.getProperty("oauth_authorized"))) {           
            returnToConsumer(request, response, accessor);
            return;
          }

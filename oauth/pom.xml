@@ -15,6 +15,7 @@
       <module>example-oauth-consumer</module>
       <module>example-oauth-gadget</module>
       <module>example-rest-service</module>
+      <module>exo-oauth-management</module>
       <module>gadget-consumer-management</module>
    </modules>
    <build>
