@@ -19,10 +19,8 @@
 package org.exoplatform.openid;
 
 import org.exoplatform.container.PortalContainer;
-import org.exoplatform.container.RootContainer;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.organization.User;
 import org.exoplatform.web.security.security.AbstractTokenService;
 import org.exoplatform.web.security.security.TransientTokenService;
 import org.gatein.wci.security.Credentials;
@@ -51,7 +49,7 @@ public class OpenIdUtil
 
    public static PortalContainer getContainer()
    {
-      return RootContainer.getInstance().getPortalContainer("portal");
+      return PortalContainer.getInstance();
    }
 
    public static OpenIDService getOpenIDService()
@@ -59,11 +57,11 @@ public class OpenIdUtil
       return (OpenIDService) getContainer().getComponentInstanceOfType(OpenIDService.class);
    }
 
-   public static void autoLogin(User user, ActionRequest request, ActionResponse response) throws IOException
+   public static void autoLogin(String username, ActionRequest request, ActionResponse response) throws IOException
    {
-      String token = request.getPortletSession().getAttribute("openid.token").toString();
+      String token = request.getPortletSession().getAttribute(OpenIdKeys.OPENID_TOKEN).toString();
       TransientTokenService tokenService = AbstractTokenService.getInstance(TransientTokenService.class);
-      Credentials credentials = new Credentials(user.getUserName(), token);
+      Credentials credentials = new Credentials(username, token);
       token = tokenService.createToken(credentials);
 
       response.sendRedirect("/portal/openidservlet?token=" + token);

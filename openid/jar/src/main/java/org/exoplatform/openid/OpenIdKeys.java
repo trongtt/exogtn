@@ -27,7 +27,11 @@ public class OpenIdKeys
    public static final String OPENID_DISCOVERY = "openid-disco";
 
    public static final String OPEN_ID_RESPONSE_STATUS = "status";
-
+   
+   public static final String OPEN_ID_RESPONSE_STATUS_MAP = "map";
+   
+   public static final String OPEN_ID_RESPONSE_STATUS_REGISTER = "register";
+   
    public static final String OPEN_ID_RESPONSE_MESSAGE = "message";
 
    public static final String OPENID_IDENTIFIER = "identifier";

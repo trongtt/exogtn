@@ -25,15 +25,13 @@ package org.gatein.openid.portlet;
 public class PortletURLConstant
 {
    static final String LOGIN_ACTION = "loginActionURL";
-   
-   static final String PROCESS_RETURN_ACTION = "processReturnAction";
-   
-   static final String REGISTER_ACTION = "registerAction";
 
-   static final String MAP_OPENID_ACTION = "mapOpenIdAction";
+   static final String PROCESS_RETURN_ACTION = "processReturnAction";
+
+   static final String REGISTER_ACTION = "registerAction";
 
    static final String PROCESS_MAPPING_OPENID_ACTION = "processMappingOpenIdAction";
 
-   final static String PROCESS_BACK_ACTION = "backAction";
-   
+   final static String PROCESS_ROUTE_ACTION = "routeAction";
+
 }

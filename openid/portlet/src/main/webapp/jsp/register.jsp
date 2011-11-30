@@ -7,13 +7,13 @@
 </head>
 <body>
 	<div class="back">
-		<a href="${backAction}"><<</a>
+		<a href="${routeAction}"><<</a>
 	</div>
 	<form name="openid-register-form" action="${registerAction}" method="post" accept-charset="utf-8" style="border: 1px">
 		<div class="message">
 			Register new user and map openID with this user
 			<p>
-				You had a GateIn user, using <a href="${mapOpenIdAction}">map user</a>
+				You had a GateIn user, using <a href="${routeAction}&form=map">map user</a>
 			</p>
 		</div>
 		<div class="error" id="error">${error}</div>

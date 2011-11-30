@@ -7,7 +7,7 @@
 </head>
 <body>
 	<div class="back">
-		<a href="${backAction}&form=register"><<</a>
+		<a href="${routeAction}&form=register"><<</a>
 	</div>
 	<form name="openid-map-form" action="${processMappingOpenIdAction}"
 		method="post" style="border: 1px">

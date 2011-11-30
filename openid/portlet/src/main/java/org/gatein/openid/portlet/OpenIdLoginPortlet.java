@@ -65,6 +65,8 @@ import javax.portlet.RenderResponse;
 import javax.servlet.ServletException;
 
 /**
+ * A Portlet for displaying UI such as enter openId identifier, register user or mapping
+ * 
  * @author <a href="mailto:ndkhoi168@gmail.com">Nguyen Duc Khoi</a>
  * Nov 21, 2011
  */
@@ -129,11 +131,11 @@ public class OpenIdLoginPortlet extends GenericPortlet
 
          if (responseStatus != null)
          {
-            if (responseStatus.equals("register"))
+            if (responseStatus.equals(OpenIdKeys.OPEN_ID_RESPONSE_STATUS_REGISTER))
             {
                jspPath = "/jsp/register.jsp";
             }
-            else if (responseStatus.equals("map"))
+            else if (responseStatus.equals(OpenIdKeys.OPEN_ID_RESPONSE_STATUS_MAP))
             {
                jspPath = "/jsp/mapuser.jsp";
             }
@@ -157,12 +159,27 @@ public class OpenIdLoginPortlet extends GenericPortlet
       writer.close();
    }
 
+   /**
+    * Process openId login
+    * <p>This action is invoked when user enter an openId identifier or choose an OP to login</p>
+    * @param request
+    * @param response
+    * @throws Exception
+    */
    @ProcessAction(name = PortletURLConstant.LOGIN_ACTION)
    public void loginAction(ActionRequest request, ActionResponse response) throws Exception
    {
       this._sendOpenIdRequest(request, response);
    }
 
+   /**
+    * Process the request sent from openId provider
+    * <p>This action's URL has been set as <code>return_url</code> in request to the OP, after login process at OP side successfully
+    * OP send a request to the <code>return_url</code></p>
+    * 
+    * @param request
+    * @param response
+    */
    @ProcessAction(name = PortletURLConstant.PROCESS_RETURN_ACTION)
    public void processReturnAction(ActionRequest request, ActionResponse response)
    {
@@ -179,20 +196,24 @@ public class OpenIdLoginPortlet extends GenericPortlet
       }
    }
 
+   /**
+    * Create a GateIn account for new user
+    * 
+    * @param request
+    * @param response
+    */
    @ProcessAction(name = PortletURLConstant.REGISTER_ACTION)
    public void registerAction(ActionRequest request, ActionResponse response)
    {
       _processRegisterAccount(request, response);
    }
 
-   @ProcessAction(name = PortletURLConstant.MAP_OPENID_ACTION)
-   public void mapOpenIdAction(ActionRequest request, ActionResponse response)
-   {
-      String identifier = (String) request.getPortletSession().getAttribute(OpenIdKeys.OPENID_IDENTIFIER);
-      request.setAttribute(OpenIdKeys.OPENID_IDENTIFIER, identifier);
-      request.setAttribute(OpenIdKeys.OPEN_ID_RESPONSE_STATUS, "map");
-   }
-
+   /**
+    * Process login with username and password entered by user
+    * 
+    * @param request
+    * @param response
+    */
    @ProcessAction(name = PortletURLConstant.PROCESS_MAPPING_OPENID_ACTION)
    public void processMappingOpenIdAction(ActionRequest request, ActionResponse response)
    {
@@ -200,8 +221,8 @@ public class OpenIdLoginPortlet extends GenericPortlet
       _processMappingOpenId(request, response);
    }
 
-   @ProcessAction(name = PortletURLConstant.PROCESS_BACK_ACTION)
-   public void processBackAction(ActionRequest request, ActionResponse response)
+   @ProcessAction(name = PortletURLConstant.PROCESS_ROUTE_ACTION)
+   public void routeAction(ActionRequest request, ActionResponse response)
    {
       String form = request.getParameter("form");
       request.setAttribute(OpenIdKeys.OPEN_ID_RESPONSE_STATUS, form);
@@ -209,7 +230,6 @@ public class OpenIdLoginPortlet extends GenericPortlet
 
    private void _processMappingOpenId(ActionRequest request, ActionResponse response)
    {
-      String token = (String) request.getPortletSession().getAttribute(OpenIdKeys.OPENID_IDENTIFIER);
       String identifier = (String) request.getPortletSession().getAttribute(OpenIdKeys.OPENID_IDENTIFIER);
 
       //Submit from register.jsp
@@ -217,7 +237,6 @@ public class OpenIdLoginPortlet extends GenericPortlet
       String password = request.getParameter("password");
       if (username == null || password == null || identifier == null)
          return;
-
       try
       {
          //Verify username and password
@@ -239,9 +258,7 @@ public class OpenIdLoginPortlet extends GenericPortlet
          OpenIDService service = OpenIdUtil.getOpenIDService();
          service.mapToUser(identifier, userId);
          //Auto login
-         User user = new UserImpl(userId);
-         user.setPassword(token);
-         OpenIdUtil.autoLogin(user, request, response);
+         OpenIdUtil.autoLogin(userId, request, response);
       }
       catch (Exception e)
       {
@@ -250,7 +267,6 @@ public class OpenIdLoginPortlet extends GenericPortlet
 
          //Go back to mapuser screen
          request.setAttribute("error", "Username or Password is invalid");
-         //         this.getPortletContext().getRequestDispatcher().getRequestDispatcher("/login/openid/mapuser.jsp").include(request, response);
       }
       return;
    }
@@ -270,7 +286,7 @@ public class OpenIdLoginPortlet extends GenericPortlet
          if (user != null)
          {
             //Auto Login
-            OpenIdUtil.autoLogin(user, request, response);
+            OpenIdUtil.autoLogin(user.getUserName(), request, response);
          }
          _log.info("Create successfully user: " + user.getUserName());
       }
@@ -292,18 +308,18 @@ public class OpenIdLoginPortlet extends GenericPortlet
          {
             String identifier = tCredentials.getUsername();
             OpenIDService service = OpenIdUtil.getOpenIDService();
-            User user = service.findUserByOpenID(identifier);
+            String username = service.findUsernameByOpenID(identifier);
             request.getPortletSession().setAttribute(OpenIdKeys.OPENID_IDENTIFIER, identifier);
-            if (user != null)
+            if (username != null)
             {
-               OpenIdUtil.autoLogin(user, request, response);
+               OpenIdUtil.autoLogin(username, request, response);
             }
             else
             {
                //ask user create account
                _log.info("Go to register new account");
                request.setAttribute(OpenIdKeys.OPENID_IDENTIFIER, identifier);
-               request.setAttribute(OpenIdKeys.OPEN_ID_RESPONSE_STATUS, "register");
+               request.setAttribute(OpenIdKeys.OPEN_ID_RESPONSE_STATUS, OpenIdKeys.OPEN_ID_RESPONSE_STATUS_REGISTER);
             }
          }
          catch (Exception e)
@@ -328,17 +344,13 @@ public class OpenIdLoginPortlet extends GenericPortlet
       registerActionURL.setParameter(ActionRequest.ACTION_NAME, PortletURLConstant.REGISTER_ACTION);
       request.setAttribute(PortletURLConstant.REGISTER_ACTION, registerActionURL);
 
-      PortletURL mapOpenIdActionURL = response.createActionURL();
-      mapOpenIdActionURL.setParameter(ActionRequest.ACTION_NAME, PortletURLConstant.MAP_OPENID_ACTION);
-      request.setAttribute(PortletURLConstant.MAP_OPENID_ACTION, mapOpenIdActionURL);
-
       PortletURL processMappingOpenIdURL = response.createActionURL();
       processMappingOpenIdURL.setParameter(ActionRequest.ACTION_NAME, PortletURLConstant.PROCESS_MAPPING_OPENID_ACTION);
       request.setAttribute(PortletURLConstant.PROCESS_MAPPING_OPENID_ACTION, processMappingOpenIdURL);
 
-      PortletURL backActionURL = response.createActionURL();
-      backActionURL.setParameter(ActionRequest.ACTION_NAME, PortletURLConstant.PROCESS_BACK_ACTION);
-      request.setAttribute(PortletURLConstant.PROCESS_BACK_ACTION, backActionURL);
+      PortletURL routeActionURL = response.createActionURL();
+      routeActionURL.setParameter(ActionRequest.ACTION_NAME, PortletURLConstant.PROCESS_ROUTE_ACTION);
+      request.setAttribute(PortletURLConstant.PROCESS_ROUTE_ACTION, routeActionURL);
    }
 
    private void _sendOpenIdRequest(ActionRequest request, ActionResponse response) throws Exception
