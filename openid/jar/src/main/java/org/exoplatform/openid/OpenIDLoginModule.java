@@ -41,7 +41,7 @@ public class OpenIDLoginModule extends DefaultLoginModule
          String password = (String) sharedState.get("javax.security.auth.login.password");
          if (username == null || password == null)
          {
-            log.info("You are using GateIn Login Module");
+            log.info("Cannot login with username and password are null");
             return false;
          }
 

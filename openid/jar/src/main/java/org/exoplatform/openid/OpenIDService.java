@@ -18,6 +18,7 @@
  */
 package org.exoplatform.openid;
 
+import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 
 import java.util.List;
@@ -28,17 +29,50 @@ import java.util.List;
  */
 public interface OpenIDService
 {
-   public User findUserByOpenID(String openid);
-
+   /**
+    * Get all openId identifier linked to a username
+    * 
+    * @param username
+    * @return List of openId identifier
+    */
    public List<String> findOpenIdsByUser(String username);
 
+   /**
+    * Get all openid persisted in storage
+    * @return
+    */
    public List<String> getAllOpenIds();
 
+   /**
+    * Create a user via {@link OrganizationService} and link an openId identifier to created user
+    * 
+    * @param user
+    * @param openid
+    * @return
+    * @throws Exception
+    */
    public User createUser(User user, String openid) throws Exception;
 
+   /**
+    * Get username linked by openid identifier
+    * 
+    * @param openid
+    * @return
+    */
    public String findUsernameByOpenID(String openid);
 
+   /**
+    * Process map an openid identifier to a GateIn username
+    * 
+    * @param openId
+    * @param username
+    */
    public void mapToUser(String openId, String username);
 
+   /**
+    * Remove an openid identifier persisted in storage.
+    * 
+    * @param openId
+    */
    public void removeOpenID(String openId);
 }

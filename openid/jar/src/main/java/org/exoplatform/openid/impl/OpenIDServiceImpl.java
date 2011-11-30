@@ -44,31 +44,6 @@ public class OpenIDServiceImpl implements OpenIDService
       openIdDao = openIDDAO;
    }
 
-   public User findUserByOpenID(String openid)
-   {
-      try
-      {
-         String username = findUsernameByOpenID(openid);
-         PortalContainer container = OpenIdUtil.getContainer();
-         OrganizationService orgService = (OrganizationService) container
-               .getComponentInstanceOfType(OrganizationService.class);
-         User user = null;
-         if (username != null)
-         {
-            begin(orgService);
-            user = orgService.getUserHandler().findUserByName(username);
-            end(orgService);
-
-            return user;
-         }
-      }
-      catch (Exception e)
-      {
-         e.printStackTrace();
-      }
-      return null;
-   }
-
    public User createUser(User user, String openid) throws Exception
    {
       //TODO Need implement validator for register input fields
@@ -87,26 +62,31 @@ public class OpenIDServiceImpl implements OpenIDService
       return new UserImpl(user.getUserName());
    }
 
+   @Override
    public String findUsernameByOpenID(String openid)
    {
       return openIdDao.getUser(openid);
    }
 
+   @Override
    public void mapToUser(String openid, String username)
    {
       openIdDao.addOpenID(openid, username);
    }
 
+   @Override
    public void removeOpenID(String openId)
    {
       openIdDao.removeOpenId(openId);
    }
 
+   @Override
    public List<String> findOpenIdsByUser(String username)
    {
       return openIdDao.getOpenIds(username);
    }
 
+   @Override
    public List<String> getAllOpenIds()
    {
       return openIdDao.getAllOpenIds();

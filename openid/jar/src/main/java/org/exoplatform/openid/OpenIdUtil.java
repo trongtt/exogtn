@@ -41,22 +41,35 @@ import javax.portlet.ActionResponse;
 
 public class OpenIdUtil
 {
+   /**
+    * Get an instance of {@link ConsumerManager}, using for manage communication between OpenId consumer and provider
+    * 
+    * @return
+    */
    public static ConsumerManager getConsumerManager()
    {
       _instance._initialize();
       return _instance._manager;
    }
 
-   public static PortalContainer getContainer()
-   {
-      return PortalContainer.getInstance();
-   }
-
+   /**
+    * Get an instance of {@link OpenIDService}
+    * @return
+    */
    public static OpenIDService getOpenIDService()
    {
       return (OpenIDService) getContainer().getComponentInstanceOfType(OpenIDService.class);
    }
 
+   /**
+    * Process login with username
+    * <p>This util creates and persists a credential which used in login modules</p>
+    * 
+    * @param username
+    * @param request
+    * @param response
+    * @throws IOException
+    */
    public static void autoLogin(String username, ActionRequest request, ActionResponse response) throws IOException
    {
       String token = request.getPortletSession().getAttribute(OpenIdKeys.OPENID_TOKEN).toString();
@@ -65,6 +78,11 @@ public class OpenIdUtil
       token = tokenService.createToken(credentials);
 
       response.sendRedirect("/portal/openidservlet?token=" + token);
+   }
+
+   public static PortalContainer getContainer()
+   {
+      return PortalContainer.getInstance();
    }
 
    private void _initialize()
