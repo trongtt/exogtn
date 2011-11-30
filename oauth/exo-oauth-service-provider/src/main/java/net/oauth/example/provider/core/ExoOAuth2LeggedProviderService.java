@@ -62,7 +62,7 @@ public class ExoOAuth2LeggedProviderService
       if (consumer == null)
       {
          OAuthProblemException problem =
-            new OAuthProblemException("token_rejected, consumer hasn't yet registered with provider");
+            new OAuthProblemException(OAuthKeys.OAUTH_TOKEN_REJECTED + ": Consumer hasn't yet registered with provider");
          throw problem;
       }
       OAuthAccessor accessor = new OAuthAccessor(consumer);

@@ -19,6 +19,8 @@
 
 package net.oauth.example.provider.servlets;
 
+import net.oauth.example.provider.core.OAuthKeys;
+
 import net.oauth.example.provider.core.SimpleOAuthServiceProvider;
 
 import net.oauth.OAuthProblemException;
@@ -66,26 +68,24 @@ public class ExoRequestTokenServlet extends AbstractHttpServlet
             (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
 
          OAuthMessage requestMessage = OAuthServlet.getMessage(req, null);
-
          OAuthConsumer consumer = SimpleOAuthServiceProvider.toOAuthConsumer(consumerService.getConsumer(requestMessage.getConsumerKey()));
          if (consumer == null)
          {
             OAuthProblemException problem =
-               new OAuthProblemException("token_rejected, consumer hasn't yet registered with provider");
+               new OAuthProblemException(OAuthKeys.OAUTH_TOKEN_REJECTED + ": Consumer hasn't yet registered with provider");
             throw problem;
          }
 
          OAuthAccessor accessor = new OAuthAccessor(consumer);
-
          OAuthValidator validator = (OAuthValidator)container.getComponentInstanceOfType(OAuthValidator.class);
          validator.validateMessage(requestMessage, accessor);
 
          // Support the 'Variable Accessor Secret' extension
          // described in http://oauth.pbwiki.com/AccessorSecret
-         String secret = requestMessage.getParameter("oauth_accessor_secret");
+         String secret = requestMessage.getParameter(OAuthKeys.OAUTH_ACCESSOR_SECRET);
          if (secret != null)
          {
-            accessor.setProperty(OAuthConsumer.ACCESSOR_SECRET, secret);
+            accessor.setProperty(OAuthKeys.OAUTH_ACCESSOR_SECRET, secret);
          }
 
          // generate request_token and secret
@@ -96,7 +96,7 @@ public class ExoRequestTokenServlet extends AbstractHttpServlet
          res.setContentType("text/plain");
          OutputStream out = res.getOutputStream();
          OAuth.formEncode(
-            OAuth.newList("oauth_token", accessor.requestToken, "oauth_token_secret", accessor.tokenSecret), out);
+            OAuth.newList(OAuthKeys.OAUTH_TOKEN, accessor.requestToken, OAuthKeys.OAUTH_TOKEN_SECRET, accessor.tokenSecret), out);
          out.close();
 
       }

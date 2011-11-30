@@ -19,6 +19,8 @@
 
 package net.oauth.example.provider.servlets;
 
+import net.oauth.example.provider.core.OAuthKeys;
+
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthValidator;
@@ -41,7 +43,7 @@ import javax.servlet.http.HttpServletResponse;
  * This filter is used to authorize a request that follows 3-legged OAuth (consumer-server-user)
  * A resource can use OAuth protection by adding this filter to their filter chain
  * 
- * See OAuth 2.0 specification for more detail
+ * See OAuth 1.0a specification for more detail
  * 
  * @author <a href="trongtt@gmail.com">Trong Tran</a>
  * @version $Revision$
@@ -62,7 +64,7 @@ public class ExoOAuth3LeggedFilter extends AbstractFilter
          
          OAuthValidator validator = (OAuthValidator)container.getComponentInstanceOfType(OAuthValidator.class);
          validator.validateMessage(requestMessage, accessor);
-         request.setAttribute("oauth_user_id", accessor.getProperty("oauth_user_id"));
+         request.setAttribute(OAuthKeys.OAUTH_USER_ID, accessor.getProperty(OAuthKeys.OAUTH_USER_ID));
          chain.doFilter(request, response);
       }
       catch (Exception e)
@@ -73,8 +75,6 @@ public class ExoOAuth3LeggedFilter extends AbstractFilter
    }
 
    public void destroy()
-   {
-      // TODO Auto-generated method stub
-      
+   {      
    }
 }

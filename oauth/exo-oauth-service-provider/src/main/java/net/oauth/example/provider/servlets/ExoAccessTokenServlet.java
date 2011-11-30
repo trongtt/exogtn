@@ -19,6 +19,8 @@
 
 package net.oauth.example.provider.servlets;
 
+import net.oauth.example.provider.core.OAuthKeys;
+
 import net.oauth.OAuth;
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthMessage;
@@ -41,7 +43,7 @@ import javax.servlet.http.HttpServletResponse;
  * This Servlet will be called lastly after authentication and authorization passed successfully.
  * It creates an access token for getting resource
  * 
- * See OAuth 2.0 specification for more information
+ * See OAuth 1.0a specification for more information
  * 
  * @author <a href="trongtt@gmail.com">Trong Tran</a>
  * @version $Revision$
@@ -65,10 +67,9 @@ public class ExoAccessTokenServlet extends AbstractHttpServlet
          validator.validateMessage(requestMessage, accessor);
 
          // make sure token is authorized
-         if (!Boolean.TRUE.equals(accessor.getProperty("oauth_authorized")))
+         if (!Boolean.TRUE.equals(accessor.getProperty(OAuthKeys.OAUTH_AUTHORIZED)))
          {
-            throw new OAuthProblemException("permission_denied");
-//            throw problem;
+            throw new OAuthProblemException(OAuthKeys.OAUTH_PERMISSION_DENIED);
          }
          
          // generate access token and secret
@@ -77,7 +78,7 @@ public class ExoAccessTokenServlet extends AbstractHttpServlet
          res.setContentType("text/plain");
          OutputStream out = res.getOutputStream();
          OAuth.formEncode(
-            OAuth.newList("oauth_token", accessor.accessToken, "oauth_token_secret", accessor.tokenSecret), out);
+            OAuth.newList(OAuthKeys.OAUTH_TOKEN, accessor.accessToken, OAuthKeys.OAUTH_TOKEN_SECRET, accessor.tokenSecret), out);
          out.close();
 
       }

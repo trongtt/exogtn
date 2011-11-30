@@ -89,7 +89,7 @@ public class OAuthTokenService
 
       if (accessor == null)
       {
-         throw new OAuthProblemException("token_expired");
+         throw new OAuthProblemException(OAuthKeys.OAUTH_TOKEN_EXPIRED);
       }
 
       return accessor;
@@ -101,11 +101,10 @@ public class OAuthTokenService
     * @param identity object as real user from database
     * @throws OAuthException
     */
-   public synchronized void markAsAuthorized(OAuthAccessor accessor, Identity identity) throws OAuthException
+   public synchronized void markAsAuthenticated(OAuthAccessor accessor, Identity identity) throws OAuthException
    {
-      accessor.setProperty("oauth_user_id", identity.getUserId());
-      accessor.setProperty("oauth_user_roles", identity.getRoles());
-      accessor.setProperty("oauth_authorized", Boolean.TRUE);
+      accessor.setProperty(OAuthKeys.OAUTH_USER_ID, identity.getUserId());
+      accessor.setProperty(OAuthKeys.OAUTH_USER_ROLES, identity.getRoles());
    }
 
    /**
