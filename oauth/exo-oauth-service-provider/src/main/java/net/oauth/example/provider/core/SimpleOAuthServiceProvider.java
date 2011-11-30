@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * An simple oauth consumer service which just persist in Memory
+ * An simple OAuth Provider service which just persist everything in memory
  * 
  * Created by The eXo Platform SAS
  * Author : Nguyen Anh Kien

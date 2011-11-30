@@ -30,6 +30,10 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
+ * @deprecated Seems we don't need to introduce this class
+ * which just wraps the one org.exoplatform.portal.oauth.OAuthConsumerService from GateIn.
+ * It could directly use org.exoplatform.portal.oauth.OAuthConsumerService somehow.
+ * 
  * @author <a href="mailto:khoi.nguyen@exoplatform.com">Nguyen Duc Khoi</a>  
  * Nov 24, 2010
  */

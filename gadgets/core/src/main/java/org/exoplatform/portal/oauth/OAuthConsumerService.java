@@ -29,6 +29,8 @@ import java.net.URISyntaxException;
 import java.util.Map;
 
 /**
+ * This service is to manage gadget consumer information which are running on GateIn
+ * 
  * @author <a href="trongtt@gmail.com">Trong Tran</a>
  * @version $Revision$
  */

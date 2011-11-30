@@ -40,21 +40,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Operate as GateIn service, class process three legged model as OAuth 2.0 specification
- * class manage all tokens, object accessing (accessor) of OAuth session
- * see OAuth 2.0 specification for more detail
+ * This service is to maintain tokens during OAuth process.
  * 
  * @author <a href="trongtt@gmail.com">Trong Tran</a>
  * @version $Revision$
  */
 
-public class ExoOAuth3LeggedProviderService
+public class OAuthTokenService
 {
    private ExoCache<String, OAuthAccessor> tokens;
-
-   public ExoOAuth3LeggedProviderService(OAuthValidator validator, CacheService cService)
+   
+   public OAuthTokenService(OAuthValidator validator, CacheService cService)
    {
-      tokens = cService.getCacheInstance(ExoOAuth3LeggedProviderService.class.getSimpleName());
+      tokens = cService.getCacheInstance(OAuthTokenService.class.getSimpleName());
    }
 
    /**
@@ -134,7 +132,6 @@ public class ExoOAuth3LeggedProviderService
 
       // add to the local cache
       tokens.put(accessor.requestToken, accessor);
-      System.out.println(tokens.getCacheSize());
    }
 
    /**

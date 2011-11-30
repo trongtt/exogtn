@@ -28,7 +28,7 @@ import net.oauth.OAuthAccessor;
 import net.oauth.OAuthConsumer;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthValidator;
-import net.oauth.example.provider.core.ExoOAuth3LeggedProviderService;
+import net.oauth.example.provider.core.OAuthTokenService;
 import net.oauth.example.provider.core.OAuthServiceProvider;
 import net.oauth.server.OAuthServlet;
 
@@ -89,8 +89,8 @@ public class ExoRequestTokenServlet extends AbstractHttpServlet
          }
 
          // generate request_token and secret
-         ExoOAuth3LeggedProviderService provider =
-            (ExoOAuth3LeggedProviderService)container.getComponentInstanceOfType(ExoOAuth3LeggedProviderService.class);
+         OAuthTokenService provider =
+            (OAuthTokenService)container.getComponentInstanceOfType(OAuthTokenService.class);
          provider.generateRequestToken(accessor);
 
          res.setContentType("text/plain");
@@ -102,7 +102,7 @@ public class ExoRequestTokenServlet extends AbstractHttpServlet
       }
       catch (Exception e)
       {
-         ExoOAuth3LeggedProviderService.handleException(e, req, res, true);
+         OAuthTokenService.handleException(e, req, res, true);
       }
 
    }

@@ -22,7 +22,7 @@ package net.oauth.example.provider.servlets;
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthValidator;
-import net.oauth.example.provider.core.ExoOAuth3LeggedProviderService;
+import net.oauth.example.provider.core.OAuthTokenService;
 import net.oauth.server.OAuthServlet;
 
 import org.exoplatform.container.ExoContainer;
@@ -57,7 +57,7 @@ public class ExoOAuth3LeggedFilter extends AbstractFilter
          OAuthMessage requestMessage = OAuthServlet.getMessage((HttpServletRequest)request, null);
 
          ExoContainer container = getContainer();
-         ExoOAuth3LeggedProviderService provider = (ExoOAuth3LeggedProviderService)container.getComponentInstanceOfType(ExoOAuth3LeggedProviderService.class);
+         OAuthTokenService provider = (OAuthTokenService)container.getComponentInstanceOfType(OAuthTokenService.class);
          OAuthAccessor accessor = provider.getAccessor(requestMessage);
          
          OAuthValidator validator = (OAuthValidator)container.getComponentInstanceOfType(OAuthValidator.class);
@@ -67,7 +67,7 @@ public class ExoOAuth3LeggedFilter extends AbstractFilter
       }
       catch (Exception e)
       {
-         ExoOAuth3LeggedProviderService.handleException(e, (HttpServletRequest)request, (HttpServletResponse)response, false);
+         OAuthTokenService.handleException(e, (HttpServletRequest)request, (HttpServletResponse)response, false);
       }
 
    }

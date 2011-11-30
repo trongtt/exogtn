@@ -24,7 +24,7 @@
    xmlns="http://www.exoplaform.org/xml/ns/kernel_1_1.xsd">
 
    <component>
-      <type>net.oauth.example.provider.core.ExoOAuth3LeggedProviderService</type>
+      <type>net.oauth.example.provider.core.OAuthTokenService</type>
    </component>
 
    <component>

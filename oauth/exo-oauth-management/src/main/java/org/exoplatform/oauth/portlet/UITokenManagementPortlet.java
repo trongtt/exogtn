@@ -24,7 +24,7 @@ import net.oauth.example.provider.core.ConsumerInfo;
 
 import net.oauth.OAuthAccessor;
 
-import net.oauth.example.provider.core.ExoOAuth3LeggedProviderService;
+import net.oauth.example.provider.core.OAuthTokenService;
 
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
@@ -67,8 +67,8 @@ public class UITokenManagementPortlet extends GenericPortlet
    public void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
    {
       ExoContainer container = ExoContainerContext.getCurrentContainer();
-      ExoOAuth3LeggedProviderService provider =
-         (ExoOAuth3LeggedProviderService)container.getComponentInstanceOfType(ExoOAuth3LeggedProviderService.class);
+      OAuthTokenService provider =
+         (OAuthTokenService)container.getComponentInstanceOfType(OAuthTokenService.class);
 
       List<OAuthAccessor> accessors = provider.getAuthorizedTokens();
       List<ConsumerInfo> consumers = new ArrayList<ConsumerInfo>();
@@ -93,9 +93,9 @@ public class UITokenManagementPortlet extends GenericPortlet
       String token = request.getParameter("oauth_token");
       if (token != null)
       {
-         ExoOAuth3LeggedProviderService provider =
-            (ExoOAuth3LeggedProviderService)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
-               ExoOAuth3LeggedProviderService.class);
+         OAuthTokenService provider =
+            (OAuthTokenService)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
+               OAuthTokenService.class);
          provider.revokeAccessToken(token);
       }
    }
