@@ -1,0 +1,9 @@
+1. Persist token, consumer information into storage
+2. Using GateIn login mechanism, instead of manually login
+3. Study cross-login and package oauth extension
+4. Design UI stylesheet for two portlets, authorization screen (authorize.jsp file)
+5. Enhance OAuth Unit Tests and automation test
+6. Enhance sample gadgets (using OAuth popup feature, meaningful REST services, etc)
+7. Documentation
+8. Improve oauth_verifier in common OAuth flow
+9. Improve mechanism to invoke automatically request token effectively
