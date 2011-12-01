@@ -34,6 +34,8 @@ public class OAuthKeys
    public static final String OAUTH_TOKEN_SECRET = "oauth_token_secret";
    public static final String OAUTH_TOKEN_REJECTED = "oauth_token_rejected";
    public static final String OAUTH_TOKEN_EXPIRED = "oauth_token_expired";
+   public static final String OAUTH_ACCESS_TOKEN = "oauth_access_token";
+   public static final String OAUTH_REQUEST_TOKEN = "oauth_request_token";
    public static final String OAUTH_NO_CALLBACK = "oauth_no_callback";
    public static final String OAUTH_PERMISSION_DENIED = "oauth_permission_denied";
    public static final String OAUTH_ACCESSOR_SECRET = "oauth_accessor_secret";

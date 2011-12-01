@@ -18,21 +18,22 @@
  */
 package org.exoplatform.oauth.portlet;
 
-import net.oauth.example.provider.core.SimpleOAuthServiceProvider;
+import net.oauth.example.provider.core.OAuthServiceProvider;
+
+import net.oauth.example.provider.core.OAuthKeys;
+
+import net.oauth.example.provider.core.TokenInfo;
 
 import net.oauth.example.provider.core.ConsumerInfo;
-
-import net.oauth.OAuthAccessor;
-
-import net.oauth.example.provider.core.OAuthTokenService;
 
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -67,36 +68,34 @@ public class UITokenManagementPortlet extends GenericPortlet
    public void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
    {
       ExoContainer container = ExoContainerContext.getCurrentContainer();
-      OAuthTokenService provider =
-         (OAuthTokenService)container.getComponentInstanceOfType(OAuthTokenService.class);
+      OAuthServiceProvider provider =
+         (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
 
-      List<OAuthAccessor> accessors = provider.getAuthorizedTokens();
-      List<ConsumerInfo> consumers = new ArrayList<ConsumerInfo>();
-      ConsumerInfo consumer = null;
-      for (OAuthAccessor a : accessors)
+      List<TokenInfo> tokens = provider.getAuthorizedTokens();
+      Map<TokenInfo, ConsumerInfo> accessors = new HashMap<TokenInfo, ConsumerInfo>();
+      for(TokenInfo token : tokens)
       {
-         if (request.getRemoteUser().equals(a.getProperty("oauth_user_id")))
+         if (request.getRemoteUser().equals(token.getUserId()))
          {
-            consumer = SimpleOAuthServiceProvider.toConsumerInfo(a.consumer);
-            consumer.setProperty("accessToken", a.accessToken);
-            consumers.add(consumer);
+            ConsumerInfo consumer = provider.getConsumer(token.getConsumerKey());
+            accessors.put(token, consumer);
          }
       }
 
-      request.setAttribute("consumers", consumers);
+      request.setAttribute("accessors", accessors);
       getPortletContext().getRequestDispatcher("/jsp/token.jsp").include(request, response);
    }
 
    @ProcessAction(name = "revokeAccess")
    public void revokeAccess(ActionRequest request, ActionResponse response)
    {
-      String token = request.getParameter("oauth_token");
+      String token = request.getParameter(OAuthKeys.OAUTH_TOKEN);
       if (token != null)
       {
-         OAuthTokenService provider =
-            (OAuthTokenService)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
-               OAuthTokenService.class);
-         provider.revokeAccessToken(token);
+         OAuthServiceProvider provider =
+            (OAuthServiceProvider)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
+               OAuthServiceProvider.class);
+         provider.revokeToken(token);
       }
    }
 }

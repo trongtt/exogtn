@@ -16,18 +16,30 @@
  */
 package net.oauth.example.provider.core;
 
+import net.oauth.server.OAuthServlet;
+
+import net.oauth.OAuthAccessor;
+
 import net.oauth.OAuthConsumer;
 import net.oauth.OAuthProblemException;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.exoplatform.container.ExoContainerContext;
 import org.picocontainer.Startable;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * An simple OAuth Provider service which just persist everything in memory
@@ -40,8 +52,10 @@ import java.util.Properties;
 public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startable
 {
    /*store all consumers into map with consumer key as identifier*/
-   private final Map<String, ConsumerInfo> ALL_CONSUMERS = Collections
+   private final Map<String, ConsumerInfo> consumers = Collections
       .synchronizedMap(new HashMap<String, ConsumerInfo>(10));
+   
+   private Map<String, TokenInfo> tokens = new HashMap<String, TokenInfo>();
 
    public void start()
    {
@@ -126,22 +140,22 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
          // TODO Auto-generated catch block
          e.printStackTrace();
       }
-      return ALL_CONSUMERS.get(consumer_key);
+      return consumers.get(consumer_key);
    }
 
    public void addConsumer(ConsumerInfo consumer)
    {
-      ALL_CONSUMERS.put(consumer.getConsumerKey(), consumer);
+      consumers.put(consumer.getConsumerKey(), consumer);
    }
 
    public void removeConsumer(String consumerKey)
    {
-      ALL_CONSUMERS.remove(consumerKey);
+      consumers.remove(consumerKey);
    }
    
    public Map<String, ConsumerInfo> getAllConsumers()
    {
-      return ALL_CONSUMERS;
+      return consumers;
    }
    
    public static ConsumerInfo toConsumerInfo(OAuthConsumer oauthConsumer)
@@ -159,5 +173,105 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
       OAuthConsumer oauthConsumer = new OAuthConsumer(consumer.getCallbackUrl(), consumer.getConsumerKey(), consumer.getConsumerSecret(), null);
       oauthConsumer.setProperty("name", consumer.getProperty("name"));
       return oauthConsumer;
+   }
+   
+   public TokenInfo generateRequestToken(String consumerKey)
+   {
+      // generate oauth_token and oauth_secret from consumer key
+      String token_data = consumerKey + System.nanoTime();
+      String tokenMd5 = DigestUtils.md5Hex(token_data);
+      
+      String secret_data = consumerKey + System.nanoTime() + tokenMd5;
+      String secretMd5 = DigestUtils.md5Hex(secret_data);
+      
+      TokenInfo token = new TokenInfo();
+      token.setRequestToken(tokenMd5);
+      token.setTokenSecret(secretMd5);
+      token.setConsumerKey(consumerKey);
+      tokens.put(tokenMd5, token);
+      return token;
+   }
+   
+   public TokenInfo generateAccessToken(TokenInfo requestToken)
+   {
+      if(requestToken != null)
+      {
+         // remove request token
+         tokens.remove(requestToken);
+         
+         // generate oauth_token and oauth_secret from consumer name (key)
+         String token_data = requestToken.getConsumerKey() + System.nanoTime();
+         String tokenMd5 = DigestUtils.md5Hex(token_data);
+         
+         String secret_data = requestToken.getConsumerKey() + System.nanoTime() + tokenMd5;
+         String secretMd5 = DigestUtils.md5Hex(secret_data);  
+         
+         TokenInfo token = requestToken.clone();
+         token.setAccessToken(tokenMd5);
+         token.setRequestToken(null);
+         token.setTokenSecret(secretMd5);
+         tokens.put(tokenMd5, token);
+         return token;
+      }
+      return null;
+   }
+   
+   public TokenInfo getToken(String token)
+   {
+      return tokens.get(token);
+   }
+   
+   public void revokeToken(String token)
+   {
+      tokens.remove(token);
+   }
+   
+   public List<TokenInfo> getAuthorizedTokens()
+   {
+      List<TokenInfo> results = new ArrayList<TokenInfo>();
+      for (String key : tokens.keySet())
+      {
+         if (tokens.get(key).getAccessToken() != null)
+         {
+            results.add(tokens.get(key));
+         }
+      }
+      return results;
+   }
+   
+   public void markAsAuthorizedToken(String token, String userId)
+   {
+      tokens.get(token).setUserId(userId);
+   }
+   
+   public static OAuthAccessor buildAccessor(TokenInfo token)
+   {
+      OAuthAccessor accessor = null;
+      OAuthServiceProvider provider =
+         (OAuthServiceProvider)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
+            OAuthServiceProvider.class);
+      String consumerKey = token.getConsumerKey();
+
+      if (consumerKey != null)
+      {
+         accessor = new OAuthAccessor(SimpleOAuthServiceProvider.toOAuthConsumer(provider.getConsumer(consumerKey)));
+         accessor.requestToken = token.getRequestToken();
+         accessor.accessToken = token.getAccessToken();
+         accessor.tokenSecret = token.getTokenSecret();
+      }
+      else
+      {
+         //Should log this
+      }
+
+      return accessor;
+   }
+   
+   public static void handleException(Exception e, HttpServletRequest request, HttpServletResponse response,
+      boolean sendBody) throws IOException, ServletException
+   {
+      String realm = (request.isSecure()) ? "https://" : "http://";
+      realm += request.getLocalName();
+      OAuthServlet.handleException(response, e, realm, sendBody);
    }
 }

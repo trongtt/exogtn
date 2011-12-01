@@ -19,14 +19,17 @@
 
 package net.oauth.example.provider.servlets;
 
+import net.oauth.example.provider.core.SimpleOAuthServiceProvider;
+
+import net.oauth.example.provider.core.OAuthServiceProvider;
+import net.oauth.example.provider.core.TokenInfo;
+
 import net.oauth.example.provider.core.OAuthKeys;
 
 import net.oauth.OAuth;
-import net.oauth.OAuthAccessor;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthProblemException;
 import net.oauth.OAuthValidator;
-import net.oauth.example.provider.core.OAuthTokenService;
 import net.oauth.server.OAuthServlet;
 
 import org.exoplatform.container.ExoContainer;
@@ -58,33 +61,37 @@ public class ExoAccessTokenServlet extends AbstractHttpServlet
    {
       try
       {
-         OAuthMessage requestMessage = OAuthServlet.getMessage(req, null);
-
-         OAuthTokenService provider = (OAuthTokenService)container.getComponentInstanceOfType(OAuthTokenService.class);
-         OAuthAccessor accessor = provider.getAccessor(requestMessage);
+         OAuthServiceProvider provider =
+            (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
          
+         OAuthMessage requestMessage = OAuthServlet.getMessage(req, null);
+         TokenInfo token = provider.getToken(requestMessage.getToken());
+         if(token == null)
+         {
+            throw new OAuthProblemException(OAuthKeys.OAUTH_TOKEN_EXPIRED);
+         }
+
          OAuthValidator validator = (OAuthValidator)container.getComponentInstanceOfType(OAuthValidator.class);
-         validator.validateMessage(requestMessage, accessor);
+         validator.validateMessage(requestMessage, SimpleOAuthServiceProvider.buildAccessor(token));
 
          // make sure token is authorized
-         if (!Boolean.TRUE.equals(accessor.getProperty(OAuthKeys.OAUTH_AUTHORIZED)))
+         if (!Boolean.TRUE.equals(token.getProperty(OAuthKeys.OAUTH_AUTHORIZED)))
          {
             throw new OAuthProblemException(OAuthKeys.OAUTH_PERMISSION_DENIED);
          }
          
          // generate access token and secret
-         provider.generateAccessToken(accessor);
+         TokenInfo newToken = provider.generateAccessToken(token);
 
          res.setContentType("text/plain");
          OutputStream out = res.getOutputStream();
          OAuth.formEncode(
-            OAuth.newList(OAuthKeys.OAUTH_TOKEN, accessor.accessToken, OAuthKeys.OAUTH_TOKEN_SECRET, accessor.tokenSecret), out);
+            OAuth.newList(OAuthKeys.OAUTH_TOKEN, newToken.getAccessToken(), OAuthKeys.OAUTH_TOKEN_SECRET, newToken.getTokenSecret()), out);
          out.close();
-
       }
       catch (Exception e)
       {
-         OAuthTokenService.handleException(e, req, res, true);
+         SimpleOAuthServiceProvider.handleException(e, req, res, true);
       }
    }
 }

@@ -19,12 +19,18 @@
 
 package net.oauth.example.provider.servlets;
 
+import net.oauth.OAuthProblemException;
+
+import net.oauth.example.provider.core.OAuthServiceProvider;
+
+import net.oauth.example.provider.core.TokenInfo;
+
+import net.oauth.example.provider.core.SimpleOAuthServiceProvider;
+
 import net.oauth.example.provider.core.OAuthKeys;
 
-import net.oauth.OAuthAccessor;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthValidator;
-import net.oauth.example.provider.core.OAuthTokenService;
 import net.oauth.server.OAuthServlet;
 
 import org.exoplatform.container.ExoContainer;
@@ -56,20 +62,25 @@ public class ExoOAuth3LeggedFilter extends AbstractFilter
    {
       try
       {
+         ExoContainer container = getContainer();
+         OAuthServiceProvider provider =
+            (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
          OAuthMessage requestMessage = OAuthServlet.getMessage((HttpServletRequest)request, null);
 
-         ExoContainer container = getContainer();
-         OAuthTokenService provider = (OAuthTokenService)container.getComponentInstanceOfType(OAuthTokenService.class);
-         OAuthAccessor accessor = provider.getAccessor(requestMessage);
+         TokenInfo token = provider.getToken(requestMessage.getToken());
+         if(token == null || token.getAccessToken() == null)
+         {
+            throw new OAuthProblemException(OAuthKeys.OAUTH_TOKEN_EXPIRED);
+         }
          
          OAuthValidator validator = (OAuthValidator)container.getComponentInstanceOfType(OAuthValidator.class);
-         validator.validateMessage(requestMessage, accessor);
-         request.setAttribute(OAuthKeys.OAUTH_USER_ID, accessor.getProperty(OAuthKeys.OAUTH_USER_ID));
+         validator.validateMessage(requestMessage, SimpleOAuthServiceProvider.buildAccessor(token));
+         request.setAttribute(OAuthKeys.OAUTH_USER_ID, token.getUserId());
          chain.doFilter(request, response);
       }
       catch (Exception e)
       {
-         OAuthTokenService.handleException(e, (HttpServletRequest)request, (HttpServletResponse)response, false);
+         SimpleOAuthServiceProvider.handleException(e, (HttpServletRequest)request, (HttpServletResponse)response, false);
       }
 
    }

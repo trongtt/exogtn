@@ -19,10 +19,11 @@ package net.oauth.example.provider.core;
 import net.oauth.OAuthProblemException;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /**
- * The OAuth Provider service�s responsibility is to allow Consumer Developers
+ * The OAuth Provider services responsibility is to allow Consumer Developers
  * to establish a Consumer Key and Consumer Secret.
  * <p>
  * The process and requirements for provisioning these are entirely up to the Service Providers.
@@ -64,4 +65,52 @@ public interface OAuthServiceProvider
     * @return
     */
    public Map<String, ConsumerInfo> getAllConsumers();
+      
+   /**
+    * Generate request token from consumer information (name, key, etc)
+    * request token is temporal token
+    * 
+    * @param consumer
+    * @return TokenInfo
+    */
+   public TokenInfo generateRequestToken(String consumerName);
+
+   /**
+    * Generate token from request token
+    * 
+    * @param requestToken
+    * @return TokenInfo
+    */
+   public TokenInfo generateAccessToken(TokenInfo requestToken);
+   
+   /**
+    * Get token information from token string
+    * 
+    * @param token
+    * @return TokenInfo
+    */
+   public TokenInfo getToken(String token);
+
+   /**
+    * Revoke token
+    * 
+    * @param token
+    * @throws OAuthProcessingException
+    */
+   public void revokeToken(String token);
+
+   /**
+    * Return all OAuth authorized tokens in system
+    * 
+    * @return
+    */
+   public List<TokenInfo> getAuthorizedTokens();
+   
+   /**
+    * Mark token as authorized state, often when Consumer has a request token and authorized session
+    * 
+    * @return
+    */
+   public void markAsAuthorizedToken(String token, String userId);
+
 }

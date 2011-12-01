@@ -19,6 +19,10 @@
 
 package net.oauth.example.provider.servlets;
 
+import net.oauth.OAuth.Parameter;
+
+import net.oauth.example.provider.core.TokenInfo;
+
 import net.oauth.example.provider.core.OAuthKeys;
 
 import net.oauth.example.provider.core.SimpleOAuthServiceProvider;
@@ -30,7 +34,6 @@ import net.oauth.OAuthAccessor;
 import net.oauth.OAuthConsumer;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthValidator;
-import net.oauth.example.provider.core.OAuthTokenService;
 import net.oauth.example.provider.core.OAuthServiceProvider;
 import net.oauth.server.OAuthServlet;
 
@@ -39,6 +42,7 @@ import org.exoplatform.container.web.AbstractHttpServlet;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -48,7 +52,7 @@ import javax.servlet.http.HttpServletResponse;
  * Servlet process the first request, it validate information to avoid malform request or attacking
  * After validating completely, it create a token calls Request token for authorization step later
  * 
- * See OAuth 2.0 specification for more detail
+ * See OAuth 1.0a specification for more detail
  * 
  * @author <a href="trongtt@gmail.com">Trong Tran</a>
  * @version $Revision$
@@ -63,12 +67,11 @@ public class ExoRequestTokenServlet extends AbstractHttpServlet
    {
       try
       {
-         // generate request_token and secret
-         OAuthServiceProvider consumerService =
+         OAuthServiceProvider provider =
             (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
 
          OAuthMessage requestMessage = OAuthServlet.getMessage(req, null);
-         OAuthConsumer consumer = SimpleOAuthServiceProvider.toOAuthConsumer(consumerService.getConsumer(requestMessage.getConsumerKey()));
+         OAuthConsumer consumer = SimpleOAuthServiceProvider.toOAuthConsumer(provider.getConsumer(requestMessage.getConsumerKey()));
          if (consumer == null)
          {
             OAuthProblemException problem =
@@ -76,33 +79,28 @@ public class ExoRequestTokenServlet extends AbstractHttpServlet
             throw problem;
          }
 
-         OAuthAccessor accessor = new OAuthAccessor(consumer);
          OAuthValidator validator = (OAuthValidator)container.getComponentInstanceOfType(OAuthValidator.class);
-         validator.validateMessage(requestMessage, accessor);
+         validator.validateMessage(requestMessage, new OAuthAccessor(consumer));
 
+         // generate request_token and secret
+         TokenInfo token = provider.generateRequestToken(consumer.consumerKey);
+         
+         res.setContentType("text/plain");
+         OutputStream out = res.getOutputStream();
+         List<Parameter> params = OAuth.newList(OAuthKeys.OAUTH_TOKEN, token.getRequestToken(), OAuthKeys.OAUTH_TOKEN_SECRET, token.getTokenSecret());
          // Support the 'Variable Accessor Secret' extension
          // described in http://oauth.pbwiki.com/AccessorSecret
          String secret = requestMessage.getParameter(OAuthKeys.OAUTH_ACCESSOR_SECRET);
          if (secret != null)
          {
-            accessor.setProperty(OAuthKeys.OAUTH_ACCESSOR_SECRET, secret);
+            params.add(new Parameter(OAuthKeys.OAUTH_ACCESSOR_SECRET, secret));
          }
-
-         // generate request_token and secret
-         OAuthTokenService provider =
-            (OAuthTokenService)container.getComponentInstanceOfType(OAuthTokenService.class);
-         provider.generateRequestToken(accessor);
-
-         res.setContentType("text/plain");
-         OutputStream out = res.getOutputStream();
-         OAuth.formEncode(
-            OAuth.newList(OAuthKeys.OAUTH_TOKEN, accessor.requestToken, OAuthKeys.OAUTH_TOKEN_SECRET, accessor.tokenSecret), out);
+         OAuth.formEncode(params, out);
          out.close();
-
       }
       catch (Exception e)
       {
-         OAuthTokenService.handleException(e, req, res, true);
+         SimpleOAuthServiceProvider.handleException(e, req, res, true);
       }
 
    }
