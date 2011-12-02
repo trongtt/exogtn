@@ -78,22 +78,13 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
             throw new OAuthProblemException(OAuthKeys.OAUTH_TOKEN_EXPIRED);
          }
          
-         ConsumerInfo consumer = provider.getConsumer(token.getConsumerKey());
-         if (request.getParameter(OAuthKeys.OAUTH_DENIED) != null)
-         {
-            token.setProperty(OAuthKeys.OAUTH_DENIED, Boolean.TRUE);
-         }
-         
-         if (request.getParameter(OAuthKeys.OAUTH_AUTHORIZED) != null)
-         {
-            token.setProperty(OAuthKeys.OAUTH_AUTHORIZED, Boolean.TRUE);
-         }
-         
          // Token can has only request token and secret token.
          // If current Token was marked as authorized in some other way.
-         if (Boolean.TRUE.equals(token.getProperty(OAuthKeys.OAUTH_AUTHORIZED))
-            || Boolean.TRUE.equals(token.getProperty(OAuthKeys.OAUTH_DENIED)))
+         ConsumerInfo consumer = provider.getConsumer(token.getConsumerKey());
+         if (request.getParameter(OAuthKeys.OAUTH_AUTHORIZED) != null)
          {
+            token.setProperty(OAuthKeys.OAUTH_AUTHORIZED, request
+               .getParameter(OAuthKeys.OAUTH_AUTHORIZED).toString().equals("Grant access"));
             returnToConsumer(request, response, consumer, token);
             return;
          }
@@ -190,7 +181,7 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
 
          if (token != null)
          {
-            if(Boolean.TRUE.equals(token.getProperty(OAuthKeys.OAUTH_DENIED)))
+            if(!Boolean.TRUE.equals(token.getProperty(OAuthKeys.OAUTH_AUTHORIZED)))
             {
                callback = OAuth.addParameters(callback, OAuthKeys.OAUTH_DENIED, token.getRequestToken());
                ExoContainer container = getContainer();

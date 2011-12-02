@@ -25,8 +25,8 @@
     <form name="authorization_form" action="<%= contextPath + "/authorize"%>" method="POST">
         <input type="hidden" name="oauth_token" value="<%= token %>"/>
         <input type="hidden" name="oauth_callback" value="<%= callback %>"/>
-        <input type="submit" name="oauth_authorized" value="Authorize"/>
-        <input type="submit" name="oauth_denied" value="No, thanks"/>
+        <input type="submit" name="oauth_authorized" value="Grant access"/>
+        <input type="submit" name="oauth_authorized" value="Deny access"/>
     </form>
     
     </body>
