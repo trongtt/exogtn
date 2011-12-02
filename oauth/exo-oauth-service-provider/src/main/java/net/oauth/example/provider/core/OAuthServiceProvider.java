@@ -19,7 +19,7 @@ package net.oauth.example.provider.core;
 import net.oauth.OAuthProblemException;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -71,25 +71,33 @@ public interface OAuthServiceProvider
     * request token is temporal token
     * 
     * @param consumer
-    * @return TokenInfo
+    * @return RequestToken
     */
-   public TokenInfo generateRequestToken(String consumerName);
+   public RequestToken generateRequestToken(String consumerName);
 
    /**
     * Generate token from request token
     * 
     * @param requestToken
-    * @return TokenInfo
+    * @return RequestToken
     */
-   public TokenInfo generateAccessToken(TokenInfo requestToken);
+   public AccessToken generateAccessToken(RequestToken requestToken);
    
    /**
     * Get token information from token string
     * 
     * @param token
-    * @return TokenInfo
+    * @return RequestToken
     */
-   public TokenInfo getToken(String token);
+   public RequestToken getRequestToken(String token);
+   
+   /**
+    * Get token information from token string
+    * 
+    * @param token
+    * @return RequestToken
+    */
+   public AccessToken getAccessToken(String token);
 
    /**
     * Revoke token
@@ -97,20 +105,12 @@ public interface OAuthServiceProvider
     * @param token
     * @throws OAuthProcessingException
     */
-   public void revokeToken(String token);
+   public void revokeAccessToken(String token);
 
    /**
     * Return all OAuth authorized tokens in system
     * 
     * @return
     */
-   public List<TokenInfo> getAuthorizedTokens();
-   
-   /**
-    * Mark token as authorized state, often when Consumer has a request token and authorized session
-    * 
-    * @return
-    */
-   public void markAsAuthorizedToken(String token, String userId);
-
+   public Collection<AccessToken> getAuthorizedTokens();
 }

@@ -18,19 +18,18 @@
  */
 package org.exoplatform.oauth.portlet;
 
-import net.oauth.example.provider.core.OAuthServiceProvider;
-
-import net.oauth.example.provider.core.OAuthKeys;
-
-import net.oauth.example.provider.core.TokenInfo;
-
+import net.oauth.example.provider.core.AccessToken;
 import net.oauth.example.provider.core.ConsumerInfo;
+import net.oauth.example.provider.core.OAuthKeys;
+import net.oauth.example.provider.core.OAuthServiceProvider;
+import net.oauth.example.provider.core.RequestToken;
 
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,9 +70,9 @@ public class UITokenManagementPortlet extends GenericPortlet
       OAuthServiceProvider provider =
          (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
 
-      List<TokenInfo> tokens = provider.getAuthorizedTokens();
-      Map<TokenInfo, ConsumerInfo> accessors = new HashMap<TokenInfo, ConsumerInfo>();
-      for(TokenInfo token : tokens)
+      Collection<AccessToken> tokens = provider.getAuthorizedTokens();
+      Map<AccessToken, ConsumerInfo> accessors = new HashMap<AccessToken, ConsumerInfo>();
+      for(AccessToken token : tokens)
       {
          if (request.getRemoteUser().equals(token.getUserId()))
          {
@@ -95,7 +94,7 @@ public class UITokenManagementPortlet extends GenericPortlet
          OAuthServiceProvider provider =
             (OAuthServiceProvider)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
                OAuthServiceProvider.class);
-         provider.revokeToken(token);
+         provider.revokeAccessToken(token);
       }
    }
 }

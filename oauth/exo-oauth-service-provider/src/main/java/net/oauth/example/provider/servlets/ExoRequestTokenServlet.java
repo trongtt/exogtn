@@ -21,7 +21,7 @@ package net.oauth.example.provider.servlets;
 
 import net.oauth.OAuth.Parameter;
 
-import net.oauth.example.provider.core.TokenInfo;
+import net.oauth.example.provider.core.RequestToken;
 
 import net.oauth.example.provider.core.OAuthKeys;
 
@@ -83,11 +83,11 @@ public class ExoRequestTokenServlet extends AbstractHttpServlet
          validator.validateMessage(requestMessage, new OAuthAccessor(consumer));
 
          // generate request_token and secret
-         TokenInfo token = provider.generateRequestToken(consumer.consumerKey);
+         RequestToken token = provider.generateRequestToken(consumer.consumerKey);
          
          res.setContentType("text/plain");
          OutputStream out = res.getOutputStream();
-         List<Parameter> params = OAuth.newList(OAuthKeys.OAUTH_TOKEN, token.getRequestToken(), OAuthKeys.OAUTH_TOKEN_SECRET, token.getTokenSecret());
+         List<Parameter> params = OAuth.newList(OAuthKeys.OAUTH_TOKEN, token.getToken(), OAuthKeys.OAUTH_TOKEN_SECRET, token.getTokenSecret());
          // Support the 'Variable Accessor Secret' extension
          // described in http://oauth.pbwiki.com/AccessorSecret
          String secret = requestMessage.getParameter(OAuthKeys.OAUTH_ACCESSOR_SECRET);

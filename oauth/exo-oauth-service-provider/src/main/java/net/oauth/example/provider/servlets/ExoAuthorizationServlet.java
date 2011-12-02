@@ -25,7 +25,7 @@ import net.oauth.example.provider.core.OAuthServiceProvider;
 
 import net.oauth.example.provider.core.ConsumerInfo;
 
-import net.oauth.example.provider.core.TokenInfo;
+import net.oauth.example.provider.core.RequestToken;
 
 import net.oauth.example.provider.core.SimpleOAuthServiceProvider;
 
@@ -72,7 +72,7 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
             (OAuthServiceProvider)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(OAuthServiceProvider.class);
          OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);        
          
-         TokenInfo token = provider.getToken(requestMessage.getToken());
+         RequestToken token = provider.getRequestToken(requestMessage.getToken());
          if(token == null)
          {
             throw new OAuthProblemException(OAuthKeys.OAUTH_TOKEN_EXPIRED);
@@ -112,9 +112,6 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
            return;
          }
          
-         // authentication success, mark request token as authorized
-         provider.markAsAuthorizedToken(token.getRequestToken(), identity.getUserId());
-         
          sendToAuthorizationPage(request, response, consumer, token);
       }
       catch (Exception e)
@@ -131,7 +128,7 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
     * @throws IOException
     * @throws ServletException
     */
-   private void sendToLoginPage(HttpServletRequest request, HttpServletResponse response, ConsumerInfo consumer, TokenInfo token)
+   private void sendToLoginPage(HttpServletRequest request, HttpServletResponse response, ConsumerInfo consumer, RequestToken token)
       throws IOException, ServletException
    {
       String callback = request.getParameter(OAuthKeys.OAUTH_CALLBACK);
@@ -140,7 +137,7 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
          callback = OAuthKeys.OAUTH_NO_CALLBACK;
       }
       request.setAttribute(OAuthKeys.OAUTH_CALLBACK, callback);
-      request.setAttribute(OAuthKeys.OAUTH_TOKEN, token.getRequestToken());
+      request.setAttribute(OAuthKeys.OAUTH_TOKEN, token.getToken());
       request.getRequestDispatcher("login/jsp/login.jsp").forward(request, response);
    }
 
@@ -152,7 +149,7 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
     * @throws IOException
     * @throws ServletException
     */
-   private void returnToConsumer(HttpServletRequest request, HttpServletResponse response, ConsumerInfo consumer, TokenInfo token)
+   private void returnToConsumer(HttpServletRequest request, HttpServletResponse response, ConsumerInfo consumer, RequestToken token)
       throws IOException, ServletException
    {
       // send the user back to site's callBackUrl
@@ -183,15 +180,15 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
          {
             if(!Boolean.TRUE.equals(token.getProperty(OAuthKeys.OAUTH_AUTHORIZED)))
             {
-               callback = OAuth.addParameters(callback, OAuthKeys.OAUTH_DENIED, token.getRequestToken());
+               callback = OAuth.addParameters(callback, OAuthKeys.OAUTH_DENIED, token.getToken());
                ExoContainer container = getContainer();
                OAuthServiceProvider provider =
                   (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
-               provider.revokeToken(token.getRequestToken());
+               provider.revokeAccessToken(token.getToken());
             }
             else
             {
-               callback = OAuth.addParameters(callback, OAuthKeys.OAUTH_TOKEN, token.getRequestToken());
+               callback = OAuth.addParameters(callback, OAuthKeys.OAUTH_TOKEN, token.getToken());
             }
          }
 
@@ -201,7 +198,7 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
    }
    
    private void sendToAuthorizationPage(HttpServletRequest request, HttpServletResponse response,
-      ConsumerInfo consumer, TokenInfo token) throws IOException, ServletException
+      ConsumerInfo consumer, RequestToken token) throws IOException, ServletException
    {
       String callback = request.getParameter(OAuthKeys.OAUTH_CALLBACK);
       if (callback == null || callback.length() <= 0)
@@ -209,7 +206,7 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
          callback = OAuthKeys.OAUTH_NO_CALLBACK;
       }
       request.setAttribute(OAuthKeys.OAUTH_CALLBACK, callback);
-      request.setAttribute(OAuthKeys.OAUTH_TOKEN, token.getRequestToken());
+      request.setAttribute(OAuthKeys.OAUTH_TOKEN, token.getToken());
       request.setAttribute(OAuthKeys.OAUTH_CONSUMER_NAME, consumer.getProperty("name"));
       request.getRequestDispatcher("login/jsp/authorize.jsp").forward(request, response);
    }

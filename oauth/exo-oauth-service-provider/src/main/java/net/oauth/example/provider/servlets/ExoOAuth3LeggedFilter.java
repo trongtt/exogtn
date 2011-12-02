@@ -19,11 +19,13 @@
 
 package net.oauth.example.provider.servlets;
 
+import net.oauth.example.provider.core.AccessToken;
+
 import net.oauth.OAuthProblemException;
 
 import net.oauth.example.provider.core.OAuthServiceProvider;
 
-import net.oauth.example.provider.core.TokenInfo;
+import net.oauth.example.provider.core.RequestToken;
 
 import net.oauth.example.provider.core.SimpleOAuthServiceProvider;
 
@@ -67,8 +69,8 @@ public class ExoOAuth3LeggedFilter extends AbstractFilter
             (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
          OAuthMessage requestMessage = OAuthServlet.getMessage((HttpServletRequest)request, null);
 
-         TokenInfo token = provider.getToken(requestMessage.getToken());
-         if(token == null || token.getAccessToken() == null)
+         AccessToken token = provider.getAccessToken(requestMessage.getToken());
+         if(token == null || token.getToken() == null)
          {
             throw new OAuthProblemException(OAuthKeys.OAUTH_TOKEN_EXPIRED);
          }

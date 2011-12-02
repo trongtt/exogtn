@@ -34,65 +34,29 @@ import java.util.Map;
  * @version $Revision$
  */
 
-public class TokenInfo implements Cloneable
+public class RequestToken extends OAuthToken
 {
-   private String requestToken;
-   private String accessToken;
    private String tokenSecret;
-   private String consumerKey;
-   private String userId;
-   
+
    private final Map<String, Object> properties = new HashMap<String, Object>();
 
-   public TokenInfo() {
-       this.requestToken = null;
-       this.accessToken = null;
-       this.consumerKey = null;
-       this.userId = null;
+   public RequestToken()
+   {
    }
-   
+
    @Override
-   public TokenInfo clone()
+   public RequestToken clone()
    {
-      try {
-         return (TokenInfo) super.clone();
-     } catch (CloneNotSupportedException e) {
+      try
+      {
+         return (RequestToken)super.clone();
+      }
+      catch (CloneNotSupportedException e)
+      {
          throw new RuntimeException(e);
-     }
+      }
    }
 
-   /**
-    * @param consumerKey the consumerKey to set
-    */
-   public void setConsumerKey(String consumerKey)
-   {
-      this.consumerKey = consumerKey;
-   }
-
-   /**
-    * @return the consumerKey
-    */
-   public String getConsumerKey()
-   {
-      return consumerKey;
-   }
-
-   /**
-    * @param userId the userId to set
-    */
-   public void setUserId(String userId)
-   {
-      this.userId = userId;
-   }
-
-   /**
-    * @return the userId
-    */
-   public String getUserId()
-   {
-      return userId;
-   }
-   
    public Object getProperty(String name)
    {
       return properties.get(name);
@@ -109,38 +73,6 @@ public class TokenInfo implements Cloneable
    public Map<String, Object> getProperties()
    {
       return properties;
-   }
-
-   /**
-    * @param requestToken the requestToken to set
-    */
-   public void setRequestToken(String requestToken)
-   {
-      this.requestToken = requestToken;
-   }
-
-   /**
-    * @return the requestToken
-    */
-   public String getRequestToken()
-   {
-      return requestToken;
-   }
-
-   /**
-    * @param accessToken the accessToken to set
-    */
-   public void setAccessToken(String accessToken)
-   {
-      this.accessToken = accessToken;
-   }
-
-   /**
-    * @return the accessToken
-    */
-   public String getAccessToken()
-   {
-      return accessToken;
    }
 
    /**
