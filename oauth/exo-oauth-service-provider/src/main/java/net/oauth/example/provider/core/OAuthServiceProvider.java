@@ -100,12 +100,20 @@ public interface OAuthServiceProvider
    public AccessToken getAccessToken(String token);
 
    /**
-    * Revoke token
+    * Revoke access token
     * 
     * @param token
     * @throws OAuthProcessingException
     */
    public void revokeAccessToken(String token);
+   
+   /**
+    * Revoke request token
+    * 
+    * @param token
+    * @throws OAuthProcessingException
+    */
+   public void revokeRequestToken(String token);
 
    /**
     * Return all OAuth authorized tokens in system

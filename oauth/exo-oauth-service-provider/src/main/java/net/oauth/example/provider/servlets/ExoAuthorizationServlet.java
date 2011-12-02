@@ -184,7 +184,7 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
                ExoContainer container = getContainer();
                OAuthServiceProvider provider =
                   (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
-               provider.revokeAccessToken(token.getToken());
+               provider.revokeRequestToken(token.getToken());
             }
             else
             {

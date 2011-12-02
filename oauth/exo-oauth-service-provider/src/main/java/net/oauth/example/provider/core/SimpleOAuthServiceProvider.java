@@ -232,6 +232,11 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
    {
       accessTokens.remove(token);
    }
+   
+   public void revokeRequestToken(String token)
+   {
+      requestTokens.remove(token);
+   }
 
    public Collection<AccessToken> getAuthorizedTokens()
    {
