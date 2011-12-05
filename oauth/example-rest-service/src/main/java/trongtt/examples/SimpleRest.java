@@ -20,6 +20,8 @@ package trongtt.examples;
 
 import org.exoplatform.services.rest.resource.ResourceContainer;
 
+import java.security.Principal;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -42,12 +44,25 @@ public class SimpleRest implements ResourceContainer
       String response = "Hello " + user;
       return Response.ok(response).build();
    }
-   
+
    @GET
    @Path("infos")
    public Response infos(@Context HttpServletRequest request)
    {
-      String response = "Hello " + request.getParameter("name");
+      String response;
+      Principal principal = request.getUserPrincipal();
+      if (principal == null)
+      {
+         response = "You have no permission to get protected resource";
+      }
+      else if (request.isUserInRole("/platform/administrators"))
+      {
+         response = "Hello " + principal.getName() + ", You have right to access";
+      }
+      else
+      {
+         response = "Hello " + principal.getName() + ", but you're not administrator";
+      }
       return Response.ok(response).build();
    }
 }

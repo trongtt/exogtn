@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (C) 2011 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -24,7 +24,6 @@ package net.oauth.example.provider.core;
  * @author <a href="trongtt@gmail.com">Trong Tran</a>
  * @version $Revision$
  */
-//TODO: This class should extend the Token interface from component.web.secrity project in GateIn
 public class OAuthToken
 {
    private String consumerKey;
@@ -32,6 +31,8 @@ public class OAuthToken
    private String tokenSecret;
 
    private String token;
+   
+   private String userId;
 
    /**
     * @return the consumerKey
@@ -79,5 +80,15 @@ public class OAuthToken
    public void setToken(String token)
    {
       this.token = token;
+   }
+
+   public String getUserId()
+   {
+      return userId;
+   }
+
+   public void setUserId(String userId)
+   {
+      this.userId = userId;
    }
 }

@@ -267,6 +267,9 @@ function getModule(params)
    module.oauth.oauthProviderWebapp =
    new Project("org.exoplatform.portal", "exo-oauth-provider", "war", module.version);
 
+   module.oauth.oauthLogin =
+   new Project("org.exoplatform.portal", "exo-oauth-login", "war", module.version);
+
    module.oauth.exampleConsumer =
    new Project("org.exoplatform.portal", "example-oauth-consumer", "war", module.version);
 

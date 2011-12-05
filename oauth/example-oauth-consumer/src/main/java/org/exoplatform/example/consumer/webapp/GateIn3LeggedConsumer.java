@@ -47,7 +47,7 @@ public class GateIn3LeggedConsumer extends HttpServlet
          OAuthAccessor accessor = CookieConsumer.getAccessor(request, response, consumer);
          OAuthMessage message =
             accessor.newRequestMessage(OAuthMessage.GET,
-               "http://localhost:8080/exo-oauth-provider/rest/SimpleRest/hello/lambkin", null);
+               "http://localhost:8080/exo-oauth-provider/rest/SimpleRest/infos", null);
          OAuthMessage result = CookieConsumer.CLIENT.invoke(message, ParameterStyle.AUTHORIZATION_HEADER);
 
          CookieConsumer.copyResponse(result, response);

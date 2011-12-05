@@ -36,8 +36,6 @@ import java.util.Map;
 
 public class RequestToken extends OAuthToken
 {
-   private String tokenSecret;
-
    private final Map<String, Object> properties = new HashMap<String, Object>();
 
    public RequestToken()
@@ -73,21 +71,5 @@ public class RequestToken extends OAuthToken
    public Map<String, Object> getProperties()
    {
       return properties;
-   }
-
-   /**
-    * @param tokenSecret the tokenSecret to set
-    */
-   public void setTokenSecret(String tokenSecret)
-   {
-      this.tokenSecret = tokenSecret;
-   }
-
-   /**
-    * @return the tokenSecret
-    */
-   public String getTokenSecret()
-   {
-      return tokenSecret;
    }
 }

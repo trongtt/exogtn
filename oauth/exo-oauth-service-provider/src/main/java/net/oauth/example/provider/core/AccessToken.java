@@ -18,18 +18,14 @@
  */
 package net.oauth.example.provider.core;
 
-
 /**
  * @author <a href="trongtt@gmail.com">Trong Tran</a>
  * @version $Revision$
  */
 public class AccessToken extends OAuthToken
 {
-   private String userId;
-
    public AccessToken()
    {
-      this.userId = null;
    }
 
    @Override
@@ -37,27 +33,11 @@ public class AccessToken extends OAuthToken
    {
       try
       {
-         return (AccessToken)super.clone();
+         return (AccessToken) super.clone();
       }
       catch (CloneNotSupportedException e)
       {
          throw new RuntimeException(e);
       }
-   }
-
-   /**
-    * @param userId the userId to set
-    */
-   public void setUserId(String userId)
-   {
-      this.userId = userId;
-   }
-
-   /**
-    * @return the userId
-    */
-   public String getUserId()
-   {
-      return userId;
    }
 }

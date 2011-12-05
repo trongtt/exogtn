@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (C) 2010 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -63,9 +63,8 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
    {
       try
       {
-         OAuthServiceProvider provider =
-            (OAuthServiceProvider)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
-               OAuthServiceProvider.class);
+         OAuthServiceProvider provider = (OAuthServiceProvider) ExoContainerContext.getCurrentContainer()
+               .getComponentInstanceOfType(OAuthServiceProvider.class);
          OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
 
          RequestToken token = provider.getRequestToken(requestMessage.getToken());
@@ -138,12 +137,11 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
     * @throws ServletException
     */
    private void returnToConsumer(HttpServletRequest request, HttpServletResponse response, ConsumerInfo consumer,
-      RequestToken token) throws IOException, ServletException
+         RequestToken token) throws IOException, ServletException
    {
       // send the user back to site's callBackUrl
       String callback = (String)token.getProperty(OAuthKeys.OAUTH_CALLBACK);
-      if (callback == null && consumer.getCallbackUrl() != null
-         && consumer.getCallbackUrl().length() > 0)
+      if (callback == null && consumer.getCallbackUrl() != null && consumer.getCallbackUrl().length() > 0)
       {
          // first check if we have something from config
          callback = consumer.getCallbackUrl();
@@ -155,28 +153,25 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
          response.setContentType("text/plain");
          PrintWriter out = response.getWriter();
          out.println("You have successfully authorized '" + consumer.getProperty("description")
-            + "'. Please close this browser window and click continue" + " in the client.");
+               + "'. Please close this browser window and click continue" + " in the client.");
          out.close();
       }
       else
       {
-         // if callback is not passed in, use the callback from config
-         if (callback == null || callback.length() <= 0)
-            callback = consumer.getCallbackUrl();
-
          if (token != null)
          {
-            if (!Boolean.TRUE.equals(token.getProperty(OAuthKeys.OAUTH_AUTHORIZED)))
+            if (Boolean.TRUE.equals(token.getProperty(OAuthKeys.OAUTH_AUTHORIZED)))
+            {
+               token.setUserId(request.getRemoteUser());
+               callback = OAuth.addParameters(callback, OAuthKeys.OAUTH_TOKEN, token.getToken());
+            }
+            else
             {
                callback = OAuth.addParameters(callback, OAuthKeys.OAUTH_DENIED, token.getToken());
                ExoContainer container = getContainer();
                OAuthServiceProvider provider =
-                  (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
+                     (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
                provider.revokeRequestToken(token.getToken());
-            }
-            else
-            {
-               callback = OAuth.addParameters(callback, OAuthKeys.OAUTH_TOKEN, token.getToken());
             }
          }
 

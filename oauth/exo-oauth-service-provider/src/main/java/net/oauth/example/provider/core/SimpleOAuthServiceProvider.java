@@ -212,6 +212,7 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
          token.setToken(tokenMd5);
          token.setConsumerKey(requestToken.getConsumerKey());
          token.setTokenSecret(secretMd5);
+         token.setUserId(requestToken.getUserId());
          accessTokens.put(tokenMd5, token);
          return token;
       }

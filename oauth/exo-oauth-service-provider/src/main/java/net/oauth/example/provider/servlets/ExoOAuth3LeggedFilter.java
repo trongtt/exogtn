@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (C) 2010 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -21,31 +21,20 @@ package net.oauth.example.provider.servlets;
 
 import net.oauth.example.provider.core.AccessToken;
 
-import net.oauth.OAuthProblemException;
-
-import net.oauth.example.provider.core.OAuthServiceProvider;
-
-import net.oauth.example.provider.core.RequestToken;
-
-import net.oauth.example.provider.core.SimpleOAuthServiceProvider;
-
-import net.oauth.example.provider.core.OAuthKeys;
-
-import net.oauth.OAuthMessage;
-import net.oauth.OAuthValidator;
-import net.oauth.server.OAuthServlet;
-
 import org.exoplatform.container.ExoContainer;
-import org.exoplatform.container.web.AbstractFilter;
+import org.exoplatform.container.component.ComponentRequestLifecycle;
+import org.exoplatform.container.component.RequestLifeCycle;
+import org.exoplatform.services.organization.Membership;
+import org.exoplatform.services.organization.MembershipHandler;
+import org.exoplatform.services.organization.OrganizationService;
 
-import java.io.IOException;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequestWrapper;
 
 /**
  * This filter is used to authorize a request that follows 3-legged OAuth (consumer-server-user)
@@ -56,38 +45,87 @@ import javax.servlet.http.HttpServletResponse;
  * @author <a href="trongtt@gmail.com">Trong Tran</a>
  * @version $Revision$
  */
-public class ExoOAuth3LeggedFilter extends AbstractFilter
+public class ExoOAuth3LeggedFilter extends ExoOAuthFilter
 {
+   private static final String OAUTH_AUTH_METHOD = "OAuth";
 
-   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-      ServletException
+   @Override
+   protected HttpServletRequest createSecurityContext(HttpServletRequest request, AccessToken accessToken)
    {
+      String userId = accessToken.getUserId();
+      if (userId == null)
+      {
+         return request;
+      }
+      final Principal principal = new GateInPrincipal(userId);
+      final Collection<String> roles = getRoles(userId);
+
+      return new HttpServletRequestWrapper(request)
+      {
+         @Override
+         public Principal getUserPrincipal()
+         {
+            return principal;
+         }
+
+         @Override
+         public boolean isUserInRole(String role)
+         {
+            return roles.contains(role);
+         }
+
+         @Override
+         public String getAuthType()
+         {
+            return OAUTH_AUTH_METHOD;
+         }
+      };
+   }
+
+   private static class GateInPrincipal implements Principal
+   {
+      private String name;
+
+      public GateInPrincipal(String name)
+      {
+         this.name = name;
+      }
+
+      public String getName()
+      {
+         return this.name;
+      }
+   }
+
+   private Collection<String> getRoles(String userId)
+   {
+      List<String> roles = new ArrayList<String>();
+      ExoContainer container = getContainer();
+      OrganizationService orgService = (OrganizationService) container
+            .getComponentInstanceOfType(OrganizationService.class);
+      MembershipHandler membershipHandler = orgService.getMembershipHandler();
+      RequestLifeCycle.begin((ComponentRequestLifecycle) orgService);
       try
       {
-         ExoContainer container = getContainer();
-         OAuthServiceProvider provider =
-            (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
-         OAuthMessage requestMessage = OAuthServlet.getMessage((HttpServletRequest)request, null);
-
-         AccessToken token = provider.getAccessToken(requestMessage.getToken());
-         if(token == null || token.getToken() == null)
+         Collection<Membership> collection = membershipHandler.findMembershipsByUser(userId);
+         for (Membership membership : collection)
          {
-            throw new OAuthProblemException(OAuthKeys.OAUTH_TOKEN_EXPIRED);
+            String groupId = membership.getGroupId();
+            roles.add(groupId);
          }
-         
-         OAuthValidator validator = (OAuthValidator)container.getComponentInstanceOfType(OAuthValidator.class);
-         validator.validateMessage(requestMessage, SimpleOAuthServiceProvider.buildAccessor(token));
-         request.setAttribute(OAuthKeys.OAUTH_USER_ID, token.getUserId());
-         chain.doFilter(request, response);
       }
       catch (Exception e)
       {
-         SimpleOAuthServiceProvider.handleException(e, (HttpServletRequest)request, (HttpServletResponse)response, false);
+         e.printStackTrace();
       }
-
+      finally
+      {
+         RequestLifeCycle.end();
+      }
+      return roles;
    }
 
    public void destroy()
-   {      
+   {
    }
 }

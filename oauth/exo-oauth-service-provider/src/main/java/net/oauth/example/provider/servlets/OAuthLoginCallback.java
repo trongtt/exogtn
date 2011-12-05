@@ -55,14 +55,12 @@ public class OAuthLoginCallback extends AbstractHttpServlet
       try
       {
          String token = req.getParameter(OAuthKeys.OAUTH_TOKEN);
-         OAuthServiceProvider provider =
-            (OAuthServiceProvider)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
-               OAuthServiceProvider.class);
+         OAuthServiceProvider provider = (OAuthServiceProvider) ExoContainerContext.getCurrentContainer()
+               .getComponentInstanceOfType(OAuthServiceProvider.class);
          RequestToken reqToken = provider.getRequestToken(token);
          if (reqToken != null && req.getRemoteUser() != null)
          {
-            String authorizeURL =
-               "/authorize?" + OAuthKeys.OAUTH_TOKEN + "=" + token;
+            String authorizeURL = "/authorize?" + OAuthKeys.OAUTH_TOKEN + "=" + token;
             req.getRequestDispatcher(authorizeURL).forward(req, res);
          }
          else
@@ -72,7 +70,7 @@ public class OAuthLoginCallback extends AbstractHttpServlet
       }
       catch (Exception e)
       {
-
+         e.printStackTrace();
       }
    }
 }
