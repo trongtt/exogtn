@@ -301,6 +301,7 @@ public class WebAppController
    public void service(HttpServletRequest req, HttpServletResponse res) throws Exception
    {
       boolean debug = log.isDebugEnabled();
+      req.setCharacterEncoding("UTF-8");
       String portalPath = req.getRequestURI().substring(req.getContextPath().length());
       Router router = routerRef.get();
 
