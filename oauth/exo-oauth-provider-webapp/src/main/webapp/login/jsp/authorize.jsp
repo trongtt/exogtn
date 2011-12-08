@@ -5,7 +5,6 @@
 		String consumerName = (String)request.getAttribute("oauth_consumer_name");
     String consumerDesc = (String)request.getAttribute("oauth_consumer_description");
     String token = (String)request.getAttribute("oauth_token");
-    String callback = (String)request.getAttribute("oauth_callback");
 %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
@@ -24,7 +23,6 @@
 		   
     <form name="authorization_form" action="<%= contextPath + "/authorize"%>" method="POST">
         <input type="hidden" name="oauth_token" value="<%= token %>"/>
-        <input type="hidden" name="oauth_callback" value="<%= callback %>"/>
         <input type="submit" name="oauth_authorized" value="Grant access"/>
         <input type="submit" name="oauth_authorized" value="Deny access"/>
     </form>

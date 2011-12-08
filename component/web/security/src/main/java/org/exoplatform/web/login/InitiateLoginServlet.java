@@ -146,11 +146,11 @@ public class InitiateLoginServlet extends AbstractHttpServlet
    /**
     * @see org.exoplatform.container.web.AbstractHttpServlet#requirePortalEnvironment()
     */
-   @Override
-   protected boolean requirePortalEnvironment()
-   {
-      return true;
-   }
+//   @Override
+//   protected boolean requirePortalEnvironment()
+//   {
+//      return true;
+//   }
 
    private WCIController getWCIController() {
       if (wciController == null) {

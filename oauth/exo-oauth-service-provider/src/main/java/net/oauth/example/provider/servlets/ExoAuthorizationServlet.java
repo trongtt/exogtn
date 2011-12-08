@@ -38,11 +38,6 @@ import net.oauth.server.OAuthServlet;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.web.AbstractHttpServlet;
-import org.exoplatform.services.security.Authenticator;
-import org.exoplatform.services.security.Credential;
-import org.exoplatform.services.security.Identity;
-import org.exoplatform.services.security.PasswordCredential;
-import org.exoplatform.services.security.UsernameCredential;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -69,50 +64,45 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
       try
       {
          OAuthServiceProvider provider =
-            (OAuthServiceProvider)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(OAuthServiceProvider.class);
-         OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);        
-         
+            (OAuthServiceProvider)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
+               OAuthServiceProvider.class);
+         OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
+
          RequestToken token = provider.getRequestToken(requestMessage.getToken());
-         if(token == null)
+         if (token == null)
          {
             throw new OAuthProblemException(OAuthKeys.OAUTH_TOKEN_EXPIRED);
          }
          
+         //Initialize oauth_callback that get from consumer and mark it into token
+         if(token.getProperty(OAuthKeys.OAUTH_CALLBACK) == null)
+         {
+            String callback = request.getParameter(OAuthKeys.OAUTH_CALLBACK);
+            if (callback != null && callback.length() > 0)
+            {
+               token.setProperty(OAuthKeys.OAUTH_CALLBACK, callback);
+            }            
+         }
+
          // Token can has only request token and secret token.
          // If current Token was marked as authorized in some other way.
          ConsumerInfo consumer = provider.getConsumer(token.getConsumerKey());
          if (request.getParameter(OAuthKeys.OAUTH_AUTHORIZED) != null)
          {
-            token.setProperty(OAuthKeys.OAUTH_AUTHORIZED, request
-               .getParameter(OAuthKeys.OAUTH_AUTHORIZED).toString().equals("Grant access"));
+            token.setProperty(OAuthKeys.OAUTH_AUTHORIZED, request.getParameter(OAuthKeys.OAUTH_AUTHORIZED).toString()
+               .equals("Grant access"));
             returnToConsumer(request, response, consumer, token);
             return;
          }
 
-         // do authentication
-         String username = request.getParameter("username");
-         String password = request.getParameter("password");
-         if (username == null || username.length() == 0
-             || password == null || password.length() == 0) {
-           sendToLoginPage(request, response, consumer, token);
-           return;
+         if (request.getRemoteUser() != null)
+         {
+            sendToAuthorizationPage(request, response, consumer, token);
          }
-
-         Identity identity = null;         
-         Authenticator authenticator = (Authenticator) container.getComponentInstanceOfType(Authenticator.class);
-         Credential[] credentials = new Credential[] { new UsernameCredential(username),
-             new PasswordCredential(password) };
-         
-         try {
-           String userId = authenticator.validateUser(credentials);
-           identity = authenticator.createIdentity(userId);
-         } catch (Exception e) {
-           e.printStackTrace();
-           sendToLoginPage(request, response, consumer, token);
-           return;
+         else
+         {
+            sendToLoginPage(request, response, consumer, token);
          }
-         
-         sendToAuthorizationPage(request, response, consumer, token);
       }
       catch (Exception e)
       {
@@ -128,17 +118,15 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
     * @throws IOException
     * @throws ServletException
     */
-   private void sendToLoginPage(HttpServletRequest request, HttpServletResponse response, ConsumerInfo consumer, RequestToken token)
-      throws IOException, ServletException
+   private void sendToLoginPage(HttpServletRequest request, HttpServletResponse response, ConsumerInfo consumer,
+      RequestToken token) throws IOException, ServletException
    {
-      String callback = request.getParameter(OAuthKeys.OAUTH_CALLBACK);
-      if (callback == null || callback.length() <= 0)
-      {
-         callback = OAuthKeys.OAUTH_NO_CALLBACK;
-      }
-      request.setAttribute(OAuthKeys.OAUTH_CALLBACK, callback);
-      request.setAttribute(OAuthKeys.OAUTH_TOKEN, token.getToken());
-      request.getRequestDispatcher("login/jsp/login.jsp").forward(request, response);
+      String callbackURL =
+         "http://localhost:8080/exo-oauth-provider/OAuthLoginCallback?oauth_token=" + token.getToken();
+      String loginUrl =
+         "http://localhost:8080/exo-oauth-login/ServiceLogin?callbackURL=" + callbackURL;
+
+      response.sendRedirect(response.encodeRedirectURL(loginUrl));
    }
 
    /**
@@ -149,19 +137,19 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
     * @throws IOException
     * @throws ServletException
     */
-   private void returnToConsumer(HttpServletRequest request, HttpServletResponse response, ConsumerInfo consumer, RequestToken token)
-      throws IOException, ServletException
+   private void returnToConsumer(HttpServletRequest request, HttpServletResponse response, ConsumerInfo consumer,
+      RequestToken token) throws IOException, ServletException
    {
       // send the user back to site's callBackUrl
-      String callback = request.getParameter(OAuthKeys.OAUTH_CALLBACK);
-      if (callback.equals(OAuthKeys.OAUTH_NO_CALLBACK) && consumer.getCallbackUrl() != null
+      String callback = (String)token.getProperty(OAuthKeys.OAUTH_CALLBACK);
+      if (callback == null && consumer.getCallbackUrl() != null
          && consumer.getCallbackUrl().length() > 0)
       {
          // first check if we have something from config
          callback = consumer.getCallbackUrl();
       }
 
-      if (callback.equals(OAuthKeys.OAUTH_NO_CALLBACK))
+      if (callback == null)
       {
          // no call back it must be a client
          response.setContentType("text/plain");
@@ -178,7 +166,7 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
 
          if (token != null)
          {
-            if(!Boolean.TRUE.equals(token.getProperty(OAuthKeys.OAUTH_AUTHORIZED)))
+            if (!Boolean.TRUE.equals(token.getProperty(OAuthKeys.OAUTH_AUTHORIZED)))
             {
                callback = OAuth.addParameters(callback, OAuthKeys.OAUTH_DENIED, token.getToken());
                ExoContainer container = getContainer();
@@ -196,16 +184,10 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
          response.setHeader("Location", callback);
       }
    }
-   
+
    private void sendToAuthorizationPage(HttpServletRequest request, HttpServletResponse response,
       ConsumerInfo consumer, RequestToken token) throws IOException, ServletException
    {
-      String callback = request.getParameter(OAuthKeys.OAUTH_CALLBACK);
-      if (callback == null || callback.length() <= 0)
-      {
-         callback = OAuthKeys.OAUTH_NO_CALLBACK;
-      }
-      request.setAttribute(OAuthKeys.OAUTH_CALLBACK, callback);
       request.setAttribute(OAuthKeys.OAUTH_TOKEN, token.getToken());
       request.setAttribute(OAuthKeys.OAUTH_CONSUMER_NAME, consumer.getProperty("name"));
       request.getRequestDispatcher("login/jsp/authorize.jsp").forward(request, response);

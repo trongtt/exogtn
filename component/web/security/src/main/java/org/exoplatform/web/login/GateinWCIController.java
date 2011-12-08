@@ -50,11 +50,6 @@ public class GateinWCIController extends WCIController
       String initialURI = getInitialURI(req);
       try
       {
-         String queryString = (String)req.getAttribute("javax.servlet.forward.query_string");
-         if (req.getAttribute("javax.servlet.forward.query_string") != null)
-         {
-            initialURI = initialURI + "?" + queryString;
-         }
          req.setAttribute("org.gatein.portal.login.initial_uri", initialURI);
          servletContext.getRequestDispatcher("/login/jsp/login.jsp").include(req, resp);
       }
