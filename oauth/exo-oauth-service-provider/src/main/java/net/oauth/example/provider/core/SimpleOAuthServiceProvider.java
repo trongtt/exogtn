@@ -280,4 +280,9 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
       realm += request.getLocalName();
       OAuthServlet.handleException(response, e, realm, sendBody);
    }
+   
+   public static String getLoginCallbackURL()
+   {
+      return "http://localhost:8080/exo-oauth-provider/OAuthLoginCallback";
+   }
 }

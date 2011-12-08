@@ -28,6 +28,7 @@ import net.oauth.example.provider.core.OAuthKeys;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.web.AbstractHttpServlet;
+import org.exoplatform.web.security.security.TransientTokenService;
 
 import java.io.IOException;
 
@@ -54,23 +55,30 @@ public class OAuthLoginCallback extends AbstractHttpServlet
    {
       try
       {
-         String token = req.getParameter(OAuthKeys.OAUTH_TOKEN);
-         OAuthServiceProvider provider = (OAuthServiceProvider) ExoContainerContext.getCurrentContainer()
-               .getComponentInstanceOfType(OAuthServiceProvider.class);
-         RequestToken reqToken = provider.getRequestToken(token);
-         if (reqToken != null && req.getRemoteUser() != null)
+         TransientTokenService tokenService =
+            (TransientTokenService)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
+               TransientTokenService.class);
+         OAuthServiceProvider provider =
+            (OAuthServiceProvider)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
+               OAuthServiceProvider.class);
+         String oauthToken = req.getParameter(OAuthKeys.OAUTH_TOKEN);
+         String loginToken = req.getParameter("login_token");
+         RequestToken reqToken = provider.getRequestToken(oauthToken);
+         if (reqToken != null && loginToken != null && req.getRemoteUser() != null
+            && tokenService.validateToken(loginToken, true) != null)
          {
-            String authorizeURL = "/authorize?" + OAuthKeys.OAUTH_TOKEN + "=" + token;
+            String authorizeURL = "/authorize?" + OAuthKeys.OAUTH_TOKEN + "=" + oauthToken;
             req.getRequestDispatcher(authorizeURL).forward(req, res);
          }
          else
          {
-            System.out.println("There is an error from authentication services");
+            throw new Exception("Get an error from authentication services");
          }
       }
       catch (Exception e)
       {
-         e.printStackTrace();
+         //Should log this as information
+         System.out.println(e.getMessage());
       }
    }
 }

@@ -18,7 +18,11 @@
  */
 package org.exoplatform.login;
 
+import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.web.AbstractHttpServlet;
+import org.exoplatform.web.security.GateInToken;
+import org.exoplatform.web.security.security.TransientTokenService;
+import org.gatein.wci.security.Credentials;
 
 import java.io.IOException;
 import java.net.URI;
@@ -28,6 +32,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * The Endpoint handles authentication
+ * 
+ * request must have parameters as callback, oauth_token
+ * response will have parameters as oauth_token, login_token
+ * 
+ * If there is any error, response will be HttpServletResponse.SC_BAD_REQUEST
+ * 
  * @author <a href="kienna@exoplatform.com">Kien Nguyen</a>
  * @version $Revision$
  */
@@ -35,34 +46,57 @@ import javax.servlet.http.HttpServletResponse;
 @SuppressWarnings("serial")
 public class ServiceLoginServlet extends AbstractHttpServlet
 {
+   private static final String LOGIN_TOKEN = "login_token";
+
    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
    {
-      String callbackURL = request.getParameter("callbackURL");
+      String transientToken = null;
 
-      try
+      TransientTokenService tokenService =
+         (TransientTokenService)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
+            TransientTokenService.class);
+      String loginToken = request.getParameter(LOGIN_TOKEN);
+      if (loginToken != null) //After login successfully
       {
-         URI uri = new URI(callbackURL);
-         if (!uri.isAbsolute())
+         if (request.getRemoteUser() != null && tokenService.getToken(loginToken) != null)
          {
-            callbackURL =
-               request.getLocalAddr() + (callbackURL.startsWith("/") ? uri.toString() : "/" + uri.toString());
+            GateInToken oToken = tokenService.getToken(loginToken);
+            String callbackURL = oToken.getPayload().getUsername();
+            callbackURL += "?" + LOGIN_TOKEN + "=" + loginToken + "&oauth_token=" + oToken.getPayload().getPassword();
+            response.sendRedirect(response.encodeRedirectURL(callbackURL));
          }
-      }
-      catch (Exception e)
-      {
-         response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-         return;
-      }
-
-      if (request.getRemoteUser() != null)
-      {
-         response.sendRedirect(response.encodeRedirectURL(callbackURL));
+         else
+         {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+         }
       }
       else
       {
-         String initialURI = request.getRequestURI() + "?callbackURL=" + callbackURL;
-         String redirectURI = request.getContextPath() + "/dologin?initialURI=" + initialURI;
-         response.sendRedirect(response.encodeRedirectURL(redirectURI));
+         try
+         {
+            String callbackURL = request.getParameter("callback");
+            String token = request.getParameter("oauth_token");
+            if (callbackURL == null || token == null)
+            {
+               throw new Exception("parameter_absent");
+            }
+            URI uri = new URI(callbackURL);
+            if (!uri.isAbsolute())
+            {
+               callbackURL =
+                  request.getLocalAddr() + (callbackURL.startsWith("/") ? uri.toString() : "/" + uri.toString());
+            }
+            
+            //Create a transient token with Credentials: callbackURL(as username) and oauth_token (as password)
+            transientToken = tokenService.createToken(new Credentials(callbackURL, token));
+            String initialURI = request.getRequestURI() + "?" + LOGIN_TOKEN + "=" + transientToken;
+            String redirectURI = request.getContextPath() + "/dologin?initialURI=" + initialURI;
+            response.sendRedirect(response.encodeRedirectURL(redirectURI));
+         }
+         catch (Exception e)
+         {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+         }
       }
    }
 

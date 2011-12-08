@@ -120,11 +120,10 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
    private void sendToLoginPage(HttpServletRequest request, HttpServletResponse response, ConsumerInfo consumer,
       RequestToken token) throws IOException, ServletException
    {
-      String callbackURL =
-         "http://localhost:8080/exo-oauth-provider/OAuthLoginCallback?oauth_token=" + token.getToken();
+      String callbackURL = SimpleOAuthServiceProvider.getLoginCallbackURL();
       String loginUrl =
-         "http://localhost:8080/exo-oauth-login/ServiceLogin?callbackURL=" + callbackURL;
-
+         "http://localhost:8080/exo-oauth-login/ServiceLogin?callback=" + callbackURL  + "&oauth_token=" + token.getToken();
+      
       response.sendRedirect(response.encodeRedirectURL(loginUrl));
    }
 
