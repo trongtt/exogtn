@@ -1,17 +1,33 @@
 .AddConsumer {
 	border: 1px solid #ccced7;
 }
+
 .AddConsumer table {
 	width: 100%;
 }
 
 .AddConsumer .Submit {
-	width: 100px;	
+	width: 100px;
 }
+
 .AddConsumer tr {
 	
 }
 
 .AddConsumer tr td {
 	
+}
+
+OAuthToken h1 {
+	font-family: Arial Black;
+	font-size: 20px;
+	color: black;
+	text-align: center
+}
+
+OAuthConsumer h1 {
+	font-family: Arial Black;
+	font-size: 20px;
+	color: black;
+	text-align: center
 }

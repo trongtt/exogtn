@@ -7,8 +7,9 @@
 	href="/skin/DefaultStyleSheet.css">
 </head>
 
-<div><portlet:defineObjects />
-<div>OAuth Provider: Manage information of available Consumer</div>
+<div class="OAuthConsumer"><portlet:defineObjects />
+<div><h1>OAuth
+Provider: Manage information of Consumer Applications</h1></div>
 <div><c:if test="${not empty consumers}">
 	<table border="1">
 		<tr bgcolor="#99CCFF">

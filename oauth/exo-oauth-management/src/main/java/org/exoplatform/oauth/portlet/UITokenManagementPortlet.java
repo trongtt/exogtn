@@ -22,7 +22,6 @@ import net.oauth.example.provider.core.AccessToken;
 import net.oauth.example.provider.core.ConsumerInfo;
 import net.oauth.example.provider.core.OAuthKeys;
 import net.oauth.example.provider.core.OAuthServiceProvider;
-import net.oauth.example.provider.core.RequestToken;
 
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
@@ -31,7 +30,6 @@ import org.w3c.dom.Element;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.portlet.ActionRequest;

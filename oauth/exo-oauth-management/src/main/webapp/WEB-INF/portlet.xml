@@ -25,16 +25,16 @@
              xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd">
 
    <portlet>
-      <description xml:lang="EN">The portlet for managing the OAuth authorized token</description>
+      <description xml:lang="EN">The portlet manages the OAuth authorized token</description>
       <portlet-name>OAuthTokenManagementPortlet</portlet-name>
-      <display-name>OAuth Token Managemenet Portlet</display-name>
+      <display-name>OAuth Authorized Tokens</display-name>
       <portlet-class>org.exoplatform.oauth.portlet.UITokenManagementPortlet</portlet-class>
       <supports>
          <mime-type>text/html</mime-type>
       </supports>
       <supported-locale>en</supported-locale>
       <portlet-info>
-         <title>OAuth Token</title>
+         <title>OAuth Authorized Tokens</title>
          <short-title>oToken</short-title>
          <keywords>System</keywords>
       </portlet-info>
@@ -47,14 +47,14 @@
    <portlet>
       <description xml:lang="EN">Manage consumer applications that access to GateIn OAuth provider</description>
       <portlet-name>OAuthConsumerManagementPortlet</portlet-name>
-      <display-name>OAuth Consumer Managemenet Portlet</display-name>
+      <display-name>OAuth Consumer Applications</display-name>
       <portlet-class>org.exoplatform.oauth.portlet.UIConsumerManagementPortlet</portlet-class>
       <supports>
          <mime-type>text/html</mime-type>
       </supports>
       <supported-locale>en</supported-locale>
       <portlet-info>
-         <title>OAuth consumer</title>
+         <title>OAuth Consumer Applications</title>
          <short-title>oConsumer</short-title>
          <keywords>System</keywords>
       </portlet-info>

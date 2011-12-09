@@ -2,13 +2,19 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ page contentType="text/html" import="java.util.ArrayList;"%>
 
+<head>
+<link rel="stylesheet" type="text/css"
+	href="/skin/DefaultStyleSheet.css">
+</head>
+
 <portlet:defineObjects />
 
-<div class="OAuthSession"><c:choose>
+<div class="OAuthToken"><c:choose>
 	<c:when test="${not empty accessors}">
-		<div>Your authorized tokens</div>
+		<div><h1>Your
+		authorized tokens</h1></div>
 		<br />
-		<table align="center">
+		<table align="center" border="1">
 				<tr bgcolor="#99CCFF">
 					<td valign="top"><b>Consumer</b></td>
 					<td valign="top"><b>Consumer Url</b></td>
@@ -21,14 +27,15 @@
 						<td><c:out value="${entry.value.properties['website']}"></c:out></td>
 						<td><c:out value="${entry.value.properties['description']}"></c:out></td>
 						<td><a
-							href='<portlet:actionURL name="revokeAccess"><portlet:param name="oauth_token" value="${entry.key.accessToken}" /></portlet:actionURL>'>Revoke
+							href='<portlet:actionURL name="revokeAccess"><portlet:param name="oauth_token" value="${entry.key.token}" /></portlet:actionURL>'>Revoke
 						Access</a></td>
 					</tr>
 			</c:forEach>
 		</table>
 	</c:when>
 	<c:otherwise>
-		<div>You don't have any Authorized Tokens</div>
+		<div><h1>You
+		don't have any Authorized Tokens</h1></div>
 	</c:otherwise>
 </c:choose><br />
 
