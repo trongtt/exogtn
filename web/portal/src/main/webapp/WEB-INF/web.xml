@@ -202,6 +202,10 @@
       <servlet-class>org.exoplatform.web.login.ErrorLoginServlet</servlet-class>
    </servlet>
    <servlet>
+      <servlet-name>OAuthLoginServlet</servlet-name>
+      <servlet-class>org.exoplatform.web.login.OAuthLoginServlet</servlet-class>
+   </servlet>
+   <servlet>
       <servlet-name>GateInServlet</servlet-name>
       <servlet-class>org.gatein.wci.api.GateInServlet</servlet-class>
       <load-on-startup>0</load-on-startup>
@@ -223,6 +227,10 @@
    <servlet-mapping>
       <servlet-name>DoLoginServlet</servlet-name>
       <url-pattern>/dologin</url-pattern>
+   </servlet-mapping>
+   <servlet-mapping>
+      <servlet-name>OAuthLoginServlet</servlet-name>
+      <url-pattern>/OAuthLogin</url-pattern>
    </servlet-mapping>
    <servlet-mapping>
       <servlet-name>javascript</servlet-name>

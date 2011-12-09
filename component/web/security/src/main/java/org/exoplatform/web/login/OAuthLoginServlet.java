@@ -16,7 +16,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.exoplatform.login;
+package org.exoplatform.web.login;
 
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.web.AbstractHttpServlet;
@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletResponse;
  * The Endpoint handles authentication
  * 
  * request must have parameters as callback, oauth_token
- * response will have parameters as oauth_token, login_token
+ * response will have parameters as oauth_token, oauth_login_token
  * 
  * If there is any error, response will be HttpServletResponse.SC_BAD_REQUEST
  * 
@@ -44,25 +44,31 @@ import javax.servlet.http.HttpServletResponse;
  */
 
 @SuppressWarnings("serial")
-public class ServiceLoginServlet extends AbstractHttpServlet
+public class OAuthLoginServlet extends AbstractHttpServlet
 {
-   private static final String LOGIN_TOKEN = "login_token";
+   private static final String OAUTH_TOKEN = "oauth_token";
+   private static final String OAUTH_LOGIN_TOKEN = "oauth_login_token";
+   private static final String AUTH_TOKEN = "auth_token";
 
    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
    {
-      String transientToken = null;
-
       TransientTokenService tokenService =
          (TransientTokenService)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
             TransientTokenService.class);
-      String loginToken = request.getParameter(LOGIN_TOKEN);
-      if (loginToken != null) //After login successfully
+      String authToken = request.getParameter(AUTH_TOKEN);
+      if (authToken != null) //After login successfully
       {
-         if (request.getRemoteUser() != null && tokenService.getToken(loginToken) != null)
+         if (request.getRemoteUser() != null && tokenService.getToken(authToken) != null)
          {
-            GateInToken oToken = tokenService.getToken(loginToken);
+            GateInToken oToken = tokenService.getToken(authToken);
             String callbackURL = oToken.getPayload().getUsername();
-            callbackURL += "?" + LOGIN_TOKEN + "=" + loginToken + "&oauth_token=" + oToken.getPayload().getPassword();
+            String oauthToken = oToken.getPayload().getPassword();
+            
+            //Create another transient token to send consumer it
+            String loginToken = tokenService.createToken(new Credentials(request.getRemoteUser(), oauthToken));
+            tokenService.deleteToken(authToken);
+            
+            callbackURL += "?" + OAUTH_LOGIN_TOKEN + "=" + loginToken + "&" + OAUTH_TOKEN + "=" + oToken.getPayload().getPassword();
             response.sendRedirect(response.encodeRedirectURL(callbackURL));
          }
          else
@@ -88,8 +94,8 @@ public class ServiceLoginServlet extends AbstractHttpServlet
             }
             
             //Create a transient token with Credentials: callbackURL(as username) and oauth_token (as password)
-            transientToken = tokenService.createToken(new Credentials(callbackURL, token));
-            String initialURI = request.getRequestURI() + "?" + LOGIN_TOKEN + "=" + transientToken;
+            authToken = tokenService.createToken(new Credentials(callbackURL, token));
+            String initialURI = request.getRequestURI() + "?" + AUTH_TOKEN + "=" + authToken;
             String redirectURI = request.getContextPath() + "/dologin?initialURI=" + initialURI;
             response.sendRedirect(response.encodeRedirectURL(redirectURI));
          }

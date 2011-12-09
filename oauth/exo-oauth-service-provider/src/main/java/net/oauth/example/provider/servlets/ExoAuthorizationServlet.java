@@ -38,6 +38,8 @@ import net.oauth.server.OAuthServlet;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.web.AbstractHttpServlet;
+import org.exoplatform.web.security.security.TransientTokenService;
+import org.gatein.wci.security.Credentials;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -94,9 +96,24 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
             return;
          }
 
-         if (request.getRemoteUser() != null)
+         //Verify authentication and authorization
+         TransientTokenService tokenService =
+            (TransientTokenService)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
+               TransientTokenService.class);
+         String loginToken = request.getParameter(OAuthKeys.OAUTH_LOGIN_TOKEN);
+         if(loginToken != null)
          {
-            sendToAuthorizationPage(request, response, consumer, token);
+            Credentials credentials = tokenService.validateToken(loginToken, true);
+            if (credentials != null)
+            {
+               token.setUserId(credentials.getUsername());
+               sendToAuthorizationPage(request, response, consumer, token);
+            }
+            else
+            {
+               token.setProperty(OAuthKeys.OAUTH_AUTHORIZED, false);
+               returnToConsumer(request, response, consumer, token);
+            }
          }
          else
          {
@@ -120,9 +137,11 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
    private void sendToLoginPage(HttpServletRequest request, HttpServletResponse response, ConsumerInfo consumer,
       RequestToken token) throws IOException, ServletException
    {
-      String callbackURL = SimpleOAuthServiceProvider.getLoginCallbackURL();
-      String loginUrl =
-         "http://localhost:8080/exo-oauth-login/ServiceLogin?callback=" + callbackURL  + "&oauth_token=" + token.getToken();
+      String callbackURL = request.getRequestURL().toString();
+      String localhost = request.getScheme() + "://" + request.getServerName() + ((request.getServerPort() != 80) ? ":" + request.getServerPort() : "");
+      String portal = ExoContainerContext.getCurrentContainer().getContext().getPortalContainerName();
+      String loginCtx = "/OAuthLogin";
+      String loginUrl = localhost + "/" + portal + loginCtx + "?callback=" + callbackURL  + "&oauth_token=" + token.getToken();;
       
       response.sendRedirect(response.encodeRedirectURL(loginUrl));
    }
@@ -162,7 +181,6 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
             if (Boolean.TRUE.equals(token.getProperty(OAuthKeys.OAUTH_AUTHORIZED)))
             {
                final String verifier = SimpleOAuthServiceProvider.createVerifier(10);
-               token.setUserId(request.getRemoteUser());
                token.setProperty(OAuthKeys.OAUTH_VERIFIER, verifier);
                callback = OAuth.addParameters(callback, OAuthKeys.OAUTH_TOKEN, token.getToken(), OAuthKeys.OAUTH_VERIFIER, verifier);
             }

@@ -282,11 +282,6 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
       OAuthServlet.handleException(response, e, realm, sendBody);
    }
    
-   public static String getLoginCallbackURL()
-   {
-      return "http://localhost:8080/exo-oauth-provider/OAuthLoginCallback";
-   }
-   
    /**
     * Create a secure random string
     * result is string that fit the ASCII letters 1-9, A-Z, a-z
