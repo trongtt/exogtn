@@ -161,8 +161,10 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
          {
             if (Boolean.TRUE.equals(token.getProperty(OAuthKeys.OAUTH_AUTHORIZED)))
             {
+               final String verifier = SimpleOAuthServiceProvider.createVerifier(10);
                token.setUserId(request.getRemoteUser());
-               callback = OAuth.addParameters(callback, OAuthKeys.OAUTH_TOKEN, token.getToken());
+               token.setProperty(OAuthKeys.OAUTH_VERIFIER, verifier);
+               callback = OAuth.addParameters(callback, OAuthKeys.OAUTH_TOKEN, token.getToken(), OAuthKeys.OAUTH_VERIFIER, verifier);
             }
             else
             {

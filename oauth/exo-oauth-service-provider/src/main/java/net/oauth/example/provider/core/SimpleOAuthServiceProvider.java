@@ -28,6 +28,7 @@ import org.picocontainer.Startable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -284,5 +285,24 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
    public static String getLoginCallbackURL()
    {
       return "http://localhost:8080/exo-oauth-provider/OAuthLoginCallback";
+   }
+   
+   /**
+    * Create a secure random string
+    * result is string that fit the ASCII letters 1-9, A-Z, a-z
+    * 
+    * @param length
+    * @return
+    */
+   public static String createVerifier(int length)
+   {
+      final char[] CODEC = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
+      byte[] bytes = new byte[length];
+      new SecureRandom().nextBytes(bytes);
+      char[] chars = new char[bytes.length];
+      for (int i = 0; i < bytes.length; i++) {
+         chars[i] = CODEC[((bytes[i] & 0xFF) % CODEC.length)];
+      }
+      return new String(chars);
    }
 }

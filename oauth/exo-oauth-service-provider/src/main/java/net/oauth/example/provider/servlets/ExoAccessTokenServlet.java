@@ -68,7 +68,18 @@ public class ExoAccessTokenServlet extends AbstractHttpServlet
          {
             throw new OAuthProblemException(OAuthKeys.OAUTH_TOKEN_EXPIRED);
          }
-
+         
+         //Verify secure string oauth_verifier that is created in authorization step
+         if(token.getProperty(OAuthKeys.OAUTH_VERIFIER) != null)
+         {
+            String verifier = (String) token.getProperty(OAuthKeys.OAUTH_VERIFIER);
+            if(!verifier.equals(requestMessage.getParameter(OAuthKeys.OAUTH_VERIFIER)))
+            {
+               throw new OAuthProblemException(OAuthKeys.OAUTH_VERIFIER_INVALID);
+            }
+            token.getProperties().remove(OAuthKeys.OAUTH_VERIFIER);
+         }
+         
          OAuthValidator validator = (OAuthValidator)container.getComponentInstanceOfType(OAuthValidator.class);
          validator.validateMessage(requestMessage, SimpleOAuthServiceProvider.buildAccessor(token));
 

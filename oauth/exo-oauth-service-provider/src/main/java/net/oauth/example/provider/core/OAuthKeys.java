@@ -40,4 +40,6 @@ public class OAuthKeys
    public static final String OAUTH_PERMISSION_DENIED = "oauth_permission_denied";
    public static final String OAUTH_ACCESSOR_SECRET = "oauth_accessor_secret";
    public static final String OAUTH_CONSUMER_NAME = "oauth_consumer_name";
+   public static final String OAUTH_VERIFIER = "oauth_verifier";
+   public static final String OAUTH_VERIFIER_INVALID = "oauth_verifier_invalid";
 }
