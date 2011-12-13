@@ -24,7 +24,7 @@
    xmlns="http://www.exoplaform.org/xml/ns/kernel_1_2.xsd">
    
    <component>
-      <type>net.oauth.example.provider.core.ExoOAuth2LeggedProviderService</type>
+      <type>org.exoplatform.oauth.provider.impl.ExoOAuth2LeggedProviderService</type>
    </component>
 
    <component>
@@ -33,8 +33,8 @@
    </component>
 
    <component>
-      <key>net.oauth.example.provider.core.OAuthServiceProvider</key>
-      <type>net.oauth.example.provider.core.SimpleOAuthServiceProvider</type>
+      <key>org.exoplatform.oauth.provider.OAuthServiceProvider</key>
+      <type>org.exoplatform.oauth.provider.impl.SimpleOAuthServiceProvider</type>
    </component>
 
 </configuration>

@@ -26,11 +26,11 @@
    xmlns="http://www.exoplaform.org/xml/ns/kernel_1_1.xsd">
 
   <component>
-    <type>trongtt.examples.SimpleRest</type>
+    <type>org.exoplatform.oauth.provider.example.rest.SimpleRest</type>
   </component>
   
   <component>
-    <type>trongtt.examples.SocialRest</type>
+    <type>org.exoplatform.oauth.provider.example.rest.SocialRest</type>
   </component>
 
 </configuration>

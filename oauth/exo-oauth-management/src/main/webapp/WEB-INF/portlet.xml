@@ -28,7 +28,7 @@
       <description xml:lang="EN">The portlet manages the OAuth authorized token</description>
       <portlet-name>OAuthTokenManagementPortlet</portlet-name>
       <display-name>OAuth Authorized Tokens</display-name>
-      <portlet-class>org.exoplatform.oauth.portlet.UITokenManagementPortlet</portlet-class>
+      <portlet-class>org.exoplatform.oauth.provider.portlet.UITokenPortlet</portlet-class>
       <supports>
          <mime-type>text/html</mime-type>
       </supports>
@@ -48,7 +48,7 @@
       <description xml:lang="EN">Manage consumer applications that access to GateIn OAuth provider</description>
       <portlet-name>OAuthConsumerManagementPortlet</portlet-name>
       <display-name>OAuth Consumer Applications</display-name>
-      <portlet-class>org.exoplatform.oauth.portlet.UIConsumerManagementPortlet</portlet-class>
+      <portlet-class>org.exoplatform.oauth.provider.portlet.UIConsumerPortlet</portlet-class>
       <supports>
          <mime-type>text/html</mime-type>
       </supports>

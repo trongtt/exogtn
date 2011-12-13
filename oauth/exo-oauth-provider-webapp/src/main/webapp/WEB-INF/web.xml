@@ -2,18 +2,18 @@
 <web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee 
 	http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
-   <display-name>portal</display-name>
+   <display-name>exo-oauth-provider</display-name>
    <filter>
       <filter-name>PortalContainerInitializedFilter</filter-name>
       <filter-class>org.exoplatform.ws.frameworks.servlet.PortalContainerInitializedFilter</filter-class>
    </filter>
    <filter>
       <filter-name>ExoOAuth3LeggedFilter</filter-name>
-      <filter-class>net.oauth.example.provider.servlets.ExoOAuth3LeggedFilter</filter-class>
+      <filter-class>org.exoplatform.oauth.provider.ExoOAuth3LeggedFilter</filter-class>
    </filter>
    <filter>
       <filter-name>ExoOAuth2LeggedFilter</filter-name>
-      <filter-class>net.oauth.example.provider.servlets.ExoOAuth2LeggedFilter</filter-class>
+      <filter-class>org.exoplatform.oauth.provider.ExoOAuth2LeggedFilter</filter-class>
    </filter>
    <filter>
       <filter-name>RestEncodingFilter</filter-name>
@@ -51,23 +51,19 @@
 
    <servlet>
       <servlet-name>ExoRequestTokenServlet</servlet-name>
-      <servlet-class>net.oauth.example.provider.servlets.ExoRequestTokenServlet</servlet-class>
+      <servlet-class>org.exoplatform.oauth.provider.ExoRequestTokenServlet</servlet-class>
    </servlet>
    <servlet>
       <servlet-name>ExoAuthorizationServlet</servlet-name>
-      <servlet-class>net.oauth.example.provider.servlets.ExoAuthorizationServlet</servlet-class>
+      <servlet-class>org.exoplatform.oauth.provider.ExoAuthorizationServlet</servlet-class>
    </servlet>
    <servlet>
       <servlet-name>ExoAccessTokenServlet</servlet-name>
-      <servlet-class>net.oauth.example.provider.servlets.ExoAccessTokenServlet</servlet-class>
+      <servlet-class>org.exoplatform.oauth.provider.ExoAccessTokenServlet</servlet-class>
    </servlet>
    <servlet>
       <servlet-name>OAuthProtectedServlet</servlet-name>
-      <servlet-class>net.oauth.example.provider.servlets.OAuthProtectedServlet</servlet-class>
-   </servlet>
-   <servlet>
-      <servlet-name>OAuthLoginCallback</servlet-name>
-      <servlet-class>net.oauth.example.provider.servlets.OAuthLoginCallback</servlet-class>
+      <servlet-class>org.exoplatform.oauth.provider.example.servlet.OAuthProtectedServlet</servlet-class>
    </servlet>
    <servlet>
       <servlet-name>RestServer</servlet-name>
@@ -90,10 +86,6 @@
    <servlet-mapping>
       <servlet-name>OAuthProtectedServlet</servlet-name>
       <url-pattern>/echo</url-pattern>
-   </servlet-mapping>
-   <servlet-mapping>
-      <servlet-name>OAuthLoginCallback</servlet-name>
-      <url-pattern>/OAuthLoginCallback</url-pattern>
    </servlet-mapping>
    <servlet-mapping>
       <servlet-name>RestServer</servlet-name>
