@@ -270,9 +270,6 @@ function getModule(params)
    module.oauth.exampleConsumer =
    new Project("org.exoplatform.portal", "example-oauth-consumer", "war", module.version);
 
-   module.oauth.exampleGadget =
-   new Project("org.exoplatform.portal", "example-oauth-gadget", "war", module.version);
-
    module.oauth.exampleRest =
    new Project("org.exoplatform.portal", "example-rest-service", "jar", module.version);
 
