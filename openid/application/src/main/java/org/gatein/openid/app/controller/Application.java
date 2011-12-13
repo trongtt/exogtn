@@ -18,12 +18,13 @@
  */
 package org.gatein.openid.app.controller;
 
+import org.exoplatform.openid.OpenIDService;
 import org.exoplatform.openid.OpenIdUtil;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.web.security.security.AbstractTokenService;
 import org.exoplatform.web.security.security.TransientTokenService;
-import org.gatein.openid.app.Session;
+import org.gatein.openid.app.OpenId;
 import org.gatein.wci.security.Credentials;
 import org.juzu.Action;
 import org.juzu.Path;
@@ -66,23 +67,13 @@ public class Application
    org.gatein.openid.app.templates.index index;
 
    @Inject
-   @Path("register.gtmpl")
-   org.gatein.openid.app.templates.register register;
-
-   @Inject
-   Session session;
+   OpenId openid;
 
    @View
    public void index() throws IOException
    {
       String returnUrl = Application_.processReturnURL().toString();
       index.returnUrl(returnUrl).render();
-   }
-
-   @View
-   public void register() throws IOException
-   {
-      register.render();
    }
 
    @Action
@@ -93,8 +84,8 @@ public class Application
          ConsumerManager manager = OpenIdUtil.getConsumerManager();
          List<DiscoveryInformation> discoveries = manager.discover(openid_identifier);
          DiscoveryInformation discovery = manager.associate(discoveries);
-         session.setDiscoveryInfo(discovery);
-         session.setReturnUrl(returnUrl);
+         openid.setDiscoveryInfo(discovery);
+         openid.setReturnUrl(returnUrl);
          returnUrl = "http://localhost:8080" + returnUrl;
 
          //         returnUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + returnUrl;
@@ -136,10 +127,11 @@ public class Application
       }
       else
       {
-         session.setOpenIdToken(token);
-//         _processOpenIDAccount(request, response);
+         openid.setOpenIdToken(token);
+         return _processOpenIDAccount(request);
       }
-      return Application_.register();
+      return null;
+//      return Register_.index();
    }
 
    private String _readOpenIdResponse(RequestContext request)
@@ -151,7 +143,7 @@ public class Application
          Map<String, String[]> parameterMap = request.getParameters();
          ParameterList paramList = new ParameterList(parameterMap);
 
-         DiscoveryInformation discovered = session.getDiscoveryInfo();
+         DiscoveryInformation discovered = openid.getDiscoveryInfo();
 
          String[] returnValues = parameterMap.get("openid.return_to");
          String receivingURL = returnValues == null ? null : returnValues[0];
@@ -179,6 +171,7 @@ public class Application
             }
 
             _log.info("Your OpenID: " + verified.getIdentifier());
+            openid.setOpenIdIdentifier(verified.getIdentifier());
             TransientTokenService tokenService = AbstractTokenService.getInstance(TransientTokenService.class);
             Credentials credentials = new Credentials(verified.getIdentifier(), authSuccess.getSignature());
             return tokenService.createToken(credentials);
@@ -192,9 +185,9 @@ public class Application
       return null;
    }
 
-   /*private void _processOpenIDAccount(RequestContext request)
+   private Response _processOpenIDAccount(RequestContext request)
    {
-      String token = session.getOpenIdToken();
+      String token = openid.getOpenIdToken();
       TransientTokenService tokenService = AbstractTokenService.getInstance(TransientTokenService.class);
       Credentials tCredentials = tokenService.validateToken(token, false);
       if (tCredentials != null)
@@ -204,18 +197,18 @@ public class Application
             String identifier = tCredentials.getUsername();
             OpenIDService service = OpenIdUtil.getOpenIDService();
             String username = service.findUsernameByOpenID(identifier);
-            session.setOpenIdIdentifier(identifier);
-//            request.getPortletSession().setAttribute(OpenIdKeys.OPENID_IDENTIFIER, identifier);
             if (username != null)
             {
-//               OpenIdUtil.autoLogin(username, request, response);
+               Credentials credentials = new Credentials(username, token);
+               token = tokenService.createToken(credentials);
+
+               ActionContext actionCtx = (ActionContext) InternalApplicationContext.getCurrentRequest();
+               return actionCtx.redirect("/portal/openidservlet?token=" + token);
             }
             else
             {
-               //ask user create account
                _log.info("Go to register new account");
-//               request.setAttribute(OpenIdKeys.OPENID_IDENTIFIER, identifier);
-//               request.setAttribute(OpenIdKeys.OPEN_ID_RESPONSE_STATUS, OpenIdKeys.OPEN_ID_RESPONSE_STATUS_REGISTER);
+               return Register_.index();
             }
          }
          catch (Exception e)
@@ -224,5 +217,7 @@ public class Application
             e.printStackTrace();
          }
       }
-   }*/
+      
+      return null;
+   }
 }

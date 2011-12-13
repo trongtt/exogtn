@@ -1,6 +1,5 @@
 #{decorate path=main.gtmpl/} #{title value=Home/}
 #{param name=returnUrl/}
-
 <script type="text/javascript">
    function submit(openid) {
       if (openid) {

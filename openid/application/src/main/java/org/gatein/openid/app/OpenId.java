@@ -31,7 +31,7 @@ import javax.inject.Named;
  */
 @Named("Session")
 @SessionScoped
-public class Session implements Serializable
+public class OpenId implements Serializable
 {
 
    private String returnUrl;

@@ -1,1 +1,37 @@
-register
+#{decorate path=main.gtmpl/}
+<a href="@{Application.index()}">Login</a>
+
+<form name="openid-register-form" action="@{Register.register()}" method="post" accept-charset="utf-8" style="border: 1px">
+	<div class="message">
+		Register new user and map openID with this user
+		<p>
+		</p>
+	</div>
+	<div id="AccountInputSet" class="UIFormInputSet">
+		<table class="UIFormGrid">
+			<tbody>
+				<tr>
+					<td class="FieldComponent"><input type="text" name="username" id="username" value="Username" /> *</td>
+				</tr>
+				<tr>
+					<td class="FieldComponent"><input type="text" name="password" id="password" value="Password" /> *</td>
+				</tr>
+				<tr>
+					<td class="FieldComponent"><input type="text" name="confirmPassword" id="confirmpassword" value="Confirm password" /> *</td>
+				</tr>
+				<tr>
+					<td class="FieldComponent"><input type="text" name="firstName" id="firstName" value="First name" /> *</td>
+				</tr>
+				<tr>
+					<td class="FieldComponent"><input type="text" name="lastName" id="lastName" value="Last name" /> *</td>
+				</tr>
+				<tr>
+					<td class="FieldComponent"><input type="text" name="email" type="text" id="email" value="Email" /> *</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="action">
+			<input type="submit" value="Submit"></input>
+		</div>
+	</div>
+</form>

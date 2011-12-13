@@ -79,7 +79,7 @@ public class OpenIdUtil
 
       response.sendRedirect("/portal/openidservlet?token=" + token);
    }
-
+   
    public static PortalContainer getContainer()
    {
       return PortalContainer.getInstance();
