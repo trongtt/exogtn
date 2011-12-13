@@ -1,0 +1,88 @@
+#OpenIdPortlet input {
+	padding: 8px;
+	outline: none;
+	margin: 10px;
+}
+
+#OpenIdPortlet form {
+	text-align: left;
+}
+
+#OpenIdPortlet .action {
+	margin: 12px 14px;
+	padding-bottom: 14px;
+}
+
+#OpenIdPortlet .message {
+	padding: 15px;
+	font-size: 120%;
+}
+
+#OpenIdPortlet input[type="text"],#OpenIdPortlet input[type="text"] input[type="password"] {
+}
+
+#OpenIdPortlet input[type="submit"],#OpenIdPortlet .ActionButton {
+	cursor: pointer;
+	padding: 5px;
+	border: 1px solid #999999;
+	font-size: 140%;
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+#OpenIdPortlet .focusField {
+	border: solid 1px #73A6FF;
+	background: #EFF5FF;
+	color: #000;
+}
+
+#OpenIdPortlet .OpenIdButton {
+	overflow: auto;
+}
+
+#OpenIdPortlet .openid_large_btn1 {
+	-moz-border-bottom-colors: none;
+	-moz-border-image: none;
+	-moz-border-left-colors: none;
+	-moz-border-right-colors: none;
+	-moz-border-top-colors: none;
+	border-color: #DDDDDD #CCCCCC #CCCCCC #DDDDDD;
+	border-radius: 5px 5px 5px 5px;
+	border-style: solid;
+	border-width: 2px;
+	box-shadow: 2px 2px 4px #DDDDDD;
+	float: left;
+	height: 60px;
+	margin: 3px;
+	width: 100px;
+}
+
+#OpenIdPortlet .idleField {
+	background: #EEE;
+	color: #6F6F6F;
+	border: solid 1px #DFDFDF;
+}
+
+#AccountInputSet input {
+	outline: none;
+	margin: 4px;
+}
+
+#OpenIdPortlet #AccountInputSet .UIFormGrid {
+	margin: 0 14px;
+	width: 50%;
+}
+
+#OpenIdPortlet #AccountInputSet .FieldLabel {
+	width: 25%;
+	text-align: right;
+	vertical-align: middle;
+}
+
+#OpenIdPortlet #AccountInputSet input[type="text"],#OpenIdPortlet #AccountInputSet input[type="password"] {
+	width: 68%;
+	padding: 4px;
+}
+
+#OpenIdPortlet #AccountInputSet input[type="submit"] {
+	padding: 3px;
+}
