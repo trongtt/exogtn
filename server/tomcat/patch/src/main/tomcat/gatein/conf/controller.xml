@@ -125,6 +125,13 @@
 
   </route>
 
+  <!-- Script handler -->
+  <route path="/scripts/{gtn:resourcescope}/{gtn:resourceid}.js">
+    <route-param qname="gtn:handler">
+      <value>script</value>
+    </route-param>
+  </route>
+
   <route path="/{gtn:path}">
     <route-param qname="gtn:handler">
       <value>staticResource</value>
