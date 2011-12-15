@@ -79,18 +79,18 @@ eXo.require = function(module, jsLocation, callback, context, params) {
 } ;
 
 eXo.loadJS = function(paths, callback, context, params) {
-  if (!paths || !paths.length) return;
+  if (!paths || !paths.length) return;  
+  var tmp = [], loader = eXo.core.Loader;
   
-  var tmp = [];
   paths = typeof paths === 'string' ? [paths] : paths;  
   for (var i = 0; i < paths.length; i++) {
-	  if (!eXo.core.Loader.loadedScripts[paths[i]]) {
-		  eXo.core.Loader.register(paths[i], paths[i]);
+	  if (!loader.loadedScripts[paths[i]]) {
+		  loader.register(paths[i], paths[i]);
 		  tmp.push(paths[i]);
 	  }	  
   }
   if (tmp.length > 0) {
-	  eXo.core.Loader.init(tmp, callback, context, params);	  
+	  loader.init(tmp, callback, context, params);	  
   }
   
   eXo.session.startItv();
@@ -134,39 +134,45 @@ eXo.session.itvObj = null;
 eXo.session.initialized = false;
 
 eXo.session.itvInit = function() {
-   if (!eXo.session.initialized && eXo.session.canKeepState && eXo.env.portal.accessMode == 'private') {
-      if (!eXo.session.openUrl) eXo.session.openUrl = eXo.env.server.createPortalURL("UIPortal", "Ping", false) ;
-      if (!eXo.session.itvTime) eXo.session.itvTime = 1800;
-      eXo.session.initialized = true;
-      eXo.session.openItv();
+   var session = eXo.session, env = eXo.env;
+   if (!session.initialized && session.canKeepState && env.portal.accessMode == 'private') {
+      if (!session.openUrl) session.openUrl = env.server.createPortalURL("UIPortal", "Ping", false) ;
+      if (!session.itvTime) session.itvTime = 1800;
+      session.initialized = true;
+      session.openItv();
    }
 } ;
 
 eXo.session.startItv = function() {
-   if (eXo.session.initialized) {
-      eXo.session.destroyItv();
-      if (eXo.session.canKeepState && eXo.env.portal.accessMode == 'private') {
-         if (eXo.session.itvTime > 0) eXo.session.itvObj = window.setTimeout("eXo.session.openItv()", (eXo.session.itvTime - 10) * 1000) ;
+   var session = eXo.session;
+   if (session.initialized) {
+      session.destroyItv();
+      if (session.canKeepState && eXo.env.portal.accessMode == 'private') {
+         if (session.itvTime > 0) session.itvObj = window.setTimeout("eXo.session.openItv()", (session.itvTime - 10) * 1000) ;
       }
-   } else if (eXo.session.isOpen) {
-      eXo.session.itvInit();
+   } else if (session.isOpen) {
+      session.itvInit();
    }
 } ;
 
 eXo.session.openItv = function() {
-	var result = ajaxAsyncGetRequest(eXo.session.openUrl, false) ;
-	if(!isNaN(result)) eXo.session.itvTime = parseInt(result) ;
+	var session = eXo.session;
+	var result = ajaxAsyncGetRequest(session.openUrl, false) ;
+	if(!isNaN(result)) session.itvTime = parseInt(result) ;
 } ;
 
 eXo.session.destroyItv = function () {
-   window.clearTimeout(eXo.session.itvObj) ;
-   eXo.session.itvObj = null ;
+   var session = eXo.session;
+   window.clearTimeout(session.itvObj) ;
+   session.itvObj = null ;
 } ;
 
 eXo.debug = function(message) {
 	if(!eXo.developing) return;
-	if(eXo.webui.UINotification) {
+	
+	var webui = eXo.webui;
+	if(webui.UINotification) {
 		message = "DEBUG: " + message;
-		eXo.webui.UINotification.addMessage(message);
+		webui.UINotification.addMessage(message);
 	}
 } ;
