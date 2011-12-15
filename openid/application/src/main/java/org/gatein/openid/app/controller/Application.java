@@ -22,7 +22,6 @@ import org.exoplatform.openid.OpenIDService;
 import org.exoplatform.openid.OpenIdUtil;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.web.security.security.AbstractTokenService;
 import org.exoplatform.web.security.security.TransientTokenService;
 import org.gatein.openid.app.OpenId;
 import org.gatein.wci.security.Credentials;
@@ -68,6 +67,9 @@ public class Application
 
    @Inject
    OpenId openid;
+   
+   @Inject
+   TransientTokenService tokenService;
 
    @View
    public void index() throws IOException
@@ -172,7 +174,6 @@ public class Application
 
             _log.info("Your OpenID: " + verified.getIdentifier());
             openid.setOpenIdIdentifier(verified.getIdentifier());
-            TransientTokenService tokenService = AbstractTokenService.getInstance(TransientTokenService.class);
             Credentials credentials = new Credentials(verified.getIdentifier(), authSuccess.getSignature());
             return tokenService.createToken(credentials);
          }
@@ -188,7 +189,6 @@ public class Application
    private Response _processOpenIDAccount(RequestContext request)
    {
       String token = openid.getOpenIdToken();
-      TransientTokenService tokenService = AbstractTokenService.getInstance(TransientTokenService.class);
       Credentials tCredentials = tokenService.validateToken(token, false);
       if (tCredentials != null)
       {

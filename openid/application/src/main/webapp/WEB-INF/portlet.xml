@@ -3,6 +3,7 @@
    http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd">
    <portlet>
       <portlet-name>OpenIdApplication</portlet-name>
+      <display-name xml:lang="EN">OpenId Application</display-name>
       <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
       <supports>
          <mime-type>text/html</mime-type>
