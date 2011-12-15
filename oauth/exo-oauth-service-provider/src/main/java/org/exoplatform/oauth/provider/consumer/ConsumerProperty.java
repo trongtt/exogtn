@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2011 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -16,36 +16,20 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.exoplatform.oauth.provider;
+package org.exoplatform.oauth.provider.consumer;
+
+import org.chromattic.api.annotations.PrimaryType;
+import org.chromattic.api.annotations.Property;
 
 /**
- * @author <a href="trongtt@gmail.com">Trong Tran</a>
- * @version $Revision$
+ * @author <a href="hoang281283@gmail.com">Minh Hoang TO</a>
+ * @date 12/14/11
  */
-public class AccessToken extends OAuthToken
+@PrimaryType(name = "oauth:consumerproperty")
+public abstract class ConsumerProperty
 {
-   public AccessToken()
-   {
-   }
+   @Property(name = "value")
+   public abstract String getPropertyValue();
 
-   public AccessToken(org.exoplatform.oauth.provider.token.AccessToken tk)
-   {
-      setToken(tk.getAccessTokenID());
-      setConsumerKey(tk.getConsumerKey());
-      setTokenSecret(tk.getAccessTokenSecret());
-      setUserId(tk.getUserID());
-   }
-
-   @Override
-   public AccessToken clone()
-   {
-      try
-      {
-         return (AccessToken) super.clone();
-      }
-      catch (CloneNotSupportedException e)
-      {
-         throw new RuntimeException(e);
-      }
-   }
+   public abstract String setPropertyValue(String value);
 }

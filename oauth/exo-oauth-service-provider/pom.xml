@@ -66,5 +66,11 @@
          <version>2.4.3-GA</version>
          <scope>provided</scope>
       </dependency>
+
+     <dependency>
+       <groupId>org.chromattic</groupId>
+       <artifactId>chromattic.apt</artifactId>
+       <scope>compile</scope>
+     </dependency>
    </dependencies>
 </project>

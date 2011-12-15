@@ -20,7 +20,6 @@ import net.oauth.OAuthAccessor;
 import net.oauth.OAuthConsumer;
 import net.oauth.OAuthProblemException;
 import net.oauth.server.OAuthServlet;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.oauth.provider.AccessToken;
@@ -28,18 +27,18 @@ import org.exoplatform.oauth.provider.ConsumerInfo;
 import org.exoplatform.oauth.provider.OAuthServiceProvider;
 import org.exoplatform.oauth.provider.OAuthToken;
 import org.exoplatform.oauth.provider.RequestToken;
+import org.exoplatform.oauth.provider.consumer.Consumer;
+import org.exoplatform.oauth.provider.consumer.ConsumerStorage;
+import org.exoplatform.oauth.provider.token.AccessTokenStorage;
 import org.picocontainer.Startable;
-
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.security.SecureRandom;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -54,76 +53,25 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startable
 {
-   /*store all consumers into map with consumer key as identifier*/
-   private final Map<String, ConsumerInfo> consumers = Collections
-      .synchronizedMap(new HashMap<String, ConsumerInfo>(10));
-
-   /* The access token should be persisted in DB */
-   private Map<String, AccessToken> accessTokens = new HashMap<String, AccessToken>();
-
    /* The request token should be transient and expired in short time */
    private Map<String, RequestToken> requestTokens = new HashMap<String, RequestToken>();
 
+   private AccessTokenStorage tokenStorage;
+
+   private ConsumerStorage consumerInfoStorage;
+
+   public SimpleOAuthServiceProvider(AccessTokenStorage tokenStorage, ConsumerStorage consumerInfStorage) throws Exception
+   {
+      this.tokenStorage = tokenStorage;
+      this.consumerInfoStorage = consumerInfStorage;
+   }
+
    public void start()
    {
-      try
-      {
-         loadConsumers();
-      }
-      catch (IOException e)
-      {
-         e.printStackTrace();
-      }
    }
 
    public void stop()
    {
-   }
-
-   /**
-    * Load all consumers from a file and store them into memory
-    * 
-    * @throws IOException
-    */
-   private void loadConsumers() throws IOException
-   {
-      Properties p = new Properties();
-      String resourceName = "consumer.properties";
-      URL resource = this.getClass().getResource(resourceName);
-      if (resource == null)
-      {
-         throw new IOException("resource not found: " + resourceName);
-      }
-      InputStream stream = resource.openStream();
-      try
-      {
-         p.load(stream);
-      }
-      finally
-      {
-         stream.close();
-      }
-
-      // for each entry in the properties file create a OAuthConsumer
-      for (Map.Entry<Object, Object> prop : p.entrySet())
-      {
-         String consumer_key = (String)prop.getKey();
-         // make sure it's key not additional properties
-         if (!consumer_key.contains("."))
-         {
-            String consumer_secret = (String)prop.getValue();
-            if (consumer_secret != null)
-            {
-               String consumer_description = (String)p.getProperty(consumer_key + ".description");
-               String consumer_callback_url = (String)p.getProperty(consumer_key + ".callbackURL");
-               // Create OAuthConsumer w/ key and secret
-               OAuthConsumer consumer = new OAuthConsumer(consumer_callback_url, consumer_key, consumer_secret, null);
-               consumer.setProperty("name", consumer_key);
-               consumer.setProperty("description", consumer_description);
-               addConsumer(toConsumerInfo(consumer));
-            }
-         }
-      }
    }
 
    /**
@@ -136,32 +84,37 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
     */
    public ConsumerInfo getConsumer(String consumer_key)
    {
-      try
+      Consumer inf = consumerInfoStorage.getConsumer(consumer_key);
+
+      if(inf == null)
       {
-         // Try to reload consumers from the consumer.propreties.
-         // It helps to be able to edit the file at runtime for testing
-         loadConsumers();
+         return null;
       }
-      catch (IOException e)
+      else
       {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
+         return new ConsumerInfo(inf);
       }
-      return consumers.get(consumer_key);
    }
 
    public void addConsumer(ConsumerInfo consumer)
    {
-      consumers.put(consumer.getConsumerKey(), consumer);
+      System.out.println("Registering consumer info: " + consumer.getConsumerKey());
+      consumerInfoStorage.registerConsumer(consumer);
    }
 
    public void removeConsumer(String consumerKey)
    {
-      consumers.remove(consumerKey);
+      consumerInfoStorage.deleteConsumer(consumerKey);
    }
 
    public Map<String, ConsumerInfo> getAllConsumers()
    {
+      Map<String, ConsumerInfo> consumers = new LinkedHashMap<String, ConsumerInfo>();
+      for(Consumer inf : consumerInfoStorage.getConsumers())
+      {
+         consumers.put(inf.getKey(), new ConsumerInfo(inf));
+      }
+
       return consumers;
    }
 
@@ -207,20 +160,7 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
          // remove request token
          requestTokens.remove(requestToken);
 
-         // generate oauth_token and oauth_secret from consumer name (key)
-         String token_data = requestToken.getConsumerKey() + System.nanoTime();
-         String tokenMd5 = DigestUtils.md5Hex(token_data);
-
-         String secret_data = requestToken.getConsumerKey() + System.nanoTime() + tokenMd5;
-         String secretMd5 = DigestUtils.md5Hex(secret_data);
-
-         AccessToken token = new AccessToken();
-         token.setToken(tokenMd5);
-         token.setConsumerKey(requestToken.getConsumerKey());
-         token.setTokenSecret(secretMd5);
-         token.setUserId(requestToken.getUserId());
-         accessTokens.put(tokenMd5, token);
-         return token;
+         return new AccessToken(tokenStorage.generateAccessToken(requestToken));
       }
       return null;
    }
@@ -232,12 +172,20 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
 
    public AccessToken getAccessToken(String token)
    {
-      return accessTokens.get(token);
+      org.exoplatform.oauth.provider.token.AccessToken tk = tokenStorage.getAccessToken(token);
+      if(tk == null)
+      {
+         return null;
+      }
+      else
+      {
+         return new AccessToken(tk);
+      }
    }
 
    public void revokeAccessToken(String token)
    {
-      accessTokens.remove(token);
+      tokenStorage.removeAccessToken(token);
    }
    
    public void revokeRequestToken(String token)
@@ -247,7 +195,12 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
 
    public Collection<AccessToken> getAuthorizedTokens()
    {
-      return accessTokens.values();
+      List<AccessToken> tokens = new LinkedList<AccessToken>();
+      for(org.exoplatform.oauth.provider.token.AccessToken tk : tokenStorage.getAccessTokens())
+      {
+         tokens.add(new AccessToken(tk));
+      }
+      return tokens;
    }
 
    public static OAuthAccessor buildAccessor(OAuthToken token)

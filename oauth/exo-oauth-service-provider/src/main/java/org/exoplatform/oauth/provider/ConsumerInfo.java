@@ -18,6 +18,8 @@
  */
 package org.exoplatform.oauth.provider;
 
+import org.exoplatform.oauth.provider.consumer.Consumer;
+import org.exoplatform.oauth.provider.consumer.ConsumerProperty;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,6 +58,19 @@ public class ConsumerInfo
    public ConsumerInfo()
    {
       // TODO Auto-generated constructor stub
+   }
+
+   //Constructor facilitating binding between Consumer and ConsumerInfo.
+   public ConsumerInfo(Consumer consumer)
+   {
+      this.consumerKey = consumer.getKey();
+      this.consumerSecret = consumer.getSecret();
+      this.callbackUrl = consumer.getCallbackURL();
+
+      for(Map.Entry<String, ConsumerProperty> entry : consumer.getProperties().entrySet())
+      {
+         properties.put(entry.getKey(), entry.getValue().getPropertyValue());
+      }
    }
 
    /**

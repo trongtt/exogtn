@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2011 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -18,34 +18,37 @@
  */
 package org.exoplatform.oauth.provider;
 
+import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.component.RequestLifeCycle;
+import org.exoplatform.container.web.AbstractFilter;
+import java.io.IOException;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
 /**
- * @author <a href="trongtt@gmail.com">Trong Tran</a>
- * @version $Revision$
+ * @author <a href="hoang281283@gmail.com">Minh Hoang TO</a>
+ * @date 12/13/11
  */
-public class AccessToken extends OAuthToken
+public class InitTransactionFilter extends AbstractFilter
 {
-   public AccessToken()
-   {
-   }
-
-   public AccessToken(org.exoplatform.oauth.provider.token.AccessToken tk)
-   {
-      setToken(tk.getAccessTokenID());
-      setConsumerKey(tk.getConsumerKey());
-      setTokenSecret(tk.getAccessTokenSecret());
-      setUserId(tk.getUserID());
-   }
-
-   @Override
-   public AccessToken clone()
+   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException
    {
       try
       {
-         return (AccessToken) super.clone();
+         ExoContainer container = getContainer();
+         RequestLifeCycle.begin(container);
+
+         chain.doFilter(request, response);
       }
-      catch (CloneNotSupportedException e)
+      finally
       {
-         throw new RuntimeException(e);
+         RequestLifeCycle.end();
       }
+   }
+
+   public void destroy()
+   {
    }
 }

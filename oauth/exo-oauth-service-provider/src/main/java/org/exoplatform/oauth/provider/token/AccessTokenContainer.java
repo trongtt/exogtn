@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2011 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -16,36 +16,31 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.exoplatform.oauth.provider;
+package org.exoplatform.oauth.provider.token;
+
+import org.chromattic.api.annotations.Create;
+import org.chromattic.api.annotations.OneToMany;
+import org.chromattic.api.annotations.PrimaryType;
+import java.util.Map;
 
 /**
- * @author <a href="trongtt@gmail.com">Trong Tran</a>
- * @version $Revision$
+ * @author <a href="hoang281283@gmail.com">Minh Hoang TO</a>
+ * @date 12/13/11
  */
-public class AccessToken extends OAuthToken
+@PrimaryType(name = "oauth:accesstokencontainer")
+public abstract class AccessTokenContainer
 {
-   public AccessToken()
-   {
-   }
+   @Create
+   protected abstract AccessToken createAccessToken();
 
-   public AccessToken(org.exoplatform.oauth.provider.token.AccessToken tk)
-   {
-      setToken(tk.getAccessTokenID());
-      setConsumerKey(tk.getConsumerKey());
-      setTokenSecret(tk.getAccessTokenSecret());
-      setUserId(tk.getUserID());
-   }
+   @OneToMany
+   protected abstract Map<String, AccessToken> getAccessTokens();
 
-   @Override
-   public AccessToken clone()
+   public void deleteAccessToken(String tokenID)
    {
-      try
+      if(tokenID != null)
       {
-         return (AccessToken) super.clone();
-      }
-      catch (CloneNotSupportedException e)
-      {
-         throw new RuntimeException(e);
+         getAccessTokens().remove(tokenID);
       }
    }
 }
