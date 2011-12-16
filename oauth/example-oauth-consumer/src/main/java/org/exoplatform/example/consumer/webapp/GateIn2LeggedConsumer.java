@@ -43,8 +43,17 @@ public class GateIn2LeggedConsumer extends HttpServlet
       OAuthConsumer consumer = null;
       try
       {
+         String oauth_token = request.getParameter("oauth_token");
+         String oauth_token_secret = request.getParameter("oauth_token_secret");
+         if(oauth_token == null || oauth_token_secret == null)
+         {
+            request.getRequestDispatcher("gateintoken.jsp").forward(request, response);
+            return;
+         }
          consumer = CookieConsumer.getConsumer("gatein2", getServletContext());
          OAuthAccessor accessor = CookieConsumer.getAccessor(request, response, consumer, true);
+         accessor.accessToken = oauth_token;
+         accessor.tokenSecret = oauth_token_secret;
          OAuthMessage message =
             accessor.newRequestMessage(OAuthMessage.GET,
                "http://localhost:8080/exo-oauth-provider/rest/SocialRest/infos", null);

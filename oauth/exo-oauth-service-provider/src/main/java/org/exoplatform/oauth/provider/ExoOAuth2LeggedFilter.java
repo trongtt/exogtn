@@ -16,24 +16,8 @@
  */
 package org.exoplatform.oauth.provider;
 
-import net.oauth.OAuth;
-import net.oauth.OAuthAccessor;
-import net.oauth.OAuthMessage;
-import net.oauth.OAuthValidator;
-import net.oauth.server.OAuthServlet;
-
-import org.exoplatform.container.ExoContainer;
-import org.exoplatform.container.web.AbstractFilter;
-import org.exoplatform.oauth.provider.impl.ExoOAuth2LeggedProviderService;
-
-import java.io.IOException;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.exoplatform.oauth.provider.token.AccessToken;
 
 /**
  * A Filter used to authorize a request that follows OAuth two legged flows
@@ -46,48 +30,23 @@ import javax.servlet.http.HttpServletResponse;
  * - oauth_version version of OAuth specification (1.0, 2.0)
  * - oauth_signature signature that signed this request
  * 
- * See OAuth 1.0 specification for more detail
+ * See OAuth 1.0a specification for more detail
  * 
  * Created by The eXo Platform SAS
  * Author : Nguyen Anh Kien
  *          nguyenanhkien2a@gmail.com
  * Dec 2, 2010  
  */
-public class ExoOAuth2LeggedFilter extends AbstractFilter
+public class ExoOAuth2LeggedFilter extends ExoOAuthFilter
 {
-   /* (non-Javadoc)
-    * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
-    */
-   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-         ServletException
+   @Override
+   protected HttpServletRequest createSecurityContext(HttpServletRequest request, AccessToken accessToken)
    {
-      
-      try
-      {
-         OAuthMessage requestMessage = OAuthServlet.getMessage((HttpServletRequest)request, null);
-         requestMessage.requireParameters(OAuth.OAUTH_CONSUMER_KEY, OAuth.OAUTH_SIGNATURE, OAuth.OAUTH_SIGNATURE_METHOD);
-         
-         ExoContainer container = getContainer();
-         ExoOAuth2LeggedProviderService provider = (ExoOAuth2LeggedProviderService)container.getComponentInstanceOfType(ExoOAuth2LeggedProviderService.class);
-         OAuthAccessor accessor = provider.getAccessor(requestMessage);
-         OAuthValidator validator = (OAuthValidator)container.getComponentInstanceOfType(OAuthValidator.class);
-         validator.validateMessage(requestMessage, accessor);
-         
-         chain.doFilter(request, response);
-      }
-      catch (Exception e)
-      {
-         ExoOAuth2LeggedProviderService.handleException(e, (HttpServletRequest)request, (HttpServletResponse)response, false);
-      }
-
+      return request;
    }
 
-   /* (non-Javadoc)
-    * @see javax.servlet.Filter#destroy()
-    */
    public void destroy()
    {
-      // TODO Auto-generated method stub
 
    }
 }

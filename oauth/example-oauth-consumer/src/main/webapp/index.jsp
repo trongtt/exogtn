@@ -12,6 +12,8 @@
 -  <b>OAuthExample</b>, with the password
 -  <b>password</b>.
 -  <br />
+-	 <a href="Twitter2">Twitter sign request (2 legged)</a>
+-	 <br />
 -  <a href="Yahoo">Yahoo</a>
 -  <br />
 -  <a href="Orkut">Orkut</a>

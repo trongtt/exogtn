@@ -2,6 +2,7 @@
 <web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee 
 	http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+   <display-name>example-oauth-consumer</display-name>
    <welcome-file-list>
       <welcome-file>index.jsp</welcome-file>
       <welcome-file>index.html</welcome-file>
@@ -33,6 +34,10 @@
    <servlet>
       <servlet-name>TwitterConsumer</servlet-name>
       <servlet-class>net.oauth.example.consumer.webapp.TwitterConsumer</servlet-class>
+   </servlet>
+   <servlet>
+      <servlet-name>Twitter2LeggedConsumer</servlet-name>
+      <servlet-class>net.oauth.example.consumer.webapp.Twitter2LeggedConsumer</servlet-class>
    </servlet>
    <servlet>
       <servlet-name>UserAuthorizationStub</servlet-name>
@@ -94,6 +99,10 @@
    <servlet-mapping>
       <servlet-name>TwitterConsumer</servlet-name>
       <url-pattern>/Twitter</url-pattern>
+   </servlet-mapping>
+   <servlet-mapping>
+      <servlet-name>Twitter2LeggedConsumer</servlet-name>
+      <url-pattern>/Twitter2</url-pattern>
    </servlet-mapping>
    <servlet-mapping>
       <servlet-name>SampleProviderConsumer</servlet-name>
