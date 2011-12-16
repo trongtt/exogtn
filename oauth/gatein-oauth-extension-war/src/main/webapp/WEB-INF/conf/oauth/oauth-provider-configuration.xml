@@ -54,7 +54,7 @@
         </value-param>
         <value-param>
           <name>workspace-name</name>
-          <value>portal-work</value>
+          <value>oauth-ws</value>
         </value-param>
         <values-param>
           <name>entities</name>

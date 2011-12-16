@@ -16,6 +16,9 @@
       <module>example-rest-service</module>
       <module>exo-oauth-management</module>
       <module>gadget-consumer-management</module>
+      <module>gatein-oauth-extension-config</module>
+      <module>gatein-oauth-extension-lib</module>
+      <module>gatein-oauth-extension-war</module>
    </modules>
    <build>
       <plugins>
