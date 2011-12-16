@@ -263,7 +263,7 @@ eXo.webui.UIPopupWindow = {
     // TODO: Check if the bottom is not null before assign new value to
     // 'content.style.height'
     if ((pointerY - delta) > 0)
-      content.style.height = (pointerY - delta - this.POPUP_WINDOW_BOTTOM_HEIGHT)
+      content.style.height = (pointerY - delta - eXo.webui.UIPopupWindow.POPUP_WINDOW_BOTTOM_HEIGHT)
           + "px";
     targetPopup.style.height = "auto";
 
