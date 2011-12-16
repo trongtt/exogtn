@@ -652,7 +652,6 @@ function HttpResponseHandler(){
 		 * Modified by Truong LE to avoid double click problem
 		 */		
 		 
-		Browser = eXo.core.Browser; 
 		if(eXo.portal.AjaxRequest.maskLayer == null ){
 			eXo.portal.AjaxRequest.maskLayer = eXo.core.UIMaskLayer.createTransparentMask("TOP-CENTER");
 		}
