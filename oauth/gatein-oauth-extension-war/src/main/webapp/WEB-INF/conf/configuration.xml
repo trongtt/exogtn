@@ -27,5 +27,6 @@
 
    <import>war:/conf/oauth/jcr/jcr-configuration.xml</import>
    <import>war:/conf/oauth/oauth-provider-configuration.xml</import>
+   <import>war:/conf/oauth/authentication-configuration.xml</import>
 
 </configuration>
