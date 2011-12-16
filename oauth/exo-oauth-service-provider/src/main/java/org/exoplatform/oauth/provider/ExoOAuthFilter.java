@@ -26,6 +26,8 @@ import net.oauth.server.OAuthServlet;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.web.AbstractFilter;
 import org.exoplatform.oauth.provider.impl.SimpleOAuthServiceProvider;
+import org.exoplatform.oauth.provider.token.AccessToken;
+import org.exoplatform.oauth.provider.validation.AccessorBuilder;
 
 import java.io.IOException;
 
@@ -58,16 +60,18 @@ public abstract class ExoOAuthFilter extends AbstractFilter
          OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
 
          AccessToken token = provider.getAccessToken(requestMessage.getToken());
-         if (token == null || token.getToken() == null)
+         if (token == null || token.getAccessTokenID() == null)
          {
             throw new OAuthProblemException(OAuthKeys.OAUTH_TOKEN_EXPIRED);
          }
-
-         OAuthValidator validator = (OAuthValidator) container.getComponentInstanceOfType(OAuthValidator.class);
-         validator.validateMessage(requestMessage, SimpleOAuthServiceProvider.buildAccessor(token));
-         request.setAttribute(OAuthKeys.OAUTH_USER_ID, token.getUserId());
-         request = createSecurityContext(request, token);
-         chain.doFilter(request, response);
+         else
+         {
+            OAuthValidator validator = (OAuthValidator)container.getComponentInstanceOfType(OAuthValidator.class);
+            validator.validateMessage(requestMessage, AccessorBuilder.buildAccessor(token, provider));
+            request.setAttribute(OAuthKeys.OAUTH_USER_ID, token.getUserID());
+            request = createSecurityContext(request, token);
+            chain.doFilter(request, response);
+         }
       }
       catch (Exception e)
       {

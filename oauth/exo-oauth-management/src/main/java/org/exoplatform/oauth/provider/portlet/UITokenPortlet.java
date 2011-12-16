@@ -21,10 +21,10 @@ package org.exoplatform.oauth.provider.portlet;
 
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.oauth.provider.AccessToken;
 import org.exoplatform.oauth.provider.ConsumerInfo;
 import org.exoplatform.oauth.provider.OAuthKeys;
 import org.exoplatform.oauth.provider.OAuthServiceProvider;
+import org.exoplatform.oauth.provider.token.AccessToken;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
@@ -72,7 +72,7 @@ public class UITokenPortlet extends GenericPortlet
       Map<AccessToken, ConsumerInfo> accessors = new HashMap<AccessToken, ConsumerInfo>();
       for(AccessToken token : tokens)
       {
-         if (request.getRemoteUser().equals(token.getUserId()))
+         if (request.getRemoteUser().equals(token.getUserID()))
          {
             ConsumerInfo consumer = provider.getConsumer(token.getConsumerKey());
             accessors.put(token, consumer);

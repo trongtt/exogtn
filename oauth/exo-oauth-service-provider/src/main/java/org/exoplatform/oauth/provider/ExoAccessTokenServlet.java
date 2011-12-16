@@ -28,6 +28,8 @@ import net.oauth.server.OAuthServlet;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.web.AbstractHttpServlet;
 import org.exoplatform.oauth.provider.impl.SimpleOAuthServiceProvider;
+import org.exoplatform.oauth.provider.token.AccessToken;
+import org.exoplatform.oauth.provider.validation.AccessorBuilder;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -77,7 +79,7 @@ public class ExoAccessTokenServlet extends AbstractHttpServlet
          }
          
          OAuthValidator validator = (OAuthValidator)container.getComponentInstanceOfType(OAuthValidator.class);
-         validator.validateMessage(requestMessage, SimpleOAuthServiceProvider.buildAccessor(token));
+         validator.validateMessage(requestMessage, AccessorBuilder.buildAccessor(token, provider));
 
          // make sure token is authorized
          if (!Boolean.TRUE.equals(token.getProperty(OAuthKeys.OAUTH_AUTHORIZED)))
@@ -85,13 +87,20 @@ public class ExoAccessTokenServlet extends AbstractHttpServlet
             throw new OAuthProblemException(OAuthKeys.OAUTH_PERMISSION_DENIED);
          }
          
-         // generate access token and secret
-         AccessToken accessToken = provider.generateAccessToken(token);
+         /**
+          * Once user has been authenticated, we check if there is already accessToken for this
+          * user/consumer (that might happen as user uses different browsers or deletes cookie)
+          */
+         AccessToken accessToken = provider.getAccessToken(token.getUserId(), token.getConsumerKey());
+         if(accessToken == null)
+         {
+            accessToken = provider.generateAccessToken(token);
+         }
 
          res.setContentType("text/plain");
          OutputStream out = res.getOutputStream();
          OAuth.formEncode(
-            OAuth.newList(OAuthKeys.OAUTH_TOKEN, accessToken.getToken(), OAuthKeys.OAUTH_TOKEN_SECRET, accessToken.getTokenSecret()), out);
+            OAuth.newList(OAuthKeys.OAUTH_TOKEN, accessToken.getAccessTokenID(), OAuthKeys.OAUTH_TOKEN_SECRET, accessToken.getAccessTokenSecret()), out);
          out.close();
       }
       catch (Exception e)

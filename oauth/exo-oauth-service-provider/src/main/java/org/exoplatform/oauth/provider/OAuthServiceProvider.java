@@ -18,7 +18,7 @@ package org.exoplatform.oauth.provider;
 
 
 import net.oauth.OAuthProblemException;
-
+import org.exoplatform.oauth.provider.token.AccessToken;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
@@ -50,7 +50,6 @@ public interface OAuthServiceProvider
     * Add an OAuth ConsumerInfo. If it does already contain an consumer for this key,
     * the old value will be replaced by the specified one.
     * 
-    * @param consumerKey
     * @param consumer
     */
    public void addConsumer(ConsumerInfo consumer);
@@ -71,7 +70,6 @@ public interface OAuthServiceProvider
     * Generate request token from consumer information (name, key, etc)
     * request token is temporal token
     * 
-    * @param consumer
     * @return RequestToken
     */
    public RequestToken generateRequestToken(String consumerName);
@@ -79,6 +77,7 @@ public interface OAuthServiceProvider
    /**
     * Generate token from request token
     * 
+    *
     * @param requestToken
     * @return RequestToken
     */
@@ -95,10 +94,12 @@ public interface OAuthServiceProvider
    /**
     * Get token information from token string
     * 
-    * @param token
-    * @return RequestToken
+    *
+    * @param key@return RequestToken
     */
-   public AccessToken getAccessToken(String token);
+   public AccessToken getAccessToken(String key);
+
+   public AccessToken getAccessToken(String userID, String consumerKey);
 
    /**
     * Revoke access token

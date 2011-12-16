@@ -22,13 +22,13 @@ import net.oauth.OAuthProblemException;
 import net.oauth.server.OAuthServlet;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.oauth.provider.AccessToken;
 import org.exoplatform.oauth.provider.ConsumerInfo;
 import org.exoplatform.oauth.provider.OAuthServiceProvider;
 import org.exoplatform.oauth.provider.OAuthToken;
 import org.exoplatform.oauth.provider.RequestToken;
 import org.exoplatform.oauth.provider.consumer.Consumer;
 import org.exoplatform.oauth.provider.consumer.ConsumerStorage;
+import org.exoplatform.oauth.provider.token.AccessToken;
 import org.exoplatform.oauth.provider.token.AccessTokenStorage;
 import org.picocontainer.Startable;
 import java.io.IOException;
@@ -98,7 +98,6 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
 
    public void addConsumer(ConsumerInfo consumer)
    {
-      System.out.println("Registering consumer info: " + consumer.getConsumerKey());
       consumerInfoStorage.registerConsumer(consumer);
    }
 
@@ -155,14 +154,8 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
 
    public AccessToken generateAccessToken(RequestToken requestToken)
    {
-      if (requestToken != null)
-      {
-         // remove request token
-         requestTokens.remove(requestToken);
 
-         return new AccessToken(tokenStorage.generateAccessToken(requestToken));
-      }
-      return null;
+      return tokenStorage.generateAccessToken(requestToken);
    }
 
    public RequestToken getRequestToken(String token)
@@ -170,17 +163,14 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
       return requestTokens.get(token);
    }
 
-   public AccessToken getAccessToken(String token)
+   public AccessToken getAccessToken(String key)
    {
-      org.exoplatform.oauth.provider.token.AccessToken tk = tokenStorage.getAccessToken(token);
-      if(tk == null)
-      {
-         return null;
-      }
-      else
-      {
-         return new AccessToken(tk);
-      }
+      return tokenStorage.getAccessToken(key);
+   }
+
+   public AccessToken getAccessToken(String userID, String consumerKey)
+   {
+      return tokenStorage.getAccessToken(userID, consumerKey);
    }
 
    public void revokeAccessToken(String token)
@@ -195,41 +185,7 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
 
    public Collection<AccessToken> getAuthorizedTokens()
    {
-      List<AccessToken> tokens = new LinkedList<AccessToken>();
-      for(org.exoplatform.oauth.provider.token.AccessToken tk : tokenStorage.getAccessTokens())
-      {
-         tokens.add(new AccessToken(tk));
-      }
-      return tokens;
-   }
-
-   public static OAuthAccessor buildAccessor(OAuthToken token)
-   {
-      OAuthAccessor accessor = null;
-      OAuthServiceProvider provider =
-         (OAuthServiceProvider)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
-            OAuthServiceProvider.class);
-      String consumerKey = token.getConsumerKey();
-
-      if (consumerKey != null)
-      {
-         accessor = new OAuthAccessor(SimpleOAuthServiceProvider.toOAuthConsumer(provider.getConsumer(consumerKey)));
-         if (token instanceof AccessToken)
-         {
-            accessor.accessToken = token.getToken();
-         }
-         else
-         {
-            accessor.requestToken = token.getToken();
-         }
-         accessor.tokenSecret = token.getTokenSecret();
-      }
-      else
-      {
-         //Should log this
-      }
-
-      return accessor;
+      return tokenStorage.getAccessTokens();
    }
 
    public static void handleException(Exception e, HttpServletRequest request, HttpServletResponse response,

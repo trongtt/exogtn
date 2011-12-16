@@ -79,7 +79,39 @@ public class AccessTokenStorage implements Startable
 
    public AccessToken getAccessToken(String tokenId)
    {
-      return getTokenContainer().getAccessTokens().get(tokenId);
+      if(tokenId == null)
+      {
+         return null;
+      }
+      else
+      {
+         return getTokenContainer().getAccessTokens().get(tokenId);
+      }
+   }
+
+   /**
+    * This method is needed to avoid generating multiple AccessToken for
+    * a pair user/consumer in case user uses different browsers or loses
+    * cookie
+    *
+    * @param userID
+    * @param consumerKey
+    * @return
+    */
+   public AccessToken getAccessToken(String userID, String consumerKey)
+   {
+      Collection<AccessToken> allTokens = getAccessTokens();
+      if(allTokens != null)
+      {
+         for(AccessToken token : allTokens)
+         {
+            if(token.getUserID().equals(userID) && token.getConsumerKey().equals(consumerKey))
+            {
+               return token;
+            }
+         }
+      }
+      return null;
    }
 
    public Collection<AccessToken> getAccessTokens()
@@ -89,7 +121,10 @@ public class AccessTokenStorage implements Startable
 
    public void removeAccessToken(String tokenId)
    {
-      getTokenContainer().getAccessTokens().remove(tokenId);
+      if(tokenId != null)
+      {
+         getTokenContainer().getAccessTokens().remove(tokenId);
+      }
    }
 
    public void stop()

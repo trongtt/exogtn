@@ -23,6 +23,7 @@ package org.exoplatform.oauth.provider;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.component.ComponentRequestLifecycle;
 import org.exoplatform.container.component.RequestLifeCycle;
+import org.exoplatform.oauth.provider.token.AccessToken;
 import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.MembershipHandler;
 import org.exoplatform.services.organization.OrganizationService;
@@ -51,7 +52,7 @@ public class ExoOAuth3LeggedFilter extends ExoOAuthFilter
    @Override
    protected HttpServletRequest createSecurityContext(HttpServletRequest request, AccessToken accessToken)
    {
-      String userId = accessToken.getUserId();
+      String userId = accessToken.getUserID();
       if (userId == null)
       {
          return request;
