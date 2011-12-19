@@ -53,11 +53,11 @@ function getProduct(version) {
   product.addDependencies(portal.oauth.exampleConsumer) ;
   product.addDependencies(portal.oauth.exampleRest) ;
   product.addDependencies(portal.oauth.oauthManagement) ;
-  product.addDependencies(portal.oauth.gateinExtensionConfig);
-  product.addDependencies(portal.oauth.gateinExtensionLib);
-  product.addDependencies(portal.oauth.gateinExtensionWar);
   if(eXo.server.Tomcat)
   {
+    product.addDependencies(portal.oauth.gateinExtensionConfig);
+    product.addDependencies(portal.oauth.gateinExtensionLib);
+    product.addDependencies(portal.oauth.gateinExtensionWar);
     product.addDependencies(portal.starter.war);
   }
 

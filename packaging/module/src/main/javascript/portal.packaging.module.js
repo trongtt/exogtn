@@ -288,6 +288,7 @@ function getModule(params)
    module.starter = {}
    module.starter.war =
    new Project("org.exoplatform.portal", "exo.portal.starter.war", "war", module.version);
+   module.starter.war.deployName = "starter";
 
    module.web = {}
    module.web.eXoResources =
