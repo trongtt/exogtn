@@ -96,11 +96,17 @@ public class ConsumerStorage implements Startable
             if(!key.contains("."))
             {
                String secret = config.getProperty(key);
-               String desc = config.getProperty(key + ".description");
                String callbackURL = config.getProperty(key + ".callbackURL");
+               
                Map<String, String> properties = new HashMap<String, String>();
+               String desc = config.getProperty(key + ".description");
+               String pubKey = config.getProperty(key + ".RSA-SHA1.PublicKey");
                properties.put("name", key);
                properties.put("description", desc);
+               if(pubKey != null)
+               {
+                  properties.put("RSA-SHA1.PublicKey", pubKey);
+               }
 
                registerConsumer(key, secret, callbackURL, properties);
             }

@@ -46,9 +46,8 @@ public class RSA1BasedGateInConsumer extends HttpServlet
       OAuthConsumer consumer = null;
       try
       {
-         consumer = CookieConsumer.getConsumer("gatein3", getServletContext());
+         consumer = CookieConsumer.getConsumer("gatein_rsa", getServletContext());
          OAuthAccessor accessor = CookieConsumer.getAccessor(request, response, consumer);
-         accessor.consumer.setProperty(OAUTH_SIGNATURE_METHOD, RSA_SHA1);
          OAuthMessage message =
             accessor.newRequestMessage(OAuthMessage.GET,
                "http://localhost:8080/exo-oauth-provider/rest/SimpleRest/hello/lambkin", null);

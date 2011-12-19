@@ -18,7 +18,7 @@
 						<td>${consumer.properties['description']}</td>
 						<td>
 							<p>
-								<a href="@{UITokenManagement.revokeAccessToken(accessToken = key)}">Revoke Access Token</a>
+								<a href="@{UITokenManagement.revokeAccessToken(accessToken = key.accessTokenID)}">Revoke Access Token</a>
 							</p>
 						</td>
 					</tr>

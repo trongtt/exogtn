@@ -70,16 +70,14 @@ public class UITokenManagement
    }
 
    @Action
-   public Response revokeAccessToken(AccessToken accessToken)
+   public void revokeAccessToken(String accessToken)
    {
       if (accessToken != null)
       {
          OAuthServiceProvider provider =
             (OAuthServiceProvider)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
                OAuthServiceProvider.class);
-         provider.revokeAccessToken(accessToken.getAccessTokenID());
+         provider.revokeAccessToken(accessToken);
       }
-
-      return UITokenManagement_.index();
    }
 }

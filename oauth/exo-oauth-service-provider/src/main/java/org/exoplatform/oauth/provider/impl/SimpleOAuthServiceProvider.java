@@ -131,7 +131,10 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
    {
       OAuthConsumer oauthConsumer =
          new OAuthConsumer(consumer.getCallbackUrl(), consumer.getConsumerKey(), consumer.getConsumerSecret(), null);
-      oauthConsumer.setProperty("name", consumer.getProperty("name"));
+      for(Map.Entry prop : consumer.getProperties().entrySet())
+      {
+         oauthConsumer.setProperty(prop.getKey().toString(), prop.getValue());
+      }
       return oauthConsumer;
    }
 
