@@ -86,16 +86,8 @@ public class ExoAccessTokenServlet extends AbstractHttpServlet
          {
             throw new OAuthProblemException(OAuthKeys.OAUTH_PERMISSION_DENIED);
          }
-         
-         /**
-          * Once user has been authenticated, we check if there is already accessToken for this
-          * user/consumer (that might happen as user uses different browsers or deletes cookie)
-          */
-         AccessToken accessToken = provider.getAccessToken(token.getUserId(), token.getConsumerKey());
-         if(accessToken == null)
-         {
-            accessToken = provider.generateAccessToken(token);
-         }
+
+         AccessToken accessToken = provider.generateAccessToken(token);
 
          res.setContentType("text/plain");
          OutputStream out = res.getOutputStream();

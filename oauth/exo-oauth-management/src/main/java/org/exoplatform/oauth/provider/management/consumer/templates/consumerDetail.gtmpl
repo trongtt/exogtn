@@ -1,0 +1,66 @@
+#{param name=session/}
+
+<%
+	def consumer = session.getConsumer();
+	def accessToken = session.getAccessToken();
+%>
+
+<div class="ConsumerDetail">
+	<div class="Navigation"><a href="@{UIConsumerManagement.index()}">Back to All Consumers</a></div>
+	<br />
+	<% if (consumer != null) { %>
+	<div>Consumer Information</div>
+	<table align="center" border="1">
+	  <tbody>
+		<tr>
+			<td class="InfoLabel">Consumer key:</td>
+			<td class="InfoValue">${consumer.consumerKey}</td>
+		</tr>
+		<tr>
+			<td class="InfoLabel">Consumer Secret:</td>
+			<td class="InfoValue">${consumer.consumerSecret}</td>
+		</tr>
+		<tr>
+			<td class="InfoLabel">Callback Url:</td>
+			<td class="InfoValue">${consumer.callbackUrl}</td>
+		</tr>
+		<tr>
+			<td class="InfoLabel">Consumer Name:</td>
+			<td class="InfoValue">${consumer.properties['name']}</td>
+		</tr>
+		<tr>
+			<td class="InfoLabel">Consumer Description:</td>
+			<td class="InfoValue">${consumer.properties['description']}</td>
+		</tr>	
+		<tr>
+			<td class="InfoLabel">Consumer Website:</td>
+			<td class="InfoValue">${consumer.properties['website']}</td>
+		</tr>
+	  </tbody>
+	</table>
+	<% } %>
+	<br />
+	<% if (accessToken != null) { %>
+		Your access token for this consumer
+		<table>
+		  <tbody>
+			<tr>
+				<td class="InfoLabel">Access Token</td>
+				<td class="InfoValue">${accessToken.getAccessTokenID()}<td>
+			</tr>
+			<tr>
+				<td class="InfoLabel">Token Secret</td>
+				<td class="InfoValue">${accessToken.getAccessTokenSecret()}</td>
+			</tr>
+		  </tbody>
+		</table>
+		<a href="@{UIConsumerManagement.createAccessToken(consumerKey = consumer.consumerKey)}">Recreate the Access Token</button>	
+	<% } else { %>
+		You can create an Access Token for this consumer. Consumer can use this token to sign requests for accessing resources
+		<br />
+		<a href="@{UIConsumerManagement.createAccessToken(consumerKey = consumer.consumerKey)}">Create the Access Token</button>	
+	<% } %>
+</div>
+
+
+	

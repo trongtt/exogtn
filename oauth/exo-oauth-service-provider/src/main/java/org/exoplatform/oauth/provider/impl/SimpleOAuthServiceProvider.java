@@ -154,8 +154,17 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
 
    public AccessToken generateAccessToken(RequestToken requestToken)
    {
-
       return tokenStorage.generateAccessToken(requestToken);
+   }
+   
+   public AccessToken generateAccessToken(String userID, String consumerKey)
+   {
+      AccessToken token = getAccessToken(userID, consumerKey);
+      if(token != null)
+      {
+         return token;
+      }
+      return tokenStorage.generateAccessToken(userID, consumerKey);
    }
 
    public RequestToken getRequestToken(String token)

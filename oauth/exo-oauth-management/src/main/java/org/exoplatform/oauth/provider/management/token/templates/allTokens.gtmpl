@@ -1,0 +1,32 @@
+#{param name=accessors/}
+
+<div class="OAuthToken">
+	<% if (accessors != null && accessors.size() > 0) { %>
+		<div><h1>Your authorized tokens</h1></div>
+		<br />
+		<table align="center" border="1">
+				<tr bgcolor="#99CCFF">
+					<td valign="top"><b>Consumer</b></td>
+					<td valign="top"><b>Consumer Url</b></td>
+					<td valign="top"><b>Description</b></td>
+					<td valign="top"><b>Action</b></td>
+				</tr>
+				<% accessors.each() { key, consumer -> %>
+					<tr>
+						<td>${consumer.properties['name']}</td>
+						<td>${consumer.properties['website']}</td>
+						<td>${consumer.properties['description']}</td>
+						<td>
+							<p>
+								<a href="@{UITokenManagement.revokeAccessToken(accessToken = key)}">Revoke Access Token</a>
+							</p>
+						</td>
+					</tr>
+				<% } %>
+		</table>
+	<% } else { %>
+		<div><h1>You don't have any Authorized Tokens</h1></div>
+	<% } %>
+<br />
+
+</div>

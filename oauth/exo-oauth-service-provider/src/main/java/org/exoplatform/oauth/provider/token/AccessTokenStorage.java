@@ -64,16 +64,21 @@ public class AccessTokenStorage implements Startable
 
    public AccessToken generateAccessToken(RequestToken requestToken)
    {
+      return generateAccessToken(requestToken.getUserId(), requestToken.getConsumerKey());
+   }
+   
+   public AccessToken generateAccessToken(String userID, String consumerKey)
+   {
       AccessTokenContainer tokenContainer = getTokenContainer();
       AccessToken token = tokenContainer.createAccessToken();
-      String tokenID = DigestUtils.md5Hex(requestToken.getConsumerKey() + System.nanoTime());
-      String tokenSecret = DigestUtils.md5Hex(requestToken.getConsumerKey() + System.nanoTime() + tokenID);
+      String tokenID = DigestUtils.md5Hex(consumerKey + System.nanoTime());
+      String tokenSecret = DigestUtils.md5Hex(consumerKey + System.nanoTime() + tokenID);
       tokenContainer.getAccessTokens().put(tokenID, token);
 
       token.setAccessTokenID(tokenID);
-      token.setConsumerKey(requestToken.getConsumerKey());
+      token.setConsumerKey(consumerKey);
       token.setAccessTokenSecret(tokenSecret);
-      token.setUserID(requestToken.getUserId());
+      token.setUserID(userID);
       return token;
    }
 

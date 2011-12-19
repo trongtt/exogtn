@@ -76,12 +76,19 @@ public interface OAuthServiceProvider
 
    /**
     * Generate token from request token
-    * 
     *
     * @param requestToken
     * @return RequestToken
     */
    public AccessToken generateAccessToken(RequestToken requestToken);
+   
+   /**
+    * Generate token from consumer and logged user
+    * 
+    * @param requestToken
+    * @return RequestToken
+    */
+   public AccessToken generateAccessToken(String userID, String consumerKey);
    
    /**
     * Get token information from token string
@@ -93,7 +100,6 @@ public interface OAuthServiceProvider
    
    /**
     * Get token information from token string
-    * 
     *
     * @param key@return RequestToken
     */
