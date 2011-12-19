@@ -276,6 +276,19 @@ function getModule(params)
    module.oauth.oauthManagement =
    new Project("org.exoplatform.portal", "exo-oauth-management", "war", module.version);
 
+   module.oauth.gateinExtensionConfig =
+   new Project("org.exoplatform.portal", "gatein-oauth-extension-config", "jar", module.version);
+
+   module.oauth.gateinExtensionLib =
+   new Project("org.exoplatform.portal", "gatein-oauth-extension-lib", "jar", module.version);
+
+   module.oauth.gateinExtensionWar =
+   new Project("org.exoplatform.portal", "gatein-oauth-extension-war", "war", module.version);
+
+   module.starter = {}
+   module.starter.war =
+   new Project("org.exoplatform.portal", "exo.portal.starter.war", "war", module.version);
+
    module.web = {}
    module.web.eXoResources =
    new Project("org.exoplatform.portal", "exo.portal.web.eXoResources", "war", module.version);
