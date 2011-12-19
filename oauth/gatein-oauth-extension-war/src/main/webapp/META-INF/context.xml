@@ -19,4 +19,10 @@
 
 -->
 
-<Context path="/gatein-oauth-extension-war" docBase="gatein-oauth-extension-war" debug="0" reloadable="true" crossContext="true"/>
+<Context path="/gatein-oauth-extension-war" docBase="gatein-oauth-extension-war" debug="0" reloadable="true" crossContext="true">
+  <Realm className='org.apache.catalina.realm.JAASRealm'
+         appName='gatein-domain'
+         userClassNames='org.exoplatform.services.security.jaas.UserPrincipal'
+         roleClassNames='org.exoplatform.services.security.jaas.RolePrincipal'
+         debug='0' cache='false'/>
+</Context>

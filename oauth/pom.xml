@@ -11,7 +11,6 @@
    <name>OAuth Parent POM</name>
    <modules>
       <module>exo-oauth-service-provider</module>
-      <module>exo-oauth-provider-webapp</module>
       <module>example-oauth-consumer</module>
       <module>example-rest-service</module>
       <module>exo-oauth-management</module>

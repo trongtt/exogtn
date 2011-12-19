@@ -284,6 +284,7 @@ function getModule(params)
 
    module.oauth.gateinExtensionWar =
    new Project("org.exoplatform.portal", "gatein-oauth-extension-war", "war", module.version);
+   module.oauth.gateinExtensionWar.deployName = "exo-oauth-provider";
 
    module.starter = {}
    module.starter.war =

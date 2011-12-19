@@ -32,4 +32,16 @@
   <name>GateIn OAuth Extension War</name>
   <description>GateIn OAuth Extension War</description>
 
+  <dependencies>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>exo-oauth-provider</finalName>
+  </build>
+
 </project>
