@@ -18,6 +18,7 @@ package org.exoplatform.oauth.provider;
 
 
 import net.oauth.OAuthProblemException;
+import org.exoplatform.oauth.provider.consumer.Consumer;
 import org.exoplatform.oauth.provider.token.AccessToken;
 import java.io.IOException;
 import java.util.Collection;
@@ -35,36 +36,36 @@ import java.util.Map;
 public interface OAuthServiceProvider
 {
    /**
-    * Return an OAuth ConsumerInfo which is mapped with specified consumerKey.
-    * 
-    * Return <tt>null</tt> if there is no consumer associated with this key.
-    * 
-    * @param consumerKey key as identifier of consumer
-    * @return OAuthConsumer object
-    * @throws IOException
-    * @throws OAuthProblemException
+    * Fetch a Consumer registered under key consumerKey
+    *
+    * @param consumerKey
+    * @return
     */
-   public ConsumerInfo getConsumer(String consumerKey);
+   public Consumer getConsumer(String consumerKey);
 
    /**
-    * Add an OAuth ConsumerInfo. If it does already contain an consumer for this key,
-    * the old value will be replaced by the specified one.
-    * 
-    * @param consumer
+    * Register a new consumer, implementation must take care of duplication
+    *
+    * @param consumerKey
+    * @param consumerSecret
+    * @param callbackURL
+    * @param properties
     */
-   public void addConsumer(ConsumerInfo consumer);
+   public Consumer registerConsumer(String consumerKey, String consumerSecret, String callbackURL, Map<String, String> properties);
 
    /**
-    * Remove the OAuth ConsumerInfo with specified key
+    * Remove Consumer registered under key consumerKey
+    *
     * @param consumerKey
     */
    public void removeConsumer(String consumerKey);
-   
+
    /**
-    * Return all consumers
+    * Return all registered consumers
+    *
     * @return
     */
-   public Map<String, ConsumerInfo> getAllConsumers();
+   public Map<String, Consumer> getAllConsumers();
       
    /**
     * Generate request token from consumer information (name, key, etc)
@@ -75,18 +76,19 @@ public interface OAuthServiceProvider
    public RequestToken generateRequestToken(String consumerName);
 
    /**
-    * Generate token from request token
+    * Generate access token from request token
     *
     * @param requestToken
-    * @return RequestToken
+    * @return AccessToken
     */
    public AccessToken generateAccessToken(RequestToken requestToken);
    
    /**
-    * Generate token from consumer and logged user
+    * Generate access token from consumer and logged user
     * 
-    * @param requestToken
-    * @return RequestToken
+    * @param userID
+    * @param consumerKey
+    * @return AccessToken
     */
    public AccessToken generateAccessToken(String userID, String consumerKey);
    

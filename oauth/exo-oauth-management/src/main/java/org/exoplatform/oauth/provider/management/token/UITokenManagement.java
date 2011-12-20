@@ -20,9 +20,8 @@ package org.exoplatform.oauth.provider.management.token;
 
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.oauth.provider.consumer.Consumer;
 import org.exoplatform.oauth.provider.token.AccessToken;
-import org.exoplatform.oauth.provider.ConsumerInfo;
-import org.exoplatform.oauth.provider.OAuthKeys;
 import org.exoplatform.oauth.provider.OAuthServiceProvider;
 import org.juzu.Action;
 import org.juzu.Path;
@@ -34,8 +33,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
 
 /**
  * @author <a href="kienna@exoplatform.com">Kien Nguyen</a>
@@ -56,12 +53,12 @@ public class UITokenManagement
          (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
 
       Collection<AccessToken> tokens = provider.getAuthorizedTokens();
-      Map<AccessToken, ConsumerInfo> accessors = new HashMap<AccessToken, ConsumerInfo>();
+      Map<AccessToken, Consumer> accessors = new HashMap<AccessToken, Consumer>();
       for (AccessToken token : tokens)
       {
          if ("root".equals(token.getUserID()))
          {
-            ConsumerInfo consumer = provider.getConsumer(token.getConsumerKey());
+            Consumer consumer = provider.getConsumer(token.getConsumerKey());
             accessors.put(token, consumer);
          }
       }

@@ -25,6 +25,8 @@ import org.exoplatform.oauth.provider.impl.SimpleOAuthServiceProvider;
 import org.exoplatform.oauth.provider.token.AccessToken;
 
 /**
+ * Util serves building net.oauth.OAuthAccessor object which is used for validating request
+ *
  * @author <a href="hoang281283@gmail.com">Minh Hoang TO</a>
  * @date 12/16/11
  */
@@ -38,7 +40,7 @@ public class AccessorBuilder
       String consumerKey = token.getConsumerKey();
       if(consumerKey != null)
       {
-         accessor = new OAuthAccessor(SimpleOAuthServiceProvider.toOAuthConsumer(provider.getConsumer(consumerKey)));
+         accessor = new OAuthAccessor(NetOAuthAdapter.buildConsumer(provider.getConsumer(consumerKey)));
          accessor.requestToken = token.getToken();
          accessor.tokenSecret = token.getTokenSecret();
       }
@@ -52,7 +54,7 @@ public class AccessorBuilder
       String consumerKey = token.getConsumerKey();
       if(consumerKey != null)
       {
-         accessor = new OAuthAccessor(SimpleOAuthServiceProvider.toOAuthConsumer(provider.getConsumer(consumerKey)));
+         accessor = new OAuthAccessor(NetOAuthAdapter.buildConsumer(provider.getConsumer(consumerKey)));
          accessor.accessToken = token.getAccessTokenID();
          accessor.tokenSecret = token.getAccessTokenSecret();
       }

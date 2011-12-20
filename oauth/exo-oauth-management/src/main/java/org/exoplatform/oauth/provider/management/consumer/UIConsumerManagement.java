@@ -20,14 +20,17 @@ package org.exoplatform.oauth.provider.management.consumer;
 
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.oauth.provider.consumer.Consumer;
+import org.exoplatform.oauth.provider.consumer.ConsumerProperty;
 import org.exoplatform.oauth.provider.token.AccessToken;
-import org.exoplatform.oauth.provider.ConsumerInfo;
 import org.exoplatform.oauth.provider.OAuthServiceProvider;
 import org.juzu.Action;
 import org.juzu.Path;
 import org.juzu.Response;
 import org.juzu.View;
 
+import java.util.HashMap;
+import java.util.Map;
 import javax.inject.Inject;
 
 /**
@@ -79,7 +82,7 @@ public class UIConsumerManagement
       ExoContainer container = ExoContainerContext.getCurrentContainer();
       OAuthServiceProvider oauthProvider =
          (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
-      ConsumerInfo consumer = oauthProvider.getConsumer(consumerKey);
+      Consumer consumer = oauthProvider.getConsumer(consumerKey);
       session.setConsumer(consumer);
       session.setAccessToken(oauthProvider.getAccessToken("root", consumerKey));
       return UIConsumerManagement_.consumerDetail();
@@ -105,33 +108,72 @@ public class UIConsumerManagement
    }
 
    @Action
-   public Response addNewConsumer(String consumerKey, String consumerSecret, String callbackUrl, String consumerName,
-      String consumerDescription, String consumerWebsite)
+   public Response addNewConsumer(final String consumerKey, final String consumerSecret, final String callbackUrl, String consumerName,
+                                  String consumerDescription, String consumerWebsite)
    {
       if(consumerKey == null || consumerSecret == null || callbackUrl == null)
       {
-         ConsumerInfo consumer = new ConsumerInfo(consumerKey, consumerSecret, callbackUrl);
-         consumer.setProperty("name", consumerName);
-         consumer.setProperty("description", consumerDescription);
-         consumer.setProperty("website", consumerWebsite);
-         String message = "";
-         message += (consumerKey == null ? "Consumer key is required" : "");
-         message += (consumerSecret == null ? "Consumer secret is required" : "");
-         message += (callbackUrl == null ? "callback Url is required" : "");
-         session.setMessage(message);
-         session.setConsumer(consumer);
+         StringBuilder message = new StringBuilder();
+         message.append(consumerKey == null? "Consumer key is required" : "");
+         message.append(consumerSecret == null ? "Consumer secret is required" : "");
+         message.append(callbackUrl == null ? "callback Url is required" : "");
+         session.setMessage(message.toString());
+
+         //Merely used from juzu template
+         Consumer transientConsumer = new Consumer()
+         {
+            @Override
+            public String getKey()
+            {
+               return consumerKey;
+            }
+
+            @Override
+            public String getSecret()
+            {
+               return consumerSecret;
+            }
+
+            @Override
+            public String getCallbackURL()
+            {
+               return callbackUrl;
+            }
+
+            @Override
+            public ConsumerProperty createProperty()
+            {
+               return null;
+            }
+
+            @Override
+            public Map<String, ConsumerProperty> getProperties()
+            {
+               return new HashMap<String, ConsumerProperty>();
+            }
+
+            @Override
+            public void setKey(String key){}
+
+            @Override
+            public void setSecret(String secret){}
+
+            @Override
+            public void setCallbackURL(String callbackURL){}
+         };
+         session.setConsumer(transientConsumer);
          return UIConsumerManagement_.addConsumer();
       }
       else
       {
-         ConsumerInfo consumer = new ConsumerInfo(consumerKey, consumerSecret, callbackUrl);
-         consumer.setProperty("name", consumerName);
-         consumer.setProperty("description", consumerDescription);
-         consumer.setProperty("website", consumerWebsite);
          OAuthServiceProvider provider =
             (OAuthServiceProvider)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
                OAuthServiceProvider.class);
-         provider.addConsumer(consumer);
+         Map<String, String> consumerProperties = new HashMap<String, String>();
+         consumerProperties.put("name", consumerName);
+         consumerProperties.put("description", consumerDescription);
+         consumerProperties.put("website", consumerWebsite);
+         Consumer consumer = provider.registerConsumer(consumerKey, consumerSecret, callbackUrl, consumerProperties);
          session.setConsumer(consumer);
          return UIConsumerManagement_.consumerDetail();
       }

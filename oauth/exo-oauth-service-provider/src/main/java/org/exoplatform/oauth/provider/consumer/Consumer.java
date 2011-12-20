@@ -54,4 +54,17 @@ public abstract class Consumer
    @OneToMany
    public abstract Map<String, ConsumerProperty> getProperties();
 
+   public String getProperty(String name)
+   {
+      ConsumerProperty property = getProperties().get(name);
+      if(property != null)
+      {
+         return property.getPropertyValue();
+      }
+      else
+      {
+         return null;
+      }
+   }
+
 }

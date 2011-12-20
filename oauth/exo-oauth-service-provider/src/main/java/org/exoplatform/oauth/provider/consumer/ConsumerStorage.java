@@ -23,7 +23,6 @@ import org.exoplatform.commons.chromattic.ChromatticLifeCycle;
 import org.exoplatform.commons.chromattic.ChromatticManager;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.component.RequestLifeCycle;
-import org.exoplatform.oauth.provider.ConsumerInfo;
 import org.exoplatform.services.organization.OrganizationService;
 import org.gatein.common.io.IOTools;
 import org.picocontainer.Startable;
@@ -139,39 +138,12 @@ public class ConsumerStorage implements Startable
       return container;
    }
 
-   public void registerConsumer(final ConsumerInfo consumerInfo)
+   public Consumer registerConsumer(final String key, final String secret, final String callbackURL, final Map<String, String> properties)
    {
-      Task<Void> registerTask = new Task<Void>()
+      Task<Consumer> registerTask = new Task<Consumer>()
       {
          @Override
-         public Void run(ChromatticSession session)
-         {
-            ConsumerContainer container = getConsumerContainer(session);
-            Consumer inf = container.create();
-            container.getConsumers().put(consumerInfo.getConsumerKey(), inf);
-
-            inf.setKey(consumerInfo.getConsumerKey());
-            inf.setSecret(consumerInfo.getConsumerSecret());
-            inf.setCallbackURL(consumerInfo.getCallbackUrl());
-
-            for (Map.Entry<String, Object> entry : consumerInfo.getProperties().entrySet())
-            {
-               ConsumerProperty property = inf.createProperty();
-               inf.getProperties().put(entry.getKey(), property);
-               property.setPropertyValue(entry.getValue().toString());
-            }
-            return null;
-         }
-      };
-      executor.execute(registerTask);
-   }
-
-   public void registerConsumer(final String key, final String secret, final String callbackURL, final Map<String, String> properties)
-   {
-      Task<Void> registerTask = new Task<Void>()
-      {
-         @Override
-         public Void run(ChromatticSession session)
+         public Consumer run(ChromatticSession session)
          {
             ConsumerContainer container = getConsumerContainer(session);
             Consumer consumerInf = container.create();
@@ -180,16 +152,19 @@ public class ConsumerStorage implements Startable
             consumerInf.setSecret(secret);
             consumerInf.setCallbackURL(callbackURL);
 
-            for (Map.Entry<String, String> entry : properties.entrySet())
+            if (properties != null)
             {
-               ConsumerProperty property = consumerInf.createProperty();
-               consumerInf.getProperties().put(entry.getKey(), property);
-               property.setPropertyValue(entry.getValue());
+               for (Map.Entry<String, String> entry : properties.entrySet())
+               {
+                  ConsumerProperty property = consumerInf.createProperty();
+                  consumerInf.getProperties().put(entry.getKey(), property);
+                  property.setPropertyValue(entry.getValue());
+               }
             }
-            return null;
+            return consumerInf;
          }
       };
-      executor.execute(registerTask);
+      return executor.execute(registerTask);
    }
 
    public Consumer getConsumer(String key)
@@ -202,6 +177,12 @@ public class ConsumerStorage implements Startable
    {
       ChromatticSession session = lifecycle.getContext().getSession();
       return Collections.unmodifiableCollection(getConsumerContainer(session).getConsumers().values());
+   }
+
+   public Map<String, Consumer> getConsumerMap()
+   {
+      ChromatticSession session = lifecycle.getContext().getSession();
+      return Collections.unmodifiableMap(getConsumerContainer(session).getConsumers());
    }
 
    public Consumer deleteConsumer(final String key)

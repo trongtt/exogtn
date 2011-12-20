@@ -18,8 +18,8 @@
  */
 package org.exoplatform.oauth.provider.management.consumer;
 
+import org.exoplatform.oauth.provider.consumer.Consumer;
 import org.exoplatform.oauth.provider.token.AccessToken;
-import org.exoplatform.oauth.provider.ConsumerInfo;
 import org.juzu.SessionScoped;
 
 import java.io.Serializable;
@@ -36,7 +36,7 @@ public class Session implements Serializable
 {
    private static final long serialVersionUID = 1L;
 
-   private ConsumerInfo consumer;
+   private Consumer consumer;
 
    private AccessToken accessToken;
 
@@ -45,9 +45,9 @@ public class Session implements Serializable
    private String currentUser;
 
    /**
-    * @param consumers the consumers to set
+    * @param consumer the consumers to set
     */
-   public void setConsumer(ConsumerInfo consumer)
+   public void setConsumer(Consumer consumer)
    {
       this.consumer = consumer;
    }
@@ -55,13 +55,13 @@ public class Session implements Serializable
    /**
     * @return the consumers
     */
-   public ConsumerInfo getConsumer()
+   public Consumer getConsumer()
    {
       return consumer;
    }
 
    /**
-    * @param token the token to set
+    * @param accessToken the token to set
     */
    public void setAccessToken(AccessToken accessToken)
    {

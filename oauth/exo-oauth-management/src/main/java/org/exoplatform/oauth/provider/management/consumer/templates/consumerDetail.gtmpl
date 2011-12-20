@@ -14,27 +14,27 @@
 	  <tbody>
 		<tr>
 			<td class="InfoLabel">Consumer key:</td>
-			<td class="InfoValue">${consumer.consumerKey}</td>
+			<td class="InfoValue">${consumer.getKey()}</td>
 		</tr>
 		<tr>
 			<td class="InfoLabel">Consumer Secret:</td>
-			<td class="InfoValue">${consumer.consumerSecret}</td>
+			<td class="InfoValue">${consumer.getSecret()}</td>
 		</tr>
 		<tr>
 			<td class="InfoLabel">Callback Url:</td>
-			<td class="InfoValue">${consumer.callbackUrl}</td>
+			<td class="InfoValue">${consumer.getCallbackURL()}</td>
 		</tr>
 		<tr>
 			<td class="InfoLabel">Consumer Name:</td>
-			<td class="InfoValue">${consumer.properties['name']}</td>
+			<td class="InfoValue">${consumer.getProperty("name")}</td>
 		</tr>
 		<tr>
 			<td class="InfoLabel">Consumer Description:</td>
-			<td class="InfoValue">${consumer.properties['description']}</td>
+			<td class="InfoValue">${consumer.getProperty("description")}</td>
 		</tr>	
 		<tr>
 			<td class="InfoLabel">Consumer Website:</td>
-			<td class="InfoValue">${consumer.properties['website']}</td>
+			<td class="InfoValue">${consumer.getProperty("website")}</td>
 		</tr>
 	  </tbody>
 	</table>
@@ -54,11 +54,11 @@
 			</tr>
 		  </tbody>
 		</table>
-		<a href="@{UIConsumerManagement.createAccessToken(consumerKey = consumer.consumerKey)}">Recreate the Access Token</button>	
+		<a href="@{UIConsumerManagement.createAccessToken(consumerKey = consumer.Key)}">Recreate the Access Token</a>
 	<% } else { %>
 		You can create an Access Token for this consumer. Consumer can use this token to sign requests for accessing resources
 		<br />
-		<a href="@{UIConsumerManagement.createAccessToken(consumerKey = consumer.consumerKey)}">Create the Access Token</button>	
+		<a href="@{UIConsumerManagement.createAccessToken(consumerKey = consumer.Key)}">Create the Access Token</a>
 	<% } %>
 </div>
 

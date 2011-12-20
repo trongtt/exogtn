@@ -16,15 +16,9 @@
  */
 package org.exoplatform.oauth.provider.impl;
 
-import net.oauth.OAuthAccessor;
-import net.oauth.OAuthConsumer;
-import net.oauth.OAuthProblemException;
 import net.oauth.server.OAuthServlet;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.oauth.provider.ConsumerInfo;
 import org.exoplatform.oauth.provider.OAuthServiceProvider;
-import org.exoplatform.oauth.provider.OAuthToken;
 import org.exoplatform.oauth.provider.RequestToken;
 import org.exoplatform.oauth.provider.consumer.Consumer;
 import org.exoplatform.oauth.provider.consumer.ConsumerStorage;
@@ -35,16 +29,13 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * An simple OAuth Provider service which just persist everything in memory
+ * A simple OAuth Provider service that persists access token, consumer's metadata into JCR
  * 
  * Created by The eXo Platform SAS
  * Author : Nguyen Anh Kien
@@ -58,12 +49,12 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
 
    private AccessTokenStorage tokenStorage;
 
-   private ConsumerStorage consumerInfoStorage;
+   private ConsumerStorage consumerStorage;
 
    public SimpleOAuthServiceProvider(AccessTokenStorage tokenStorage, ConsumerStorage consumerInfStorage) throws Exception
    {
       this.tokenStorage = tokenStorage;
-      this.consumerInfoStorage = consumerInfStorage;
+      this.consumerStorage = consumerInfStorage;
    }
 
    public void start()
@@ -74,68 +65,24 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
    {
    }
 
-   /**
-    * Get a consumer from consumer list
-    * 
-    * @param consumer_key key as identifier of consumer
-    * @return OAuthConsumer object
-    * @throws IOException
-    * @throws OAuthProblemException
-    */
-   public ConsumerInfo getConsumer(String consumer_key)
+   public Consumer getConsumer(String consumer_key)
    {
-      Consumer inf = consumerInfoStorage.getConsumer(consumer_key);
-
-      if(inf == null)
-      {
-         return null;
-      }
-      else
-      {
-         return new ConsumerInfo(inf);
-      }
+      return consumerStorage.getConsumer(consumer_key);
    }
 
-   public void addConsumer(ConsumerInfo consumer)
+   public Consumer registerConsumer(String consumerKey, String consumerSecret, String callbackURL, Map<String, String> properties)
    {
-      consumerInfoStorage.registerConsumer(consumer);
+      return consumerStorage.registerConsumer(consumerKey, consumerSecret, callbackURL, properties);
    }
 
    public void removeConsumer(String consumerKey)
    {
-      consumerInfoStorage.deleteConsumer(consumerKey);
+      consumerStorage.deleteConsumer(consumerKey);
    }
 
-   public Map<String, ConsumerInfo> getAllConsumers()
+   public Map<String, Consumer> getAllConsumers()
    {
-      Map<String, ConsumerInfo> consumers = new LinkedHashMap<String, ConsumerInfo>();
-      for(Consumer inf : consumerInfoStorage.getConsumers())
-      {
-         consumers.put(inf.getKey(), new ConsumerInfo(inf));
-      }
-
-      return consumers;
-   }
-
-   public static ConsumerInfo toConsumerInfo(OAuthConsumer oauthConsumer)
-   {
-      ConsumerInfo consumer = new ConsumerInfo();
-      consumer.setProperty("name", oauthConsumer.consumerKey);
-      consumer.setConsumerKey(oauthConsumer.consumerKey);
-      consumer.setConsumerSecret(oauthConsumer.consumerSecret);
-      consumer.setCallbackUrl(oauthConsumer.callbackURL);
-      return consumer;
-   }
-
-   public static OAuthConsumer toOAuthConsumer(ConsumerInfo consumer)
-   {
-      OAuthConsumer oauthConsumer =
-         new OAuthConsumer(consumer.getCallbackUrl(), consumer.getConsumerKey(), consumer.getConsumerSecret(), null);
-      for(Map.Entry prop : consumer.getProperties().entrySet())
-      {
-         oauthConsumer.setProperty(prop.getKey().toString(), prop.getValue());
-      }
-      return oauthConsumer;
+      return consumerStorage.getConsumerMap();
    }
 
    public RequestToken generateRequestToken(String consumerKey)

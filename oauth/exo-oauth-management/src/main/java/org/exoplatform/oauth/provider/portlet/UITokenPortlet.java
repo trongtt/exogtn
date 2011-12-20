@@ -21,9 +21,9 @@ package org.exoplatform.oauth.provider.portlet;
 
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.oauth.provider.ConsumerInfo;
 import org.exoplatform.oauth.provider.OAuthKeys;
 import org.exoplatform.oauth.provider.OAuthServiceProvider;
+import org.exoplatform.oauth.provider.consumer.Consumer;
 import org.exoplatform.oauth.provider.token.AccessToken;
 import org.w3c.dom.Element;
 
@@ -69,12 +69,12 @@ public class UITokenPortlet extends GenericPortlet
          (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
 
       Collection<AccessToken> tokens = provider.getAuthorizedTokens();
-      Map<AccessToken, ConsumerInfo> accessors = new HashMap<AccessToken, ConsumerInfo>();
+      Map<AccessToken, Consumer> accessors = new HashMap<AccessToken, Consumer>();
       for(AccessToken token : tokens)
       {
          if (request.getRemoteUser().equals(token.getUserID()))
          {
-            ConsumerInfo consumer = provider.getConsumer(token.getConsumerKey());
+            Consumer consumer = provider.getConsumer(token.getConsumerKey());
             accessors.put(token, consumer);
          }
       }

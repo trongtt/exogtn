@@ -18,12 +18,10 @@
  */
 package org.exoplatform.oauth.provider.portlet;
 
-
-
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.oauth.provider.ConsumerInfo;
 import org.exoplatform.oauth.provider.OAuthServiceProvider;
+import org.exoplatform.oauth.provider.consumer.Consumer;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
@@ -66,7 +64,7 @@ public class UIConsumerPortlet extends GenericPortlet
       OAuthServiceProvider oauthProvider =
          (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
 
-      Map<String, ConsumerInfo> consumers = oauthProvider.getAllConsumers();
+      Map<String, Consumer> consumers = oauthProvider.getAllConsumers();
       request.setAttribute("consumers", consumers.values());
       getPortletContext().getRequestDispatcher("/jsp/consumer.jsp").include(request, response);
    }
@@ -97,14 +95,14 @@ public class UIConsumerPortlet extends GenericPortlet
 
       if (errorMsg.size() == 0)
       {
-         ConsumerInfo consumer = new ConsumerInfo(consumerKey, consumerSecret, callbackUrl);
-         consumer.setProperty("name", consumerName);
-         consumer.setProperty("description", consumerDescription);
-         consumer.setProperty("website", consumerWebsite);
          OAuthServiceProvider provider =
             (OAuthServiceProvider)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
                OAuthServiceProvider.class);
-         provider.addConsumer(consumer);
+         Map<String, String> properties = new HashMap<String, String>();
+         properties.put("name", consumerName);
+         properties.put("description", consumerDescription);
+         properties.put("website", consumerWebsite);
+         provider.registerConsumer(consumerKey, consumerSecret, callbackUrl, properties);
       }
       else
       {

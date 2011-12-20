@@ -36,6 +36,7 @@ import net.oauth.server.OAuthServlet;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.web.AbstractHttpServlet;
 import org.exoplatform.oauth.provider.impl.SimpleOAuthServiceProvider;
+import org.exoplatform.oauth.provider.validation.NetOAuthAdapter;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -68,7 +69,7 @@ public class ExoRequestTokenServlet extends AbstractHttpServlet
             (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
 
          OAuthMessage requestMessage = OAuthServlet.getMessage(req, null);
-         OAuthConsumer consumer = SimpleOAuthServiceProvider.toOAuthConsumer(provider.getConsumer(requestMessage.getConsumerKey()));
+         OAuthConsumer consumer = NetOAuthAdapter.buildConsumer(provider.getConsumer(requestMessage.getConsumerKey()));
          if (consumer == null)
          {
             OAuthProblemException problem =

@@ -11,14 +11,14 @@
 					<td valign="top"><b>Description</b></td>
 					<td valign="top"><b>Action</b></td>
 				</tr>
-				<% accessors.each() { key, consumer -> %>
+				<% accessors.each() { token, consumer -> %>
 					<tr>
-						<td>${consumer.properties['name']}</td>
-						<td>${consumer.properties['website']}</td>
-						<td>${consumer.properties['description']}</td>
+						<td>${consumer.getProperty("name")}</td>
+						<td>${consumer.getProperty("website")}</td>
+						<td>${consumer.getProperty("description")}</td>
 						<td>
 							<p>
-								<a href="@{UITokenManagement.revokeAccessToken(accessToken = key.accessTokenID)}">Revoke Access Token</a>
+								<a href="@{UITokenManagement.revokeAccessToken(accessToken = token.AccessTokenID)}">Revoke Access Token</a>
 							</p>
 						</td>
 					</tr>

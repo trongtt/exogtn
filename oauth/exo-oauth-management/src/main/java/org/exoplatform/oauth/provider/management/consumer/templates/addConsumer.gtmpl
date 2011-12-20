@@ -6,12 +6,12 @@
 	
 	def consumerKey, consumerSecret, callbackUrl, consumerName, consumerDescrption, consumerWebsite;
 	if(consumer != null) {
-		consumerKey = consumer.consumerKey;
-		consumerSecret = consumer.consumerSecret;
-		callbackUrl = consumer.callbackUrl;
-		consumerName = consumer.properties['name'];
-		consumerDescrption = consumer.properties['description'];
-		consumerWebsite = consumer.properties['website'];
+		consumerKey = consumer.getKey();
+		consumerSecret = consumer.getSecret();
+		callbackUrl = consumer.getCallbackURL;
+		consumerName = consumer.getProperty("name");
+		consumerDescrption = consumer.getProperty("description");
+		consumerWebsite = consumer.getProperty("website");
 	}
 %>
 
@@ -41,7 +41,7 @@
 			<input type="text" name="callbackUrl" value="$callbackUrl" />
 		</tr>
 		<tr>
-			<label for="consumerName">Consumer Name</td>
+			<label for="consumerName">Consumer Name</label>
 			<input type="text" name="consumerName" value="$consumerName" />
 		</tr>
 		<tr>

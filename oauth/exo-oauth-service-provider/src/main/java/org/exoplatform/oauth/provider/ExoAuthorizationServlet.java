@@ -33,6 +33,7 @@ import net.oauth.server.OAuthServlet;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.web.AbstractHttpServlet;
+import org.exoplatform.oauth.provider.consumer.Consumer;
 import org.exoplatform.oauth.provider.impl.SimpleOAuthServiceProvider;
 import org.exoplatform.web.security.security.TransientTokenService;
 import org.gatein.wci.security.Credentials;
@@ -83,7 +84,7 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
 
          // Token can has only request token and secret token.
          // If current Token was marked as authorized in some other way.
-         ConsumerInfo consumer = provider.getConsumer(token.getConsumerKey());
+         Consumer consumer = provider.getConsumer(token.getConsumerKey());
          if (request.getParameter(OAuthKeys.OAUTH_AUTHORIZED) != null)
          {
             token.setProperty(OAuthKeys.OAUTH_AUTHORIZED, request.getParameter(OAuthKeys.OAUTH_AUTHORIZED).toString()
@@ -129,7 +130,7 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
     * @throws IOException
     * @throws ServletException
     */
-   private void sendToLoginPage(HttpServletRequest request, HttpServletResponse response, ConsumerInfo consumer,
+   private void sendToLoginPage(HttpServletRequest request, HttpServletResponse response, Consumer consumer,
       RequestToken token) throws IOException, ServletException
    {
       String callbackURL = request.getRequestURL().toString();
@@ -148,15 +149,15 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
     * @throws IOException
     * @throws ServletException
     */
-   private void returnToConsumer(HttpServletRequest request, HttpServletResponse response, ConsumerInfo consumer,
+   private void returnToConsumer(HttpServletRequest request, HttpServletResponse response, Consumer consumer,
          RequestToken token) throws IOException, ServletException
    {
       // send the user back to site's callBackUrl
       String callback = (String)token.getProperty(OAuthKeys.OAUTH_CALLBACK);
-      if (callback == null && consumer.getCallbackUrl() != null && consumer.getCallbackUrl().length() > 0)
+      if (callback == null)
       {
          // first check if we have something from config
-         callback = consumer.getCallbackUrl();
+         callback = consumer.getCallbackURL();
       }
 
       if (callback == null)
@@ -194,7 +195,7 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
    }
 
    private void sendToAuthorizationPage(HttpServletRequest request, HttpServletResponse response,
-      ConsumerInfo consumer, RequestToken token) throws IOException, ServletException
+      Consumer consumer, RequestToken token) throws IOException, ServletException
    {
       request.setAttribute(OAuthKeys.OAUTH_TOKEN, token.getToken());
       request.setAttribute(OAuthKeys.OAUTH_CONSUMER_NAME, consumer.getProperty("name"));
