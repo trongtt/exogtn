@@ -59,7 +59,7 @@ public class UIGadgetPortlet extends UIPortletApplication
 {
    final static public String LOCAL_STRING = "local://";
 
-   private static final Logger log = LoggerFactory.getLogger(GadgetImporter.class);
+   private static final Logger log = LoggerFactory.getLogger(UIGadgetPortlet.class);
 
    /** User pref. */
    private String userPref;
@@ -181,7 +181,8 @@ public class UIGadgetPortlet extends UIPortletApplication
       }
       catch (JSONException e)
       {
-         e.printStackTrace(); //To change body of catch statement use File | Settings | File Templates.
+         log.error("Has JSON error in metadata of Url " + url, e);
+         return null;
       }
       return metadata_.toString();
    }
