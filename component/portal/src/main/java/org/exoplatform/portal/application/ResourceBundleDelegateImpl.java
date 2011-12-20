@@ -43,10 +43,7 @@ public class ResourceBundleDelegateImpl implements ResourceBundleDelegate
    {
       String[] portalBundles = resourceBundleService.getSharedResourceBundleNames();
       String[] bundles = new String[portalBundles.length + 1];
-      for (int i = 0; i < portalBundles.length; i++)
-      {
-         bundles[i] = portalBundles[i];
-      }
+      System.arraycopy(portalBundles, 0, bundles, 0, portalBundles.length);
       bundles[portalBundles.length] = portletBundleName;
       return resourceBundleService.getResourceBundle(bundles, locale);
    }
