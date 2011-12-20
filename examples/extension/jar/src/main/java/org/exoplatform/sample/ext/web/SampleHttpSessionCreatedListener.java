@@ -22,6 +22,8 @@ package org.exoplatform.sample.ext.web;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.listener.Event;
 import org.exoplatform.services.listener.Listener;
+import org.gatein.common.logging.Logger;
+import org.gatein.common.logging.LoggerFactory;
 
 import javax.servlet.http.HttpSessionEvent;
 
@@ -33,11 +35,12 @@ import javax.servlet.http.HttpSessionEvent;
  */
 public class SampleHttpSessionCreatedListener extends Listener<PortalContainer, HttpSessionEvent>
 {
-
+   private static final Logger log = LoggerFactory.getLogger(SampleHttpSessionCreatedListener.class);
+      
    @Override
    public void onEvent(Event<PortalContainer, HttpSessionEvent> event) throws Exception
    {
-      System.out.println("Creating a new session of the 'sample-ext'");
+      log.info("Creating a new session of the 'sample-ext'");
    }
 
 }

@@ -7,6 +7,8 @@ import org.exoplatform.webui.core.UIContainer;
 import org.exoplatform.webui.core.UIRightClickPopupMenu;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
+import org.gatein.common.logging.Logger;
+import org.gatein.common.logging.LoggerFactory;
 
 @ComponentConfigs({
    @ComponentConfig(template = "app:/groovy/webui/component/UISampleRightClickPopupMenu.gtmpl"),
@@ -15,7 +17,8 @@ import org.exoplatform.webui.event.EventListener;
       @EventConfig(listeners = UISampleRightClickPopupMenu.SayGoodByeActionListener.class)})})
 public class UISampleRightClickPopupMenu extends UIContainer
 {
-
+   private static final Logger log = LoggerFactory.getLogger(UISampleRightClickPopupMenu.class);
+   
    public UISampleRightClickPopupMenu() throws Exception
    {
       UIRightClickPopupMenu popup = addChild(UIRightClickPopupMenu.class, "UISamplePopupMenu", null).setRendered(true);
@@ -28,7 +31,7 @@ public class UISampleRightClickPopupMenu extends UIContainer
       @Override
       public void execute(Event<UISampleRightClickPopupMenu> event) throws Exception
       {
-         System.out.println("Hello");
+         log.info("Hello");
       }
    }
 
@@ -38,7 +41,7 @@ public class UISampleRightClickPopupMenu extends UIContainer
       @Override
       public void execute(Event<UISampleRightClickPopupMenu> event) throws Exception
       {
-         System.out.println("GoodBye");
+         log.info("GoodBye");
       }
    }
 }

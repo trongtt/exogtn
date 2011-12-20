@@ -22,6 +22,8 @@ package org.exoplatform.sample.ext.web;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.listener.Event;
 import org.exoplatform.services.listener.Listener;
+import org.gatein.common.logging.Logger;
+import org.gatein.common.logging.LoggerFactory;
 
 import javax.servlet.ServletContextEvent;
 
@@ -33,11 +35,12 @@ import javax.servlet.ServletContextEvent;
  */
 public class SampleContextInitializedListener extends Listener<PortalContainer, ServletContextEvent>
 {
-
+   private static final Logger log = LoggerFactory.getLogger(SampleContextInitializedListener.class);
+   
    @Override
    public void onEvent(Event<PortalContainer, ServletContextEvent> event) throws Exception
    {
-      System.out.println("Initializing the context of the 'sample-ext'");
+      log.info("Initializing the context of the 'sample-ext'");
    }
 
 }

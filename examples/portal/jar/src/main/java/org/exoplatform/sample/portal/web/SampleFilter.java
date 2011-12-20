@@ -20,6 +20,8 @@
 package org.exoplatform.sample.portal.web;
 
 import org.exoplatform.web.filter.Filter;
+import org.gatein.common.logging.Logger;
+import org.gatein.common.logging.LoggerFactory;
 
 import java.io.IOException;
 
@@ -36,18 +38,19 @@ import javax.servlet.ServletResponse;
  */
 public class SampleFilter implements Filter
 {
-
+   private static final Logger log = LoggerFactory.getLogger(SampleFilter.class);
+   
    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
       ServletException
    {
-      System.out.println("SampleFilter start of the 'sample-portal'");
+      log.info("SampleFilter start of the 'sample-portal'");
       try
       {
          chain.doFilter(request, response);
       }
       finally
       {
-         System.out.println("SampleFilter end of the 'sample-portal'");
+         log.info("SampleFilter end of the 'sample-portal'");
       }
    }
 
