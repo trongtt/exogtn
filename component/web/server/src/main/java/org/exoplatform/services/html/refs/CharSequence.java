@@ -45,18 +45,6 @@ class CharsSequence
       index++;
    }
 
-   void append(String string)
-   {
-      char[] cs = string.toCharArray();
-      for (int i = 0; i < cs.length; i++)
-      {
-         if (index >= values.length)
-            return;
-         values[index] = cs[i];
-         index++;
-      }
-   }
-
    char[] getValues()
    {
       char[] newValues = new char[index];
