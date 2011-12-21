@@ -22,6 +22,8 @@ import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.component.ComponentPlugin;
 import org.exoplatform.container.component.ComponentRequestLifecycle;
 import org.exoplatform.services.jcr.RepositoryService;
+import org.gatein.common.logging.Logger;
+import org.gatein.common.logging.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,6 +47,8 @@ public class ChromatticManager implements ComponentRequestLifecycle
    /** . */
    private final ThreadLocal<Synchronization> currentSynchronization = new ThreadLocal<Synchronization>();
 
+   private final Logger log = LoggerFactory.getLogger(ChromatticManager.class);
+   
    public ChromatticManager(RepositoryService repositoryService) throws Exception {
       this.repositoryService = repositoryService;
       this.lifeCycleToWorkspaceMap = new HashMap<String, String>();
@@ -67,7 +71,7 @@ public class ChromatticManager implements ComponentRequestLifecycle
       }
       catch (Exception e)
       {
-         e.printStackTrace();
+         log.error("Error starting chromattic life cycle: " + lifeCycle.getName(), e);
       }
    }
 
