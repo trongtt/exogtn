@@ -693,8 +693,7 @@ public class ApplicationRegistryServiceImpl implements ApplicationRegistryServic
          }
          catch (Exception e)
          {
-            // log.error(e);
-            e.printStackTrace();
+            log.error("Error starting because of running application category plugin", e);
          }
          finally
          {
