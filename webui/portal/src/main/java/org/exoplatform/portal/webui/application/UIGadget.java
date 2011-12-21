@@ -39,6 +39,8 @@ import org.exoplatform.webui.core.UIPortletApplication;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.exception.MessageException;
+import org.gatein.common.logging.Logger;
+import org.gatein.common.logging.LoggerFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -111,6 +113,8 @@ public class UIGadget extends UIComponent
    
    public static String SAVE_PREF_FAIL = "UIGadget.savePrefFail";
 
+   private static final Logger log = LoggerFactory.getLogger(UIGadget.class);
+   
    /**
     * Initializes a newly created <code>UIGadget</code> object
     * 
@@ -179,7 +183,7 @@ public class UIGadget extends UIComponent
          }
          catch (Exception e)
          {
-            e.printStackTrace();
+            log.error("There is no gadget data", e);
          }
       }
       else

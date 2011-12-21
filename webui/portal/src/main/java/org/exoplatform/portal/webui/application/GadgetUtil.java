@@ -28,6 +28,8 @@ import org.exoplatform.container.PortalContainer;
 import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.gadget.core.SecurityTokenGenerator;
 import org.exoplatform.portal.webui.util.Util;
+import org.gatein.common.logging.Logger;
+import org.gatein.common.logging.LoggerFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,6 +50,8 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class GadgetUtil
 {
+   private static final Logger log = LoggerFactory.getLogger(GadgetUtil.class);
+   
    static public Gadget toGadget(String name, String path, boolean isLocal) throws Exception
    {
       Gadget gadget = new Gadget();
@@ -103,9 +107,9 @@ public class GadgetUtil
          result = IOUtils.toString(conn.getInputStream(), "UTF-8");
          wr.close();
       }
-      catch (IOException ioexc)
+      catch (IOException e)
       {
-         ioexc.printStackTrace();
+         log.info("Error during fetch metadata from Url " + urlStr);
          return "{}";
       }
       return result;
@@ -144,9 +148,9 @@ public class GadgetUtil
          result = IOUtils.toString(conn.getInputStream(), "UTF-8");
          wr.close();
       }
-      catch (IOException ioexc)
+      catch (IOException e)
       {
-         ioexc.printStackTrace();
+         log.info("Error during fetch metadata from Url " + urlStr);
          return "{}";
       }
       return result;

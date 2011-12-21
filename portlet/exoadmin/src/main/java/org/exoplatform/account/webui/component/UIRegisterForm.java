@@ -175,9 +175,8 @@ public class UIRegisterForm extends UIForm
                return true;
             }
          }
-         catch (Exception ex)
+         catch (Exception e)
          {
-            ex.printStackTrace();
          }
          return false;
       }

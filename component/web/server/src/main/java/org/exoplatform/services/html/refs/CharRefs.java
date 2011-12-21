@@ -40,16 +40,20 @@
 
 package org.exoplatform.services.html.refs;
 
+import org.gatein.common.logging.Logger;
+import org.gatein.common.logging.LoggerFactory;
+
 import java.util.Arrays;
 import java.util.Comparator;
 
 final class CharRefs
 {
-
+   final Logger log = LoggerFactory.getLogger(CharRefs.class);
+   
    boolean sorted = false;
 
    CharRef[] charRefs = {
-
+   
    new CharRef("nbsp", '\u00a0'), // no-break space = non-breaking space, U+00A0 ISOnum
       new CharRef("iexcl", '\u00a1'), // inverted exclamation mark, U+00A1 ISOnum
       new CharRef("cent", '\u00a2'), // cent sign, U+00A2 ISOnum
@@ -347,9 +351,9 @@ final class CharRefs
             return null;
          return charRefs[idx];
       }
-      catch (Exception exp)
+      catch (Exception e)
       {
-         exp.printStackTrace();
+         log.warn(e.getMessage());
          return null;
       }
    }

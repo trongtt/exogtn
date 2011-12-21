@@ -239,13 +239,12 @@ public class ResourceRequestFilter extends AbstractFilter
                   catch (InterruptedException e)
                   {
                      // Find out what is relevant to do
-                     e.printStackTrace();
+                     log.error("Interuption during get Image", e);
                   }
                   catch (ExecutionException e)
                   {
                      // Cleanup
-                     e.printStackTrace();
-                     mirroredImageCache.remove(resource);
+                     log.error("Error execution during get Image", e);
                   }
                }
             }

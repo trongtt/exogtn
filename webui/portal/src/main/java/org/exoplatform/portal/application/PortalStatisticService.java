@@ -28,6 +28,8 @@ import org.exoplatform.management.jmx.annotations.NameTemplate;
 import org.exoplatform.management.jmx.annotations.Property;
 import org.exoplatform.management.rest.annotations.RESTEndpoint;
 import org.exoplatform.portal.config.UserPortalConfigService;
+import org.gatein.common.logging.Logger;
+import org.gatein.common.logging.LoggerFactory;
 import org.picocontainer.Startable;
 
 import java.util.List;
@@ -52,6 +54,8 @@ public class PortalStatisticService implements Startable
 
    private UserPortalConfigService configService;
 
+   private final Logger log = LoggerFactory.getLogger(PortalStatisticService.class);
+   
    public PortalStatisticService(UserPortalConfigService res)
    {
       configService = res;
@@ -72,7 +76,7 @@ public class PortalStatisticService implements Startable
       }
       catch (Exception e)
       {
-         e.printStackTrace();
+         log.error("Error during get list of portal site names", e);
          return new String[0];
       }
    }

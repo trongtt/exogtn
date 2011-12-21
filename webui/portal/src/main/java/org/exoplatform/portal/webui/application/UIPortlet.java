@@ -947,14 +947,9 @@ public class UIPortlet<S, C extends Serializable> extends UIApplication
             this.producedOfferedPortlet = producedOfferedPortlet;
             this.applicationId = applicationId;
          }
-         catch (NoSuchDataException de)
-         {
-            log.error(de.getMessage());
-            throw de;
-         }
          catch (Exception e)
          {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
          }
       }
       else

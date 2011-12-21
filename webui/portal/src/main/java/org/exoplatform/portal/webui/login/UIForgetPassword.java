@@ -40,6 +40,8 @@ import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.form.validator.EmailAddressValidator;
 import org.exoplatform.webui.form.validator.MandatoryValidator;
 import org.exoplatform.webui.url.ComponentURL;
+import org.gatein.common.logging.Logger;
+import org.gatein.common.logging.LoggerFactory;
 import org.gatein.wci.security.Credentials;
 
 import java.net.URLEncoder;
@@ -62,6 +64,8 @@ public class UIForgetPassword extends UIForm
    static final String Username = "username";
 
    static final String Email = "email";
+   
+   private static final Logger log = LoggerFactory.getLogger(UIForgetPassword.class);
 
    public UIForgetPassword() throws Exception
    {
@@ -141,7 +145,7 @@ public class UIForgetPassword extends UIForm
          }
          catch (MissingResourceException e)
          {
-            e.printStackTrace();
+            log.debug("Resource not found: " + e.getMessage());
          }
          HttpServletRequest request = portalContext.getRequest();
          String host = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();

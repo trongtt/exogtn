@@ -37,7 +37,7 @@ import org.exoplatform.webui.core.lifecycle.UIContainerLifecycle;
 @ComponentConfig(lifecycle = UIContainerLifecycle.class)
 public class UISampleContent extends UIContainer
 {
-   private Log log_ = ExoLogger.getLogger(UISampleContent.class);
+   private Log log = ExoLogger.getLogger(UISampleContent.class);
 
    public static final int NODE_UIFORM = 0;
 
@@ -100,7 +100,7 @@ public class UISampleContent extends UIContainer
             showMultiValueInputSet();
             break;
          default :
-            log_.error("not implement yet");
+            log.error("not implement yet");
       }
    }
 
@@ -175,8 +175,7 @@ public class UISampleContent extends UIContainer
          }
          catch (Exception e)
          {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(e.getMessage());
          }
       }
       return uiComp;

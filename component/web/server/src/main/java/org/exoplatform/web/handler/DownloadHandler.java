@@ -26,6 +26,8 @@ import org.exoplatform.download.DownloadService;
 import org.exoplatform.web.ControllerContext;
 import org.exoplatform.web.WebAppController;
 import org.exoplatform.web.WebRequestHandler;
+import org.gatein.common.logging.Logger;
+import org.gatein.common.logging.LoggerFactory;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -42,7 +44,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class DownloadHandler extends WebRequestHandler
 {
-
+   private final Logger log = LoggerFactory.getLogger(DownloadHandler.class);
+   
    public String getHandlerName()
    {
       return "download";
@@ -90,7 +93,7 @@ public class DownloadHandler extends WebRequestHandler
       }
       catch (Exception ex)
       {
-         ex.printStackTrace();
+         log.error("Error during read/write data", ex);
       }
       finally
       {

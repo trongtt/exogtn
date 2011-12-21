@@ -93,7 +93,7 @@ public class RegisterPortletApplicationController extends PortletApplicationCont
       }
       catch (IOException e)
       {
-         e.printStackTrace();
+         log.error("Resource reponse error", e);
       }
    }
 }

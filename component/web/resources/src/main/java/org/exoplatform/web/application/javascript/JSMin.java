@@ -19,6 +19,9 @@
 
 package org.exoplatform.web.application.javascript;
 
+import org.gatein.common.logging.Logger;
+import org.gatein.common.logging.LoggerFactory;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -39,6 +42,8 @@ public class JSMin
 
    private int theB;
 
+   private static final Logger log = LoggerFactory.getLogger(JSMin.class);
+   
    public JSMin(Reader in, Writer out)
    {
       this.in = new PushbackReader(in);

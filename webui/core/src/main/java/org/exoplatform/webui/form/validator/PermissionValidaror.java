@@ -26,6 +26,8 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.core.UIComponent;
 import org.exoplatform.webui.exception.MessageException;
+import org.gatein.common.logging.Logger;
+import org.gatein.common.logging.LoggerFactory;
 
 /**
  * Created by The eXo Platform SARL
@@ -37,7 +39,8 @@ import org.exoplatform.webui.exception.MessageException;
  */
 public class PermissionValidaror
 {
-
+   private static final Logger log = LoggerFactory.getLogger(PermissionValidaror.class);
+   
    public void validate(UIComponent uicomponent, String permission) throws Exception
    {
       OrganizationService service =
@@ -62,7 +65,8 @@ public class PermissionValidaror
       }
       catch (Exception e)
       {
-         e.printStackTrace();
+         log.error("membership: " + membershipType.getName() + " OR group: " + group.getGroupName()
+            + " cannot be found", e);
       }
       if (membership.equals("*"))
       {

@@ -28,11 +28,15 @@ import org.apache.shindig.common.crypto.BlobCrypter;
 import org.apache.shindig.common.crypto.BlobCrypterException;
 import org.apache.shindig.common.util.TimeSource;
 import org.exoplatform.web.application.RequestContext;
+import org.gatein.common.logging.Logger;
+import org.gatein.common.logging.LoggerFactory;
 
 public class ExoDefaultSecurityTokenGenerator implements SecurityTokenGenerator
 {
    private final TimeSource timeSource;
 
+   private static final Logger log = LoggerFactory.getLogger(ExoDefaultSecurityTokenGenerator.class);
+   
    public ExoDefaultSecurityTokenGenerator() throws Exception
    {
       this.timeSource = new TimeSource();
@@ -55,11 +59,11 @@ public class ExoDefaultSecurityTokenGenerator implements SecurityTokenGenerator
       }
       catch (IOException e)
       {
-         e.printStackTrace();
+         log.error("Error during read token file", e);
       }
       catch (BlobCrypterException e)
       {
-         e.printStackTrace();
+         log.error("Error during encrypt the securty token", e);
       }
       return null;
    }

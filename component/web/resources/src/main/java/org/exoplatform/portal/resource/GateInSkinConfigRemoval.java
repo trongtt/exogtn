@@ -23,6 +23,8 @@ import java.util.Set;
 
 import javax.servlet.ServletContext;
 
+import org.gatein.common.logging.Logger;
+import org.gatein.common.logging.LoggerFactory;
 import org.gatein.wci.WebAppEvent;
 import org.gatein.wci.WebAppLifeCycleEvent;
 import org.gatein.wci.WebAppListener;
@@ -34,7 +36,8 @@ import org.gatein.wci.WebAppListener;
  */
 public class GateInSkinConfigRemoval implements WebAppListener
 {
-
+   private final Logger log = LoggerFactory.getLogger(GateInSkinConfigRemoval.class);
+   
    private SkinService service;
 
    public GateInSkinConfigRemoval(SkinService _service)
@@ -71,7 +74,7 @@ public class GateInSkinConfigRemoval implements WebAppListener
       }
       catch (Exception ex)
       {
-         ex.printStackTrace();
+         log.error("Error during removing WebApp skins", ex);
       }
    }
 

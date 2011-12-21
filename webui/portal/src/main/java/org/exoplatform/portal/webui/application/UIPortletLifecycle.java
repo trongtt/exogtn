@@ -372,7 +372,7 @@ public class UIPortletLifecycle<S, C extends Serializable, I> extends Lifecycle<
          }
          catch (Throwable ex)
          {
-            ex.printStackTrace();
+            log.error("Cannot render the template " + uicomponent.getTemplate(), ex);
          }
       }
    }

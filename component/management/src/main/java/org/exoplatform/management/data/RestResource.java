@@ -28,6 +28,8 @@ import org.exoplatform.management.spi.ManagedResource;
 import org.exoplatform.management.spi.ManagedTypeMetaData;
 import org.exoplatform.services.rest.impl.ApplicationContextImpl;
 import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
+import org.gatein.common.logging.Logger;
+import org.gatein.common.logging.LoggerFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -74,6 +76,8 @@ public class RestResource
    /** . */
    private final String description;
 
+   private final Logger log = LoggerFactory.getLogger(RestResource.class);
+   
    public RestResource(String name, ManagedResource managedResource)
    {
       ManagedTypeMetaData managedType = managedResource.getMetaData();
@@ -236,7 +240,7 @@ public class RestResource
       }
       catch (Exception e)
       {
-         e.printStackTrace();
+         log.error("Error during invoke Rest method", e);
          return Response.serverError();
       }
       finally

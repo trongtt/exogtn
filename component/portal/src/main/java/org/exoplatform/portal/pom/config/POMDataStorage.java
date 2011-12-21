@@ -58,6 +58,8 @@ import org.exoplatform.portal.pom.data.PageData;
 import org.exoplatform.portal.pom.data.PageKey;
 import org.exoplatform.portal.pom.data.PortalData;
 import org.exoplatform.portal.pom.data.PortalKey;
+import org.gatein.common.logging.Logger;
+import org.gatein.common.logging.LoggerFactory;
 import org.gatein.mop.api.workspace.ObjectType;
 import org.gatein.mop.api.workspace.Site;
 import org.gatein.mop.api.workspace.WorkspaceObject;
@@ -73,7 +75,8 @@ import org.jibx.runtime.impl.UnmarshallingContext;
  */
 public class POMDataStorage implements ModelDataStorage
 {
-
+   private static final Logger log = LoggerFactory.getLogger(POMDataStorage.class);
+   
    /** . */
    private final POMSessionManager pomMgr;
 
@@ -353,7 +356,7 @@ public class POMDataStorage implements ModelDataStorage
       }
       catch (Exception ex)
       {
-         ex.printStackTrace();
+         log.error("ModelData adapt error", ex);
          return null;
       }
    }

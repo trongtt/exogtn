@@ -41,6 +41,8 @@ import org.exoplatform.resolver.ResourceResolver;
 import org.exoplatform.services.cache.CacheService;
 import org.exoplatform.services.cache.ExoCache;
 import org.gatein.common.io.IOTools;
+import org.gatein.common.logging.Logger;
+import org.gatein.common.logging.LoggerFactory;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -65,6 +67,8 @@ public class TemplateService
 
    private boolean cacheTemplate_ = true;
 
+   private final Logger log = LoggerFactory.getLogger(TemplateService.class);
+   
    private final Loader<ResourceKey, GroovyTemplate, ResourceResolver> loader = new Loader<ResourceKey, GroovyTemplate, ResourceResolver>()
    {
       public GroovyTemplate retrieve(ResourceResolver context, ResourceKey key) throws Exception
@@ -180,14 +184,7 @@ public class TemplateService
    @ManagedDescription("Clear the template cache")
    public void reloadTemplates()
    {
-      try
-      {
-         templatesCache_.clearCache();
-      }
-      catch (Exception e)
-      {
-         e.printStackTrace();
-      }
+      templatesCache_.clearCache();
    }
 
    /*
@@ -209,7 +206,7 @@ public class TemplateService
       }
       catch (Exception e)
       {
-         e.printStackTrace();
+         log.warn("Cannot remove template: " + name + " with error " + e.getMessage());
       }
    }
 
@@ -229,7 +226,7 @@ public class TemplateService
       }
       catch (Exception e)
       {
-         e.printStackTrace();
+         log.warn(e.getMessage());
          return null;
       }
    }

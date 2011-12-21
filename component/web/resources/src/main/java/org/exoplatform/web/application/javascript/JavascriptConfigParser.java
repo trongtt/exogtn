@@ -18,6 +18,8 @@
  */
 package org.exoplatform.web.application.javascript;
 
+import org.gatein.common.logging.Logger;
+import org.gatein.common.logging.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -53,6 +55,8 @@ public class JavascriptConfigParser
    /** . */
    private ServletContext context;
 
+   private final Logger log = LoggerFactory.getLogger(JavascriptConfigParser.class);
+   
    private JavascriptConfigParser(ServletContext context)
    {
       this.context = context;
@@ -157,7 +161,7 @@ public class JavascriptConfigParser
       }
       catch (Exception ex)
       {
-         ex.printStackTrace();
+         log.error("Error parses xmlToTask", ex);
          return null;
       }
    }
