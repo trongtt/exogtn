@@ -28,6 +28,8 @@ import org.exoplatform.container.xml.ObjectParameter;
 import org.exoplatform.container.xml.ValueParam;
 import org.exoplatform.services.cache.CacheService;
 import org.exoplatform.services.organization.BaseOrganizationService;
+import org.gatein.common.logging.Logger;
+import org.gatein.common.logging.LoggerFactory;
 import org.picocontainer.Startable;
 
 import javax.naming.InitialContext;
@@ -51,6 +53,8 @@ public class PicketLinkIDMOrganizationServiceImpl extends BaseOrganizationServic
 
    private Config configuration = new Config();
 
+   private final Logger log = LoggerFactory.getLogger(PicketLinkIDMOrganizationServiceImpl.class);
+   
    public PicketLinkIDMOrganizationServiceImpl(InitParams params, PicketLinkIDMService idmService)
       throws Exception
    {
@@ -103,10 +107,6 @@ public class PicketLinkIDMOrganizationServiceImpl extends BaseOrganizationServic
 
          super.start();
 
-      }
-      catch (Exception e)
-      {
-         e.printStackTrace(); //To change body of catch statement use File | Settings | File Templates.
       }
       finally
       {
@@ -161,7 +161,7 @@ public class PicketLinkIDMOrganizationServiceImpl extends BaseOrganizationServic
       }
       catch (Exception e)
       {
-         e.printStackTrace();
+         log.error("StartRequest error", e);
       }
    }
 
@@ -197,7 +197,7 @@ public class PicketLinkIDMOrganizationServiceImpl extends BaseOrganizationServic
       }
       catch (Exception e)
       {
-         e.printStackTrace();
+         log.error("flush error", e);
       }
    }
 
@@ -225,7 +225,7 @@ public class PicketLinkIDMOrganizationServiceImpl extends BaseOrganizationServic
       }
       catch (Exception e)
       {
-         e.printStackTrace();
+         log.error("EndRequest error", e);
       }
    }
 
