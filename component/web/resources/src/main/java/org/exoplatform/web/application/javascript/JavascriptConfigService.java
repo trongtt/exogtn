@@ -87,33 +87,28 @@ public class JavascriptConfigService extends AbstractResourceService implements 
             }
             
             StringBuilder sB = new StringBuilder();
+            BufferedReader reader = null;
             try
             {
-               BufferedReader reader = new BufferedReader(resource.read());
+               reader = new BufferedReader(resource.read());
                String line = reader.readLine();
-               try
+               
+               while (line != null)
                {
-                  while (line != null)
+                  sB.append(line);
+                  if ((line = reader.readLine()) != null)
                   {
-                     sB.append(line);
-                     if ((line = reader.readLine()) != null)
-                     {
-                        sB.append("\n");
-                     }
+                     sB.append("\n");
                   }
-               }
-               catch (Exception ex)
-               {
-                  ex.printStackTrace();
-               }
-               finally
-               {
-                  Safe.close(reader);
                }
             }
             catch (Exception e)
             {
-               e.printStackTrace();
+               log.error("Error during read resource: " + key, e);
+            }
+            finally
+            {
+               Safe.close(reader);
             }
             
             return new CachedJavascript(sB.toString());
