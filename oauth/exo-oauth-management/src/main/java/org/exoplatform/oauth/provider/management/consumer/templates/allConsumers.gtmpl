@@ -36,8 +36,9 @@
 			<% } %>
 		</table>
 	<% } %>
+	<br />
 	    <p>
-    		<a href="@{UIConsumerManagement.showAddConsumer()}">Add a new Consumer</a>
+    		<a class="OSummit" href="@{UIConsumerManagement.showAddConsumer()}">Add a new Consumer</a>
 		</p>
 	</div>
 </div>

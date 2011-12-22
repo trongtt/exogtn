@@ -4,57 +4,57 @@
 	def consumer = session.getConsumer();
 	def message = session.getMessage();
 	
-	def consumerKey, consumerSecret, callbackUrl, consumerName, consumerDescrption, consumerWebsite;
+	def consumerKey, consumerSecret, callbackUrl, consumerName, consumerDescription, consumerWebsite;
 	if(consumer != null) {
 		consumerKey = consumer.getKey();
 		consumerSecret = consumer.getSecret();
-		callbackUrl = consumer.getCallbackURL;
+		callbackUrl = consumer.getCallbackURL();
 		consumerName = consumer.getProperty("name");
-		consumerDescrption = consumer.getProperty("description");
+		consumerDescription = consumer.getProperty("description");
 		consumerWebsite = consumer.getProperty("website");
 	}
 %>
 
 <form action="@{UIConsumerManagement.addNewConsumer()}" method="post">
-	<div class="Navigation"><a href="@{UIConsumerManagement.index()}">Back to All Consumers</a></div>
+	<div class="ONavigation"><a href="@{UIConsumerManagement.index()}">Back to All Consumers</a></div>
 	<br />
 	
 	<div class="AddConsumer">
-	<div>Add new Consumer</div>
+	<div><h2>Add new Consumer</h2></div>
 	
 	<% if (message != null) { %>
-	<div class="message">${message}</div>
+	<div class="OMessage">${message}</div>
 	<% } %>
 
 	<table align="center" border="1">
 	  <tbody>
 		<tr>
 			<label for="consumerKey">Consumer key*</label>
-			<input type="text" name="consumerKey" value="$consumerKey" />
+			<input type="text" name="consumerKey" value="${consumerKey}" />
 		</tr>
 		<tr>
 			<label for="consumerKey">Consumer secret*</label>
-			<input type="text" name="consumerSecret" value="$consumerSecret" />
+			<input type="text" name="consumerSecret" value="${consumerSecret}" />
 		</tr>
 		<tr>
 			<label for="callbackUrl">Callback Url*</label>
-			<input type="text" name="callbackUrl" value="$callbackUrl" />
+			<input type="text" name="callbackUrl" value="${callbackUrl}" />
 		</tr>
 		<tr>
 			<label for="consumerName">Consumer Name</label>
-			<input type="text" name="consumerName" value="$consumerName" />
+			<input type="text" name="consumerName" value="${consumerName}" />
 		</tr>
 		<tr>
 			<label for="consumerDescription">Description</label>
-			<input type="text" name="consumerDescription" value="$consumerDescription" />
+			<input type="text" name="consumerDescription" value="${consumerDescription}" />
 		</tr>
 		<tr>
 			<label for="consumerWebsite">Website</label>
-			<input type="text" name="consumerWebsite" value="$consumerWesite" />
+			<input type="text" name="consumerWebsite" value="${consumerWebsite}" />
 		</tr>
 	  </tbody>
 	</table>
-	<button type="submit" class="Submit">Add</button>
+	<button type="submit" class="OSummit" >Add</button>
 	
 	</div>
 </form>

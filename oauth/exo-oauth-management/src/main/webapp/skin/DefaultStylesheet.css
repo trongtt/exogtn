@@ -1,33 +1,70 @@
-.AddConsumer {
-	border: 1px solid #ccced7;
-}
-
-.AddConsumer table {
-	width: 100%;
-}
-
-.AddConsumer .Submit {
-	width: 100px;
-}
-
-.AddConsumer tr {
-	
-}
-
-.AddConsumer tr td {
-	
-}
-
-OAuthToken h1 {
-	font-family: Arial Black;
-	font-size: 20px;
+.AddConsumer h1 {
+	font-size: 18px;
 	color: black;
-	text-align: center
+	text-align: center;
+	font-weight:bold;
 }
 
-OAuthConsumer h1 {
-	font-family: Arial Black;
-	font-size: 20px;
+.ONavigation {
+	font-size: 14px;
+	text-align: left;
+	color: #0094C2;
+}
+
+.OSummit {
+	background-color: #00A0D1;
+	color: white;
+	text-align: center;
+	-webkit-border-radius: 40px;
+	border-radius: 40px;
+	padding: 3px 20px;
+}
+
+.OMessage {
+	color: red;
+	text-align: center;
+	font-size: 14px;
+}
+
+.OAuthToken h1 {
+	font-size: 18px;
 	color: black;
-	text-align: center
+	text-align: center;
+	font-weight:bold;
+}
+
+.OAuthToken a {
+	font-size: 12px;
+	color: blue;
+	text-align: center;
+	font-weight:bold;
+}
+
+.OAuthConsumer h1 {
+	font-size: 18px;
+	color: black;
+	text-align: center;
+	font-weight:bold;
+}
+
+.OAuthConsumer table {	
+	table-layout: fixed;
+}
+
+.OAuthConsumer table td {
+	word-wrap: break-word;
+}
+
+.ConsumerDetail h2 {
+	font-size: 14px;
+	color: black;
+	font-weight: bold;
+}
+
+.ConsumerDetail table {	
+	table-layout: fixed;
+}
+
+.ConsumerDetail table td {
+	word-wrap: break-word;
 }

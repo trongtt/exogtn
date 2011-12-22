@@ -116,7 +116,7 @@ public class UIConsumerManagement
          StringBuilder message = new StringBuilder();
          message.append(consumerKey == null? "Consumer key is required" : "");
          message.append(consumerSecret == null ? "Consumer secret is required" : "");
-         message.append(callbackUrl == null ? "callback Url is required" : "");
+         message.append(callbackUrl == null ? "Callback Url is required" : "");
          session.setMessage(message.toString());
 
          //Merely used from juzu template
@@ -169,13 +169,25 @@ public class UIConsumerManagement
          OAuthServiceProvider provider =
             (OAuthServiceProvider)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
                OAuthServiceProvider.class);
-         Map<String, String> consumerProperties = new HashMap<String, String>();
-         consumerProperties.put("name", consumerName);
-         consumerProperties.put("description", consumerDescription);
-         consumerProperties.put("website", consumerWebsite);
-         Consumer consumer = provider.registerConsumer(consumerKey, consumerSecret, callbackUrl, consumerProperties);
-         session.setConsumer(consumer);
-         return UIConsumerManagement_.consumerDetail();
+         Consumer consumer = provider.getConsumer(consumerKey);
+         if (consumer != null)
+         {
+            StringBuilder message = new StringBuilder();
+            message.append("Consumer Key is existing");
+            session.setMessage(message.toString());
+            session.setConsumer(consumer);
+            return UIConsumerManagement_.addConsumer();
+         }
+         else
+         {
+            Map<String, String> consumerProperties = new HashMap<String, String>();
+            consumerProperties.put("name", consumerName);
+            consumerProperties.put("description", consumerDescription);
+            consumerProperties.put("website", consumerWebsite);
+            consumer = provider.registerConsumer(consumerKey, consumerSecret, callbackUrl, consumerProperties);
+            session.setConsumer(consumer);
+            return UIConsumerManagement_.consumerDetail();
+         }
       }
    }
 

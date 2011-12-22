@@ -6,10 +6,10 @@
 %>
 
 <div class="ConsumerDetail">
-	<div class="Navigation"><a href="@{UIConsumerManagement.index()}">Back to All Consumers</a></div>
+	<div class="ONavigation"><a href="@{UIConsumerManagement.index()}">Back to All Consumers</a></div>
 	<br />
 	<% if (consumer != null) { %>
-	<div>Consumer Information</div>
+	<div><h2>Consumer Information</h2></div>
 	<table align="center" border="1">
 	  <tbody>
 		<tr>
@@ -41,7 +41,7 @@
 	<% } %>
 	<br />
 	<% if (accessToken != null) { %>
-		Your access token for this consumer
+		<h2>Your access token for this consumer</h2>
 		<table>
 		  <tbody>
 			<tr>
@@ -54,11 +54,12 @@
 			</tr>
 		  </tbody>
 		</table>
-		<a href="@{UIConsumerManagement.createAccessToken(consumerKey = consumer.key)}">Recreate the Access Token</a>
-	<% } else { %>
-		You can create an Access Token for this consumer. Consumer can use this token to sign requests for accessing resources
 		<br />
-		<a href="@{UIConsumerManagement.createAccessToken(consumerKey = consumer.key)}">Create the Access Token</a>
+		<a class="OSummit" href="@{UIConsumerManagement.createAccessToken(consumerKey = consumer.key)}">Recreate the Access Token</a>
+	<% } else { %>
+		<h2>You can create an Access Token for this consumer. Consumer can use this token to sign requests for accessing resources</h2>
+		<br />
+		<a class="OSummit" href="@{UIConsumerManagement.createAccessToken(consumerKey = consumer.key)}">Create the Access Token</a>
 	<% } %>
 </div>
 
