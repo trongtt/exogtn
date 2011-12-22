@@ -54,11 +54,11 @@
 			</tr>
 		  </tbody>
 		</table>
-		<a href="@{UIConsumerManagement.createAccessToken(consumerKey = consumer.Key)}">Recreate the Access Token</a>
+		<a href="@{UIConsumerManagement.createAccessToken(consumerKey = consumer.key)}">Recreate the Access Token</a>
 	<% } else { %>
 		You can create an Access Token for this consumer. Consumer can use this token to sign requests for accessing resources
 		<br />
-		<a href="@{UIConsumerManagement.createAccessToken(consumerKey = consumer.Key)}">Create the Access Token</a>
+		<a href="@{UIConsumerManagement.createAccessToken(consumerKey = consumer.key)}">Create the Access Token</a>
 	<% } %>
 </div>
 

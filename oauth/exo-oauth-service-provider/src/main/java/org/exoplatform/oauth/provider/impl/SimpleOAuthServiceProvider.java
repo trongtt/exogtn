@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * A simple OAuth Provider service that persists access token, consumer's metadata into JCR
+ * A simple implementation of OAuth Service Provider that provide details of persistent access token, consumer's information into JCR
  * 
  * Created by The eXo Platform SAS
  * Author : Nguyen Anh Kien

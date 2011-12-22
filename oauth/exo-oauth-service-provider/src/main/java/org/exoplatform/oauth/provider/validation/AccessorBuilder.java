@@ -21,7 +21,6 @@ package org.exoplatform.oauth.provider.validation;
 import net.oauth.OAuthAccessor;
 import org.exoplatform.oauth.provider.OAuthServiceProvider;
 import org.exoplatform.oauth.provider.RequestToken;
-import org.exoplatform.oauth.provider.impl.SimpleOAuthServiceProvider;
 import org.exoplatform.oauth.provider.token.AccessToken;
 
 /**

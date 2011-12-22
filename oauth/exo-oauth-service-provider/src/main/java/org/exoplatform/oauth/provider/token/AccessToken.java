@@ -18,7 +18,6 @@
  */
 package org.exoplatform.oauth.provider.token;
 
-import org.chromattic.api.annotations.Name;
 import org.chromattic.api.annotations.NamingPrefix;
 import org.chromattic.api.annotations.PrimaryType;
 import org.chromattic.api.annotations.Property;

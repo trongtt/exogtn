@@ -99,9 +99,11 @@ public class ConsumerStorage implements Startable
                
                Map<String, String> properties = new HashMap<String, String>();
                String desc = config.getProperty(key + ".description");
+               String website = config.getProperty(key + ".website");
                String pubKey = config.getProperty(key + ".RSA-SHA1.PublicKey");
                properties.put("name", key);
                properties.put("description", desc);
+               properties.put("website", website);
                if(pubKey != null)
                {
                   properties.put("RSA-SHA1.PublicKey", pubKey);

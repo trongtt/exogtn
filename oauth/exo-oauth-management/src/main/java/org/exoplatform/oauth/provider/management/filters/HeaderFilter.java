@@ -46,7 +46,7 @@ public class HeaderFilter implements RenderFilter
       PortletException
    {
       Element cssElement = response.createElement("link");
-      cssElement.setAttribute("href", response.encodeURL(request.getContextPath() + "/skin/OAuthStyle.css"));
+      cssElement.setAttribute("href", response.encodeURL(request.getContextPath() + "/skin/DefaultStylesheet.css"));
       cssElement.setAttribute("rel", "stylesheet");
       cssElement.setAttribute("type", "text/css");
 

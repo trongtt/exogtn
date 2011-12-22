@@ -16,18 +16,15 @@
  */
 package org.exoplatform.oauth.provider;
 
-
-import net.oauth.OAuthProblemException;
 import org.exoplatform.oauth.provider.consumer.Consumer;
 import org.exoplatform.oauth.provider.token.AccessToken;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
 /**
  * The OAuthServiceProvider defines an API to deal with
  *
- * 1. Consumer
+ * 1. Consumer information
  * 2. AccessToken
  * 3. RequestToken
  *
@@ -73,8 +70,8 @@ public interface OAuthServiceProvider
    public Map<String, Consumer> getAllConsumers();
       
    /**
-    * Generate request token from consumer information (name, key, etc)
-    * request token is transient token
+    * Generate request token from consumer information (name or key)
+    * request token is a transient token, it will be removed after configurable short time
     * 
     * @return RequestToken
     */
@@ -112,13 +109,13 @@ public interface OAuthServiceProvider
    public RequestToken getRequestToken(String token);
    
    /**
-    * Find an AccessToken stored under the token key: key and return it.
+    * Find an AccessToken stored under the token string: token and return it.
     * This method returns {@code null} if no such AccessToken is found
     *
     * @param key
     * @return AccessToken
     */
-   public AccessToken getAccessToken(String key);
+   public AccessToken getAccessToken(String token);
 
    /**
     * Find an AccessToken associated with the pair (userID, consumerKey) and return it.
@@ -134,7 +131,6 @@ public interface OAuthServiceProvider
     * Revoke access token
     * 
     * @param token
-    * @throws OAuthProcessingException
     */
    public void revokeAccessToken(String token);
    
@@ -142,7 +138,6 @@ public interface OAuthServiceProvider
     * Revoke request token
     * 
     * @param token
-    * @throws OAuthProcessingException
     */
    public void revokeRequestToken(String token);
 

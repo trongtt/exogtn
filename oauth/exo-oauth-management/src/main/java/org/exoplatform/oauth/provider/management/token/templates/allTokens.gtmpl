@@ -7,7 +7,7 @@
 		<table align="center" border="1">
 				<tr bgcolor="#99CCFF">
 					<td valign="top"><b>Consumer</b></td>
-					<td valign="top"><b>Consumer Url</b></td>
+					<td valign="top"><b>Consumer website</b></td>
 					<td valign="top"><b>Description</b></td>
 					<td valign="top"><b>Action</b></td>
 				</tr>
@@ -18,7 +18,7 @@
 						<td>${consumer.getProperty("description")}</td>
 						<td>
 							<p>
-								<a href="@{UITokenManagement.revokeAccessToken(accessToken = token.AccessTokenID)}">Revoke Access Token</a>
+								<a href="@{UITokenManagement.revokeAccessToken(accessToken = token.accessTokenID)}">Revoke Access Token</a>
 							</p>
 						</td>
 					</tr>
