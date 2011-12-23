@@ -63,8 +63,8 @@ public class ConsumerStorage implements Startable
          RequestLifeCycle.begin(ExoContainerContext.getCurrentContainer());
 
          //Not a good way to avoid reinitiating of data
-         Collection<Consumer> consumers = getConsumers();
-         if (consumers == null || consumers.size() < 1)
+         Collection<ConsumerEntry> consumerEntries = getConsumers();
+         if (consumerEntries == null || consumerEntries.size() < 1)
          {
             loadInitConfig();
          }
@@ -140,15 +140,15 @@ public class ConsumerStorage implements Startable
       return container;
    }
 
-   public Consumer registerConsumer(final String key, final String secret, final String callbackURL, final Map<String, String> properties)
+   public ConsumerEntry registerConsumer(final String key, final String secret, final String callbackURL, final Map<String, String> properties)
    {
-      Task<Consumer> registerTask = new Task<Consumer>()
+      Task<ConsumerEntry> registerTask = new Task<ConsumerEntry>()
       {
          @Override
-         public Consumer run(ChromatticSession session)
+         public ConsumerEntry run(ChromatticSession session)
          {
             ConsumerContainer container = getConsumerContainer(session);
-            Consumer consumerInf = container.create();
+            ConsumerEntry consumerInf = container.create();
             container.getConsumers().put(key, consumerInf);
             consumerInf.setKey(key);
             consumerInf.setSecret(secret);
@@ -169,30 +169,30 @@ public class ConsumerStorage implements Startable
       return executor.execute(registerTask);
    }
 
-   public Consumer getConsumer(String key)
+   public ConsumerEntry getConsumer(String key)
    {
       ChromatticSession session = lifecycle.getContext().getSession();
       return getConsumerContainer(session).getConsumer(key);
    }
 
-   public Collection<Consumer> getConsumers()
+   public Collection<ConsumerEntry> getConsumers()
    {
       ChromatticSession session = lifecycle.getContext().getSession();
       return Collections.unmodifiableCollection(getConsumerContainer(session).getConsumers().values());
    }
 
-   public Map<String, Consumer> getConsumerMap()
+   public Map<String, ConsumerEntry> getConsumerMap()
    {
       ChromatticSession session = lifecycle.getContext().getSession();
       return Collections.unmodifiableMap(getConsumerContainer(session).getConsumers());
    }
 
-   public Consumer deleteConsumer(final String key)
+   public ConsumerEntry deleteConsumer(final String key)
    {
-      Task<Consumer> deleteTask = new Task<Consumer>()
+      Task<ConsumerEntry> deleteTask = new Task<ConsumerEntry>()
       {
          @Override
-         public Consumer run(ChromatticSession session)
+         public ConsumerEntry run(ChromatticSession session)
          {
             ConsumerContainer container = getConsumerContainer(session);
             return container.getConsumers().remove(key);
@@ -201,18 +201,18 @@ public class ConsumerStorage implements Startable
       return executor.execute(deleteTask);
    }
 
-   public List<Consumer> deleteConsumers(final List<String> keys)
+   public List<ConsumerEntry> deleteConsumers(final List<String> keys)
    {
-      Task<List<Consumer>> deleteTask = new Task<List<Consumer>>()
+      Task<List<ConsumerEntry>> deleteTask = new Task<List<ConsumerEntry>>()
       {
          @Override
-         public List<Consumer> run(ChromatticSession session)
+         public List<ConsumerEntry> run(ChromatticSession session)
          {
-            List<Consumer> deletedConsumers = new LinkedList<Consumer>();
+            List<ConsumerEntry> deletedConsumers = new LinkedList<ConsumerEntry>();
             ConsumerContainer container = getConsumerContainer(session);
             for(String key : keys)
             {
-               Consumer deletedConsumer = container.getConsumers().remove(key);
+               ConsumerEntry deletedConsumer = container.getConsumers().remove(key);
                if(deletedConsumer != null)
                {
                   deletedConsumers.add(deletedConsumer);

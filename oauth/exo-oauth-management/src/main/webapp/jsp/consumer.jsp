@@ -15,7 +15,7 @@ Provider: Manage information of Consumer Applications</h1></div>
 		<tr bgcolor="#99CCFF">
 			<td valign="top"><b>Consumer Key</b></td>
 			<td valign="top"><b>Consumer Secret</b></td>
-			<td valign="top"><b>Callback Url</b></td>
+			<td valign="top"><b>Callback URL</b></td>
 			<td valign="top"><b>Name</b></td>
 			<td valign="top"><b>Description</b></td>
 			<td valign="top"><b>Website</b></td>
@@ -25,7 +25,7 @@ Provider: Manage information of Consumer Applications</h1></div>
 			<tr>
 				<td><c:out value="${consumer.consumerKey}"></c:out></td>
 				<td><c:out value="${consumer.consumerSecret}"></c:out></td>
-				<td><c:out value="${consumer.callbackUrl}"></c:out></td>
+				<td><c:out value="${consumer.callbackURL}"></c:out></td>
 				<td><c:out value="${consumer.properties['name']}"></c:out></td>
 				<td><c:out value="${consumer.properties['description']}"></c:out></td>
 				<td><c:out value="${consumer.properties['website']}"></c:out></td>
@@ -57,10 +57,10 @@ Provider: Manage information of Consumer Applications</h1></div>
 	</tr>
 	<tr>
 		<td>Callback Url*</td>
-		<td><input type="text" name="callbackUrl"
-			value='<c:out value="${aNewConsumer.callbackUrl}"></c:out>' /></td>
+		<td><input type="text" name="callbackURL"
+			value='<c:out value="${aNewConsumer.callbackURL}"></c:out>' /></td>
 		<td class="errMsg"><c:out
-			value="${requestScope.errorMsg.callbackUrl}" /></td>
+			value="${requestScope.errorMsg.callbackURL}" /></td>
 	</tr>
 	<tr>
 		<td>Name</td>

@@ -32,12 +32,12 @@ public abstract class ConsumerContainer
 {
 
    @Create
-   public abstract Consumer create();
+   public abstract ConsumerEntry create();
 
    @OneToMany
-   public abstract Map<String, Consumer> getConsumers();
+   public abstract Map<String, ConsumerEntry> getConsumers();
 
-   public Consumer getConsumer(String key)
+   public ConsumerEntry getConsumer(String key)
    {
       return getConsumers().get(key);
    }

@@ -21,9 +21,9 @@ package org.exoplatform.oauth.provider.portlet;
 
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.oauth.provider.Consumer;
 import org.exoplatform.oauth.provider.OAuthKeys;
 import org.exoplatform.oauth.provider.OAuthServiceProvider;
-import org.exoplatform.oauth.provider.consumer.Consumer;
 import org.exoplatform.oauth.provider.token.AccessToken;
 import org.w3c.dom.Element;
 

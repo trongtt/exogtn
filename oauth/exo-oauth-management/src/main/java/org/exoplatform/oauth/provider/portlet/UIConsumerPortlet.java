@@ -20,8 +20,8 @@ package org.exoplatform.oauth.provider.portlet;
 
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.oauth.provider.Consumer;
 import org.exoplatform.oauth.provider.OAuthServiceProvider;
-import org.exoplatform.oauth.provider.consumer.Consumer;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
@@ -74,7 +74,7 @@ public class UIConsumerPortlet extends GenericPortlet
    {
       String consumerKey = request.getParameter("consumerKey");
       String consumerSecret = request.getParameter("consumerSecret");
-      String callbackUrl = request.getParameter("callbackUrl");
+      String callbackURL = request.getParameter("callbackURL");
       String consumerName = request.getParameter("consumerName");
       String consumerDescription = request.getParameter("consumerDescription");
       String consumerWebsite = request.getParameter("consumerDescription");
@@ -88,7 +88,7 @@ public class UIConsumerPortlet extends GenericPortlet
       {
          errorMsg.put("consumerSecret", "Please input consumer secret");
       }
-      if (callbackUrl == null || callbackUrl.trim().length() == 0)
+      if (callbackURL == null || callbackURL.trim().length() == 0)
       {
          errorMsg.put("callbackURL", "Please input callback Url");
       }
@@ -102,14 +102,14 @@ public class UIConsumerPortlet extends GenericPortlet
          properties.put("name", consumerName);
          properties.put("description", consumerDescription);
          properties.put("website", consumerWebsite);
-         provider.registerConsumer(consumerKey, consumerSecret, callbackUrl, properties);
+         provider.registerConsumer(consumerKey, consumerSecret, callbackURL, properties);
       }
       else
       {
          Map<String, String> aNewConsumer = new HashMap<String, String>();
          aNewConsumer.put("consumerKey", consumerKey);
          aNewConsumer.put("consumerSecret", consumerSecret);
-         aNewConsumer.put("callbackUrl", callbackUrl);
+         aNewConsumer.put("callbackURL", callbackURL);
          request.setAttribute("errorMsg", errorMsg);
          request.setAttribute("aNewConsumer", aNewConsumer);
       }

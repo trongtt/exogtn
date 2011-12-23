@@ -19,8 +19,8 @@
 package org.exoplatform.oauth.provider.validation;
 
 import net.oauth.OAuthConsumer;
-import org.exoplatform.oauth.provider.consumer.Consumer;
-import org.exoplatform.oauth.provider.consumer.ConsumerProperty;
+
+import org.exoplatform.oauth.provider.Consumer;
 import java.util.Map;
 
 /**
@@ -34,11 +34,11 @@ public class NetOAuthAdapter
 
    public static OAuthConsumer buildConsumer(Consumer consumer)
    {
-      OAuthConsumer oauthConsumer = new OAuthConsumer(consumer.getCallbackURL(), consumer.getKey(), consumer.getSecret(), null);
+      OAuthConsumer oauthConsumer = new OAuthConsumer(consumer.getCallbackURL(), consumer.getConsumerKey(), consumer.getConsumerSecret(), null);
 
-      for(Map.Entry<String, ConsumerProperty> consumerProperty : consumer.getProperties().entrySet())
+      for(Map.Entry<String, String> property : consumer.getProperties().entrySet())
       {
-         oauthConsumer.setProperty(consumerProperty.getKey(), consumerProperty.getValue().getPropertyValue());
+         oauthConsumer.setProperty(property.getKey(), property.getValue());
       }
       return oauthConsumer;
    }

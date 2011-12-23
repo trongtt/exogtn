@@ -17,7 +17,7 @@
 		<table align="center" border="1">
 				<tr bgcolor="#99CCFF">
 					<td valign="top"><b>Consumer</b></td>
-					<td valign="top"><b>Consumer Url</b></td>
+					<td valign="top"><b>Website</b></td>
 					<td valign="top"><b>Description</b></td>
 					<td valign="top"><b>Action</b></td>
 				</tr>

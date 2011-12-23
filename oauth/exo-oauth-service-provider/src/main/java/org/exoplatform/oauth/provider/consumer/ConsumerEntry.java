@@ -23,6 +23,8 @@ import org.chromattic.api.annotations.NamingPrefix;
 import org.chromattic.api.annotations.OneToMany;
 import org.chromattic.api.annotations.PrimaryType;
 import org.chromattic.api.annotations.Property;
+import org.exoplatform.oauth.provider.Consumer;
+
 import java.util.Map;
 
 /**
@@ -31,7 +33,7 @@ import java.util.Map;
  */
 @PrimaryType(name = "oauth:consumer")
 @NamingPrefix(value = "oauth")
-public abstract class Consumer
+public abstract class ConsumerEntry
 {
    @Property(name = "key")
    public abstract String getKey();
@@ -66,5 +68,15 @@ public abstract class Consumer
          return null;
       }
    }
+   
+   public Consumer getConsumer()
+   {
+      Consumer consumer = new Consumer(this.getKey(), this.getSecret(), this.getCallbackURL());
 
+      for(Map.Entry<String, ConsumerProperty> entry : this.getProperties().entrySet())
+      {
+         consumer.getProperties().put(entry.getKey(), entry.getValue().getPropertyValue());
+      }
+      return consumer;
+   }
 }

@@ -16,7 +16,6 @@
  */
 package org.exoplatform.oauth.provider;
 
-import org.exoplatform.oauth.provider.consumer.Consumer;
 import org.exoplatform.oauth.provider.token.AccessToken;
 import java.util.Collection;
 import java.util.Map;
@@ -24,7 +23,7 @@ import java.util.Map;
 /**
  * The OAuthServiceProvider defines an API to deal with
  *
- * 1. Consumer information
+ * 1. ConsumerEntry information
  * 2. AccessToken
  * 3. RequestToken
  *
@@ -34,7 +33,7 @@ import java.util.Map;
 public interface OAuthServiceProvider
 {
    /**
-    * Return a Consumer registered under key consumerKey or {@code null} if no such Consumer exists
+    * Return a ConsumerEntry registered under key consumerKey or {@code null} if no such ConsumerEntry exists
     *
     * @param consumerKey
     * @return
@@ -42,9 +41,9 @@ public interface OAuthServiceProvider
    public Consumer getConsumer(String consumerKey);
 
    /**
-    * Register a Consumer with provided params: consumerKey, consumerSecret, callbackURL and properties
+    * Register a ConsumerEntry with provided params: consumerKey, consumerSecret, callbackURL and properties
     *
-    * In case another Consumer has been registered under the same consumerKey, this method overrides
+    * In case another ConsumerEntry has been registered under the same consumerKey, this method overrides
     * former one.
     *
     * @param consumerKey
@@ -55,7 +54,7 @@ public interface OAuthServiceProvider
    public Consumer registerConsumer(String consumerKey, String consumerSecret, String callbackURL, Map<String, String> properties);
 
    /**
-    * Remove Consumer registered under key consumerKey. All AccessToken instances associated with this Consumer
+    * Remove ConsumerEntry registered under key consumerKey. All AccessToken instances associated with this ConsumerEntry
     * must be clean from storage
     *
     * @param consumerKey

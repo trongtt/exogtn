@@ -21,11 +21,6 @@ package org.exoplatform.oauth.provider;
 
 import net.oauth.OAuthProblemException;
 
-
-
-
-
-
 import net.oauth.OAuth;
 import net.oauth.OAuthMessage;
 import net.oauth.server.OAuthServlet;
@@ -33,7 +28,6 @@ import net.oauth.server.OAuthServlet;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.web.AbstractHttpServlet;
-import org.exoplatform.oauth.provider.consumer.Consumer;
 import org.exoplatform.oauth.provider.impl.SimpleOAuthServiceProvider;
 import org.exoplatform.web.security.security.TransientTokenService;
 import org.gatein.wci.security.Credentials;
@@ -62,8 +56,9 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
    {
       try
       {
-         OAuthServiceProvider provider = (OAuthServiceProvider) ExoContainerContext.getCurrentContainer()
-               .getComponentInstanceOfType(OAuthServiceProvider.class);
+         OAuthServiceProvider provider =
+            (OAuthServiceProvider)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
+               OAuthServiceProvider.class);
          OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
 
          RequestToken token = provider.getRequestToken(requestMessage.getToken());
@@ -71,15 +66,15 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
          {
             throw new OAuthProblemException(OAuthKeys.OAUTH_TOKEN_EXPIRED);
          }
-         
+
          //Initialize oauth_callback that get from consumer and mark it into token
-         if(token.getProperty(OAuthKeys.OAUTH_CALLBACK) == null)
+         if (token.getProperty(OAuthKeys.OAUTH_CALLBACK) == null)
          {
             String callback = request.getParameter(OAuthKeys.OAUTH_CALLBACK);
             if (callback != null && callback.length() > 0)
             {
                token.setProperty(OAuthKeys.OAUTH_CALLBACK, callback);
-            }            
+            }
          }
 
          // Token can has only request token and secret token.
@@ -98,7 +93,7 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
             (TransientTokenService)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
                TransientTokenService.class);
          String loginToken = request.getParameter(OAuthKeys.OAUTH_LOGIN_TOKEN);
-         if(loginToken != null)
+         if (loginToken != null)
          {
             Credentials credentials = tokenService.validateToken(loginToken, true);
             if (credentials != null)
@@ -134,11 +129,14 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
       RequestToken token) throws IOException, ServletException
    {
       String callbackURL = request.getRequestURL().toString();
-      String localhost = request.getScheme() + "://" + request.getServerName() + ((request.getServerPort() != 80) ? ":" + request.getServerPort() : "");
+      String localhost =
+         request.getScheme() + "://" + request.getServerName()
+            + ((request.getServerPort() != 80) ? ":" + request.getServerPort() : "");
       String portal = ExoContainerContext.getCurrentContainer().getContext().getPortalContainerName();
       String loginCtx = "/OAuthLogin";
-      String loginUrl = localhost + "/" + portal + loginCtx + "?callback=" + callbackURL  + "&oauth_token=" + token.getToken();;
-      
+      String loginUrl =
+         localhost + "/" + portal + loginCtx + "?callback=" + callbackURL + "&oauth_token=" + token.getToken();;
+
       response.sendRedirect(response.encodeRedirectURL(loginUrl));
    }
 
@@ -150,7 +148,7 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
     * @throws ServletException
     */
    private void returnToConsumer(HttpServletRequest request, HttpServletResponse response, Consumer consumer,
-         RequestToken token) throws IOException, ServletException
+      RequestToken token) throws IOException, ServletException
    {
       // send the user back to site's callBackUrl
       String callback = (String)token.getProperty(OAuthKeys.OAUTH_CALLBACK);
@@ -166,7 +164,7 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
          response.setContentType("text/plain");
          PrintWriter out = response.getWriter();
          out.println("You have successfully authorized '" + consumer.getProperty("description")
-               + "'. Please close this browser window and click continue" + " in the client.");
+            + "'. Please close this browser window and click continue" + " in the client.");
          out.close();
       }
       else
@@ -177,14 +175,16 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
             {
                final String verifier = null;//SimpleOAuthServiceProvider.createVerifier(10);
                token.setProperty(OAuthKeys.OAUTH_VERIFIER, verifier);
-               callback = OAuth.addParameters(callback, OAuthKeys.OAUTH_TOKEN, token.getToken(), OAuthKeys.OAUTH_VERIFIER, verifier);
+               callback =
+                  OAuth.addParameters(callback, OAuthKeys.OAUTH_TOKEN, token.getToken(), OAuthKeys.OAUTH_VERIFIER,
+                     verifier);
             }
             else
             {
                callback = OAuth.addParameters(callback, OAuthKeys.OAUTH_DENIED, token.getToken());
                ExoContainer container = getContainer();
                OAuthServiceProvider provider =
-                     (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
+                  (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
                provider.revokeRequestToken(token.getToken());
             }
          }

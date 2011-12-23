@@ -22,7 +22,7 @@ import org.chromattic.api.ChromatticSession;
 
 /**
  *
- * Unlike AccessToken, calls to persist ConsumerInfo might happen outside HTTP requests to portal. In such
+ * Unlike AccessToken, calls to persist Consumer might happen outside HTTP requests to portal. In such
  * case, we have to manage ChromatticSession.save in our code.
  *
  * This class is designed to make Chromattic calls more modular

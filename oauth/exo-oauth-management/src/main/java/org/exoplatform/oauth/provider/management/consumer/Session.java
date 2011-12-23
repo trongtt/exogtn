@@ -18,8 +18,8 @@
  */
 package org.exoplatform.oauth.provider.management.consumer;
 
-import org.exoplatform.oauth.provider.consumer.Consumer;
 import org.exoplatform.oauth.provider.token.AccessToken;
+import org.exoplatform.oauth.provider.Consumer;
 import org.juzu.SessionScoped;
 
 import java.io.Serializable;

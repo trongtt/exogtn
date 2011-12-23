@@ -73,7 +73,7 @@ public class ExoRequestTokenServlet extends AbstractHttpServlet
          if (consumer == null)
          {
             OAuthProblemException problem =
-               new OAuthProblemException(OAuthKeys.OAUTH_TOKEN_REJECTED + ": Consumer hasn't yet registered with provider");
+               new OAuthProblemException(OAuthKeys.OAUTH_TOKEN_REJECTED + ": ConsumerEntry hasn't yet registered with provider");
             throw problem;
          }
 

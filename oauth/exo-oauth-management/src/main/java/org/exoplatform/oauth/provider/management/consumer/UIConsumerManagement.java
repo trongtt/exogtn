@@ -20,9 +20,8 @@ package org.exoplatform.oauth.provider.management.consumer;
 
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.oauth.provider.consumer.Consumer;
-import org.exoplatform.oauth.provider.consumer.ConsumerProperty;
 import org.exoplatform.oauth.provider.token.AccessToken;
+import org.exoplatform.oauth.provider.Consumer;
 import org.exoplatform.oauth.provider.OAuthServiceProvider;
 import org.juzu.Action;
 import org.juzu.Path;
@@ -91,6 +90,8 @@ public class UIConsumerManagement
    @Action
    public Response showAddConsumer()
    {
+      session.setConsumer(null);
+      session.setMessage(null);
       return UIConsumerManagement_.addConsumer();
    }
 
@@ -108,63 +109,11 @@ public class UIConsumerManagement
    }
 
    @Action
-   public Response addNewConsumer(final String consumerKey, final String consumerSecret, final String callbackUrl, String consumerName,
+   public Response addNewConsumer(final String consumerKey, final String consumerSecret, final String callbackURL, String consumerName,
                                   String consumerDescription, String consumerWebsite)
    {
-      if(consumerKey == null || consumerSecret == null || callbackUrl == null)
-      {
-         StringBuilder message = new StringBuilder();
-         message.append(consumerKey == null? "Consumer key is required" : "");
-         message.append(consumerSecret == null ? "Consumer secret is required" : "");
-         message.append(callbackUrl == null ? "Callback Url is required" : "");
-         session.setMessage(message.toString());
-
-         //Merely used from juzu template
-         Consumer transientConsumer = new Consumer()
-         {
-            @Override
-            public String getKey()
-            {
-               return consumerKey;
-            }
-
-            @Override
-            public String getSecret()
-            {
-               return consumerSecret;
-            }
-
-            @Override
-            public String getCallbackURL()
-            {
-               return callbackUrl;
-            }
-
-            @Override
-            public ConsumerProperty createProperty()
-            {
-               return null;
-            }
-
-            @Override
-            public Map<String, ConsumerProperty> getProperties()
-            {
-               return new HashMap<String, ConsumerProperty>();
-            }
-
-            @Override
-            public void setKey(String key){}
-
-            @Override
-            public void setSecret(String secret){}
-
-            @Override
-            public void setCallbackURL(String callbackURL){}
-         };
-         session.setConsumer(transientConsumer);
-         return UIConsumerManagement_.addConsumer();
-      }
-      else
+      if(consumerKey != null && consumerSecret != null && callbackURL != null &&
+         consumerKey.length() > 0 && consumerSecret.length() > 0 && callbackURL.length() > 0)
       {
          OAuthServiceProvider provider =
             (OAuthServiceProvider)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
@@ -174,6 +123,10 @@ public class UIConsumerManagement
          {
             StringBuilder message = new StringBuilder();
             message.append("Consumer Key is existing");
+            consumer = new Consumer(consumerKey, consumerSecret, callbackURL);
+            consumer.setProperty("name", consumerName);
+            consumer.setProperty("description", consumerDescription);
+            consumer.setProperty("website", consumerWebsite);
             session.setMessage(message.toString());
             session.setConsumer(consumer);
             return UIConsumerManagement_.addConsumer();
@@ -184,10 +137,24 @@ public class UIConsumerManagement
             consumerProperties.put("name", consumerName);
             consumerProperties.put("description", consumerDescription);
             consumerProperties.put("website", consumerWebsite);
-            consumer = provider.registerConsumer(consumerKey, consumerSecret, callbackUrl, consumerProperties);
+            consumer = provider.registerConsumer(consumerKey, consumerSecret, callbackURL, consumerProperties);
             session.setConsumer(consumer);
             return UIConsumerManagement_.consumerDetail();
          }
+      }
+      else
+      {
+         //Alert error message
+         Consumer consumer = new Consumer(consumerKey, consumerSecret, callbackURL);
+         consumer.setProperty("name", consumerName);
+         consumer.setProperty("description", consumerDescription);
+         consumer.setProperty("website", consumerWebsite);
+         String message = "";
+         message += (consumerKey == "" ? "Consumer key is required" : "");
+         message += (consumerSecret == "" ? "Consumer secret is required" : "");
+         message += (callbackURL == "" ? "callback URL is required" : "");
+         session.setMessage(message);
+         return UIConsumerManagement_.addConsumer();
       }
    }
 

@@ -13,9 +13,9 @@
 				</tr>
 				<% accessors.each() { token, consumer -> %>
 					<tr>
-						<td>${consumer.getProperty("name")}</td>
-						<td>${consumer.getProperty("website")}</td>
-						<td>${consumer.getProperty("description")}</td>
+						<td>${consumer.properties['name']}</td>
+						<td>${consumer.properties['website']}</td>
+						<td>${consumer.properties['description']}</td>
 						<td>
 							<p>
 								<a href="@{UITokenManagement.revokeAccessToken(accessToken = token.accessTokenID)}">Revoke Access Token</a>

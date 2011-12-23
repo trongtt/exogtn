@@ -18,9 +18,10 @@ package org.exoplatform.oauth.provider.impl;
 
 import net.oauth.server.OAuthServlet;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.exoplatform.oauth.provider.Consumer;
 import org.exoplatform.oauth.provider.OAuthServiceProvider;
 import org.exoplatform.oauth.provider.RequestToken;
-import org.exoplatform.oauth.provider.consumer.Consumer;
+import org.exoplatform.oauth.provider.consumer.ConsumerEntry;
 import org.exoplatform.oauth.provider.consumer.ConsumerStorage;
 import org.exoplatform.oauth.provider.token.AccessToken;
 import org.exoplatform.oauth.provider.token.AccessTokenStorage;
@@ -65,14 +66,31 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
    {
    }
 
+   /**
+    * Get a consumer from consumer list
+    * 
+    * @param consumer_key key as identifier of consumer
+    * @return OAuthConsumer object
+    * @throws IOException
+    * @throws OAuthProblemException
+    */
    public Consumer getConsumer(String consumer_key)
    {
-      return consumerStorage.getConsumer(consumer_key);
+      ConsumerEntry inf = consumerStorage.getConsumer(consumer_key);
+
+      if(inf == null)
+      {
+         return null;
+      }
+      else
+      {
+         return inf.getConsumer();
+      }
    }
 
    public Consumer registerConsumer(String consumerKey, String consumerSecret, String callbackURL, Map<String, String> properties)
    {
-      return consumerStorage.registerConsumer(consumerKey, consumerSecret, callbackURL, properties);
+      return consumerStorage.registerConsumer(consumerKey, consumerSecret, callbackURL, properties).getConsumer();
    }
 
    public void removeConsumer(String consumerKey)
@@ -82,7 +100,13 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
 
    public Map<String, Consumer> getAllConsumers()
    {
-      return consumerStorage.getConsumerMap();
+      Map<String, Consumer> results = new HashMap<String, Consumer>();
+      Map<String, ConsumerEntry> consumerEntries = consumerStorage.getConsumerMap();
+      for(String key : consumerEntries.keySet())
+      {
+         results.put(key, ((ConsumerEntry)consumerEntries.get(key)).getConsumer());
+      }
+      return results;
    }
 
    public RequestToken generateRequestToken(String consumerKey)

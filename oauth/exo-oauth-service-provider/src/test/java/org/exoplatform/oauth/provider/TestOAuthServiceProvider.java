@@ -4,7 +4,7 @@ import org.exoplatform.component.test.AbstractKernelTest;
 import org.exoplatform.component.test.ConfigurationUnit;
 import org.exoplatform.component.test.ConfiguredBy;
 import org.exoplatform.component.test.ContainerScope;
-import org.exoplatform.oauth.provider.consumer.Consumer;
+import org.exoplatform.oauth.provider.consumer.ConsumerEntry;
 
 /**
  * @author <a href="trongtt@gmail.com">Trong Tran</a>
@@ -29,8 +29,8 @@ public class TestOAuthServiceProvider extends AbstractKernelTest
       Consumer consumer = service.getConsumer("foo_key");
       assertNotNull(consumer);
       assertEquals("http://foo.com/callbackURL", consumer.getCallbackURL());
-      assertEquals("foo_key", consumer.getKey());
-      assertEquals("foo_secret", consumer.getSecret());
+      assertEquals("foo_key", consumer.getConsumerKey());
+      assertEquals("foo_secret", consumer.getConsumerSecret());
 
       service.removeConsumer("foo_key");
       consumer = service.getConsumer("foo_key");
