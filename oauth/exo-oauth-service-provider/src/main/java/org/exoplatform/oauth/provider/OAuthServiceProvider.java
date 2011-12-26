@@ -70,15 +70,15 @@ public interface OAuthServiceProvider
       
    /**
     * Generate request token from consumer information (name or key)
-    * request token is a transient token, it will be removed after configurable short time
+    * request token is a transient token, it will be removed after AccessToken is created or configurable short time
     * 
     * @return RequestToken
     */
-   public RequestToken generateRequestToken(String consumerName);
+   public RequestToken generateRequestToken(String consumerKey);
 
    /**
     * This method is a short form of generateAccessToken(requestToken.getUserID(), requestToken.getConsumerKey())
-    *
+    * 
     * @param requestToken
     * @return
     */

@@ -95,7 +95,23 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
 
    public void removeConsumer(String consumerKey)
    {
-      consumerStorage.deleteConsumer(consumerKey);
+      ConsumerEntry consumer = consumerStorage.getConsumer(consumerKey);
+
+      //TODO we need to improve how to store mapping of consumer and tokens to make easily for removing tokens, instead of looping
+      if (consumer != null)
+      {
+         //Remove authorized tokens of this consumer
+         Collection<AccessToken> tokens = this.getAuthorizedTokens();
+         for (AccessToken t : tokens)
+         {
+            if (t.getConsumerKey().equals(consumer.getKey()))
+            {
+               this.revokeAccessToken(t.getAccessTokenID());
+            }
+         }
+
+         consumerStorage.deleteConsumer(consumerKey);
+      }  
    }
 
    public Map<String, Consumer> getAllConsumers()
@@ -128,7 +144,12 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
 
    public AccessToken generateAccessToken(RequestToken requestToken)
    {
-      return generateAccessToken(requestToken.getUserId(), requestToken.getConsumerKey());
+      AccessToken accessToken = generateAccessToken(requestToken.getUserId(), requestToken.getConsumerKey());
+      if (accessToken != null)
+      {
+         revokeRequestToken(requestToken.getToken());
+      }
+      return accessToken;
    }
    
    public AccessToken generateAccessToken(String userID, String consumerKey)

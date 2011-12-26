@@ -12,12 +12,10 @@
       <dependency>
          <groupId>commons-codec</groupId>
          <artifactId>commons-codec</artifactId>
-         <version>1.4</version>
       </dependency>
       <dependency>
          <groupId>javax.servlet</groupId>
          <artifactId>servlet-api</artifactId>
-         <version>2.5</version>
          <scope>provided</scope>
       </dependency>
       <dependency>
@@ -34,19 +32,21 @@
       <dependency>
          <groupId>org.exoplatform.kernel</groupId>
          <artifactId>exo.kernel.container</artifactId>
-         <version>2.2.2-GA</version>
          <scope>provided</scope>
       </dependency>
       <dependency>
          <groupId>org.exoplatform.kernel</groupId>
          <artifactId>exo.kernel.component.cache</artifactId>
-         <version>2.2.2-GA</version>
          <scope>provided</scope>
       </dependency>
       <dependency>
          <groupId>org.exoplatform.core</groupId>
          <artifactId>exo.core.component.security.core</artifactId>
-         <version>2.2.2</version>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.exoplatform.portal</groupId>
+         <artifactId>exo.portal.component.portal</artifactId>
          <scope>provided</scope>
       </dependency>
       <dependency>
@@ -57,20 +57,39 @@
       <dependency>
          <groupId>org.exoplatform.portal</groupId>
          <artifactId>exo.portal.component.test.core</artifactId>
-         <version>3.2.0-PLF</version>
-         <scope>provided</scope>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.exoplatform.portal</groupId>
+         <artifactId>exo.portal.component.test.jcr</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.exoplatform.portal</groupId>
+         <artifactId>exo.portal.component.identity</artifactId>
+         <type>test-jar</type>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.exoplatform.portal</groupId>
+         <artifactId>exo.portal.component.portal</artifactId>
+         <type>test-jar</type>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.chromattic</groupId>
+         <artifactId>chromattic.core</artifactId>
+         <scope>test</scope>
       </dependency>
       <dependency>
          <groupId>org.exoplatform.core</groupId>
          <artifactId>exo.core.component.organization.api</artifactId>
-         <version>2.4.3-GA</version>
          <scope>provided</scope>
       </dependency>
-
-     <dependency>
-       <groupId>org.chromattic</groupId>
-       <artifactId>chromattic.apt</artifactId>
-       <scope>compile</scope>
-     </dependency>
+      <dependency>
+         <groupId>org.chromattic</groupId>
+         <artifactId>chromattic.apt</artifactId>
+         <scope>compile</scope>
+      </dependency>
    </dependencies>
 </project>
