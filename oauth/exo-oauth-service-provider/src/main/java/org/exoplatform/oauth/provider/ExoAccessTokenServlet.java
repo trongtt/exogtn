@@ -28,7 +28,6 @@ import net.oauth.server.OAuthServlet;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.web.AbstractHttpServlet;
 import org.exoplatform.oauth.provider.impl.SimpleOAuthServiceProvider;
-import org.exoplatform.oauth.provider.token.AccessToken;
 import org.exoplatform.oauth.provider.validation.AccessorBuilder;
 
 import java.io.IOException;
@@ -87,12 +86,12 @@ public class ExoAccessTokenServlet extends AbstractHttpServlet
             throw new OAuthProblemException(OAuthKeys.OAUTH_PERMISSION_DENIED);
          }
 
-         AccessToken accessToken = provider.generateAccessToken(token);
+         OAuthToken accessToken = provider.generateAccessToken(token);
 
          res.setContentType("text/plain");
          OutputStream out = res.getOutputStream();
          OAuth.formEncode(
-            OAuth.newList(OAuthKeys.OAUTH_TOKEN, accessToken.getAccessTokenID(), OAuthKeys.OAUTH_TOKEN_SECRET, accessToken.getAccessTokenSecret()), out);
+            OAuth.newList(OAuthKeys.OAUTH_TOKEN, accessToken.getToken(), OAuthKeys.OAUTH_TOKEN_SECRET, accessToken.getTokenSecret()), out);
          out.close();
       }
       catch (Exception e)

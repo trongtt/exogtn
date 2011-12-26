@@ -17,7 +17,6 @@
 package org.exoplatform.oauth.provider;
 
 import javax.servlet.http.HttpServletRequest;
-import org.exoplatform.oauth.provider.token.AccessToken;
 
 /**
  * A Filter used to authorize a request that follows OAuth two legged flows
@@ -40,7 +39,7 @@ import org.exoplatform.oauth.provider.token.AccessToken;
 public class ExoOAuth2LeggedFilter extends AbstractExoOAuthFilter
 {
    @Override
-   protected HttpServletRequest createSecurityContext(HttpServletRequest request, AccessToken accessToken)
+   protected HttpServletRequest createSecurityContext(HttpServletRequest request, OAuthToken accessToken)
    {
       return request;
    }

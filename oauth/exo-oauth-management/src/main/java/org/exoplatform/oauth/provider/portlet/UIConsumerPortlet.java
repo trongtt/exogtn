@@ -26,6 +26,7 @@ import org.w3c.dom.Element;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.ActionRequest;
@@ -64,8 +65,8 @@ public class UIConsumerPortlet extends GenericPortlet
       OAuthServiceProvider oauthProvider =
          (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
 
-      Map<String, Consumer> consumers = oauthProvider.getAllConsumers();
-      request.setAttribute("consumers", consumers.values());
+      List<Consumer> consumers = oauthProvider.getAllConsumers();
+      request.setAttribute("consumers", consumers);
       getPortletContext().getRequestDispatcher("/jsp/consumer.jsp").include(request, response);
    }
 

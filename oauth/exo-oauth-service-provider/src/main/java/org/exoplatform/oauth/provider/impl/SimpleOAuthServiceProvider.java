@@ -23,18 +23,21 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.exoplatform.commons.chromattic.ChromatticManager;
 import org.exoplatform.oauth.provider.Consumer;
 import org.exoplatform.oauth.provider.OAuthServiceProvider;
+import org.exoplatform.oauth.provider.OAuthToken;
 import org.exoplatform.oauth.provider.RequestToken;
 import org.exoplatform.oauth.provider.consumer.ConsumerEntry;
 import org.exoplatform.oauth.provider.consumer.ConsumerStorage;
-import org.exoplatform.oauth.provider.token.AccessToken;
+import org.exoplatform.oauth.provider.token.AccessTokenEntry;
 import org.exoplatform.oauth.provider.token.AccessTokenStorage;
 import org.exoplatform.services.organization.OrganizationService;
 import org.picocontainer.Startable;
 
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -109,12 +112,12 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
       if (consumer != null)
       {
          //Remove authorized tokens of this consumer
-         Collection<AccessToken> tokens = this.getAuthorizedTokens();
-         for (AccessToken t : tokens)
+         Collection<OAuthToken> tokens = this.getAuthorizedTokens();
+         for (OAuthToken t : tokens)
          {
             if (t.getConsumerKey().equals(consumer.getKey()))
             {
-               this.revokeAccessToken(t.getAccessTokenID());
+               this.revokeAccessToken(t.getToken());
             }
          }
 
@@ -122,13 +125,13 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
       }  
    }
 
-   public Map<String, Consumer> getAllConsumers()
+   public List<Consumer> getAllConsumers()
    {
-      Map<String, Consumer> results = new HashMap<String, Consumer>();
+      List<Consumer> results = new ArrayList<Consumer>();
       Map<String, ConsumerEntry> consumerEntries = consumerStorage.getConsumerMap();
       for(String key : consumerEntries.keySet())
       {
-         results.put(key, ((ConsumerEntry)consumerEntries.get(key)).getConsumer());
+         results.add(((ConsumerEntry)consumerEntries.get(key)).getConsumer());
       }
       return results;
    }
@@ -150,9 +153,9 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
       return token;
    }
 
-   public AccessToken generateAccessToken(RequestToken requestToken)
+   public OAuthToken generateAccessToken(RequestToken requestToken)
    {
-      AccessToken accessToken = generateAccessToken(requestToken.getUserId(), requestToken.getConsumerKey());
+      OAuthToken accessToken = generateAccessToken(requestToken.getUserId(), requestToken.getConsumerKey());
       if (accessToken != null)
       {
          revokeRequestToken(requestToken.getToken());
@@ -160,14 +163,14 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
       return accessToken;
    }
    
-   public AccessToken generateAccessToken(String userID, String consumerKey)
+   public OAuthToken generateAccessToken(String userID, String consumerKey)
    {
-      AccessToken token = getAccessToken(userID, consumerKey);
+      OAuthToken token = getAccessToken(userID, consumerKey);
       if(token != null)
       {
          return token;
       }
-      return tokenStorage.generateAccessToken(userID, consumerKey);
+      return tokenStorage.generateAccessToken(userID, consumerKey).getOAuthToken();
    }
 
    public RequestToken getRequestToken(String token)
@@ -175,14 +178,24 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
       return requestTokens.get(token);
    }
 
-   public AccessToken getAccessToken(String key)
+   public OAuthToken getAccessToken(String key)
    {
-      return tokenStorage.getAccessToken(key);
+      AccessTokenEntry tokenEntry = tokenStorage.getAccessToken(key);
+      if (tokenEntry != null)
+      {
+         return tokenEntry.getOAuthToken();
+      }
+      return null;
    }
 
-   public AccessToken getAccessToken(String userID, String consumerKey)
+   public OAuthToken getAccessToken(String userID, String consumerKey)
    {
-      return tokenStorage.getAccessToken(userID, consumerKey);
+      AccessTokenEntry tokenEntry = tokenStorage.getAccessToken(userID, consumerKey);
+      if (tokenEntry != null)
+      {
+         return tokenEntry.getOAuthToken();
+      }
+      return null;
    }
 
    public void revokeAccessToken(String token)
@@ -195,9 +208,15 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
       requestTokens.remove(token);
    }
 
-   public Collection<AccessToken> getAuthorizedTokens()
+   public List<OAuthToken> getAuthorizedTokens()
    {
-      return tokenStorage.getAccessTokens();
+      Collection<AccessTokenEntry> tokenEntries = tokenStorage.getAccessTokens();
+      List<OAuthToken> tokens = new ArrayList<OAuthToken>();
+      for(AccessTokenEntry entry : tokenEntries)
+      {
+         tokens.add(entry.getOAuthToken());
+      }
+      return tokens;
    }
 
    public static void handleException(Exception e, HttpServletRequest request, HttpServletResponse response,

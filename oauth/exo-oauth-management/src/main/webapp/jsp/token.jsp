@@ -27,7 +27,7 @@
 						<td><c:out value="${entry.value.properties['website']}"></c:out></td>
 						<td><c:out value="${entry.value.properties['description']}"></c:out></td>
 						<td><a
-							href='<portlet:actionURL name="revokeAccess"><portlet:param name="oauth_token" value="${entry.key.accessTokenID}" /></portlet:actionURL>'>Revoke
+							href='<portlet:actionURL name="revokeAccess"><portlet:param name="oauth_token" value="${entry.key.token}" /></portlet:actionURL>'>Revoke
 						Access</a></td>
 					</tr>
 			</c:forEach>

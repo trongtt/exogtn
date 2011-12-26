@@ -20,9 +20,9 @@ package org.exoplatform.oauth.provider.management.consumer;
 
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.oauth.provider.token.AccessToken;
 import org.exoplatform.oauth.provider.Consumer;
 import org.exoplatform.oauth.provider.OAuthServiceProvider;
+import org.exoplatform.oauth.provider.OAuthToken;
 import org.juzu.Action;
 import org.juzu.Path;
 import org.juzu.Response;
@@ -164,7 +164,7 @@ public class UIConsumerManagement
       OAuthServiceProvider provider =
          (OAuthServiceProvider)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
             OAuthServiceProvider.class);
-      AccessToken token = provider.generateAccessToken( "root", consumerKey);
+      OAuthToken token = provider.generateAccessToken( "root", consumerKey);
       session.setAccessToken(token);
       return UIConsumerManagement_.consumerDetail();
    }

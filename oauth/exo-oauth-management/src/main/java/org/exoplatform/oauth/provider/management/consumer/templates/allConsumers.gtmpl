@@ -15,7 +15,7 @@
 				<td valign="top"><b>Website</b></td>
 				<td valign="top"><b>Action</b></td>
 			</tr>
-			 <% consumers.each() { key, consumer -> %>
+			 <% for (def consumer : consumers) { %>
 				<tr>
 					<td>
 					    <p>

@@ -31,10 +31,10 @@ import java.util.Map;
 public abstract class AccessTokenContainer
 {
    @Create
-   protected abstract AccessToken createAccessToken();
+   protected abstract AccessTokenEntry createAccessToken();
 
    @OneToMany
-   protected abstract Map<String, AccessToken> getAccessTokens();
+   protected abstract Map<String, AccessTokenEntry> getAccessTokens();
 
    public void deleteAccessToken(String tokenID)
    {

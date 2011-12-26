@@ -45,11 +45,11 @@
 		  <tbody>
 			<tr>
 				<td class="InfoLabel">Access Token</td>
-				<td class="InfoValue">${accessToken.getAccessTokenID()}<td>
+				<td class="InfoValue">${accessToken.getToken()}<td>
 			</tr>
 			<tr>
 				<td class="InfoLabel">Token Secret</td>
-				<td class="InfoValue">${accessToken.getAccessTokenSecret()}</td>
+				<td class="InfoValue">${accessToken.getTokenSecret()}</td>
 			</tr>
 		  </tbody>
 		</table>

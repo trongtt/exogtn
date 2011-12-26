@@ -74,7 +74,7 @@
         </value-param>
         <values-param>
           <name>entities</name>
-          <value>org.exoplatform.oauth.provider.token.AccessToken</value>
+          <value>org.exoplatform.oauth.provider.token.AccessTokenEntry</value>
           <value>org.exoplatform.oauth.provider.token.AccessTokenContainer</value>
           <value>org.exoplatform.oauth.provider.consumer.ConsumerEntry</value>
           <value>org.exoplatform.oauth.provider.consumer.ConsumerContainer</value>

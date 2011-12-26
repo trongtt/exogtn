@@ -20,8 +20,8 @@ package org.exoplatform.oauth.provider.validation;
 
 import net.oauth.OAuthAccessor;
 import org.exoplatform.oauth.provider.OAuthServiceProvider;
+import org.exoplatform.oauth.provider.OAuthToken;
 import org.exoplatform.oauth.provider.RequestToken;
-import org.exoplatform.oauth.provider.token.AccessToken;
 
 /**
  * Util serves building net.oauth.OAuthAccessor object which is used for validating request
@@ -46,7 +46,7 @@ public class AccessorBuilder
       return accessor;
    }
 
-   public static OAuthAccessor buildAccessor(AccessToken token, OAuthServiceProvider provider)
+   public static OAuthAccessor buildAccessor(OAuthToken token, OAuthServiceProvider provider)
    {
       OAuthAccessor accessor = null;
 
@@ -54,8 +54,8 @@ public class AccessorBuilder
       if(consumerKey != null)
       {
          accessor = new OAuthAccessor(NetOAuthAdapter.buildConsumer(provider.getConsumer(consumerKey)));
-         accessor.accessToken = token.getAccessTokenID();
-         accessor.tokenSecret = token.getAccessTokenSecret();
+         accessor.accessToken = token.getToken();
+         accessor.tokenSecret = token.getTokenSecret();
       }
       return accessor;
    }

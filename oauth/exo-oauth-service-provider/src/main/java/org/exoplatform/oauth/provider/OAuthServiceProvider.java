@@ -16,15 +16,14 @@
  */
 package org.exoplatform.oauth.provider;
 
-import org.exoplatform.oauth.provider.token.AccessToken;
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
  * The OAuthServiceProvider defines an API to deal with
  *
  * 1. ConsumerEntry information
- * 2. AccessToken
+ * 2. AccessTokenEntry
  * 3. RequestToken
  *
  * @author <a href="trongtt@gmail.com">Trong Tran</a>
@@ -54,7 +53,7 @@ public interface OAuthServiceProvider
    public Consumer registerConsumer(String consumerKey, String consumerSecret, String callbackURL, Map<String, String> properties);
 
    /**
-    * Remove ConsumerEntry registered under key consumerKey. All AccessToken instances associated with this ConsumerEntry
+    * Remove ConsumerEntry registered under key consumerKey. All AccessTokenEntry instances associated with this ConsumerEntry
     * must be clean from storage
     *
     * @param consumerKey
@@ -66,11 +65,11 @@ public interface OAuthServiceProvider
     *
     * @return
     */
-   public Map<String, Consumer> getAllConsumers();
+   public List<Consumer> getAllConsumers();
       
    /**
     * Generate request token from consumer information (name or key)
-    * request token is a transient token, it will be removed after AccessToken is created or configurable short time
+    * request token is a transient token, it will be removed after AccessTokenEntry is created or configurable short time
     * 
     * @return RequestToken
     */
@@ -82,22 +81,22 @@ public interface OAuthServiceProvider
     * @param requestToken
     * @return
     */
-   public AccessToken generateAccessToken(RequestToken requestToken);
+   public OAuthToken generateAccessToken(RequestToken requestToken);
    
    /**
     *
-    * This method attempts first to find AccessToken associated with pair (userID, consumer)
+    * This method attempts first to find AccessTokenEntry associated with pair (userID, consumer)
     *
-    * 1. If such AccessToken exists, the method returns it immediately
+    * 1. If such AccessTokenEntry exists, the method returns it immediately
     *
-    * 2. If no such AccessToken is found, the method generates an AccessToken from (userID, consumer)
+    * 2. If no such AccessTokenEntry is found, the method generates an AccessTokenEntry from (userID, consumer)
     * then persists it
     *
     * @param userID
     * @param consumerKey
-    * @return AccessToken
+    * @return AccessTokenEntry
     */
-   public AccessToken generateAccessToken(String userID, String consumerKey);
+   public OAuthToken generateAccessToken(String userID, String consumerKey);
    
    /**
     * Get token information from token string
@@ -108,23 +107,23 @@ public interface OAuthServiceProvider
    public RequestToken getRequestToken(String token);
    
    /**
-    * Find an AccessToken stored under the token string: token and return it.
-    * This method returns {@code null} if no such AccessToken is found
+    * Find an AccessTokenEntry stored under the token string: token and return it.
+    * This method returns {@code null} if no such AccessTokenEntry is found
     *
     * @param key
-    * @return AccessToken
+    * @return AccessTokenEntry
     */
-   public AccessToken getAccessToken(String token);
+   public OAuthToken getAccessToken(String token);
 
    /**
-    * Find an AccessToken associated with the pair (userID, consumerKey) and return it.
-    * This method returns {@code null} if no such AccessToken is found
+    * Find an AccessTokenEntry associated with the pair (userID, consumerKey) and return it.
+    * This method returns {@code null} if no such AccessTokenEntry is found
     *
     * @param userID
     * @param consumerKey
     * @return
     */
-   public AccessToken getAccessToken(String userID, String consumerKey);
+   public OAuthToken getAccessToken(String userID, String consumerKey);
 
    /**
     * Revoke access token
@@ -141,9 +140,9 @@ public interface OAuthServiceProvider
    public void revokeRequestToken(String token);
 
    /**
-    * Return a collection of all persistent AccessToken.
+    * Return a collection of all persistent AccessTokenEntry.
     * 
     * @return
     */
-   public Collection<AccessToken> getAuthorizedTokens();
+   public List<OAuthToken> getAuthorizedTokens();
 }

@@ -21,6 +21,7 @@ package org.exoplatform.oauth.provider.token;
 import org.chromattic.api.annotations.NamingPrefix;
 import org.chromattic.api.annotations.PrimaryType;
 import org.chromattic.api.annotations.Property;
+import org.exoplatform.oauth.provider.OAuthToken;
 
 /**
  * @author <a href="hoang281283@gmail.com">Minh Hoang TO</a>
@@ -28,7 +29,7 @@ import org.chromattic.api.annotations.Property;
  */
 @PrimaryType(name = "oauth:accesstoken")
 @NamingPrefix(value = "oauth")
-public abstract class AccessToken
+public abstract class AccessTokenEntry
 {
    @Property(name = "consumerKey")
    public abstract String getConsumerKey();
@@ -50,4 +51,13 @@ public abstract class AccessToken
 
    public abstract void setUserID(String userID);
 
+   public OAuthToken getOAuthToken()
+   {
+      OAuthToken token = new OAuthToken();
+      token.setToken(this.getAccessTokenID());
+      token.setTokenSecret(this.getAccessTokenSecret());
+      token.setConsumerKey(this.getConsumerKey());
+      token.setUserId(this.getUserID());
+      return token;
+   }
 }

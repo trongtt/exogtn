@@ -18,8 +18,8 @@
  */
 package org.exoplatform.oauth.provider.management.consumer;
 
-import org.exoplatform.oauth.provider.token.AccessToken;
 import org.exoplatform.oauth.provider.Consumer;
+import org.exoplatform.oauth.provider.OAuthToken;
 import org.juzu.SessionScoped;
 
 import java.io.Serializable;
@@ -38,7 +38,7 @@ public class Session implements Serializable
 
    private Consumer consumer;
 
-   private AccessToken accessToken;
+   private OAuthToken accessToken;
 
    private String message;
 
@@ -63,7 +63,7 @@ public class Session implements Serializable
    /**
     * @param accessToken the token to set
     */
-   public void setAccessToken(AccessToken accessToken)
+   public void setAccessToken(OAuthToken accessToken)
    {
       this.accessToken = accessToken;
    }
@@ -71,7 +71,7 @@ public class Session implements Serializable
    /**
     * @return the token
     */
-   public AccessToken getAccessToken()
+   public OAuthToken getAccessToken()
    {
       return accessToken;
    }

@@ -58,15 +58,15 @@ public class AccessTokenStorage
       return tokenContainer;
    }
 
-   public AccessToken generateAccessToken(RequestToken requestToken)
+   public AccessTokenEntry generateAccessToken(RequestToken requestToken)
    {
       return generateAccessToken(requestToken.getUserId(), requestToken.getConsumerKey());
    }
    
-   public AccessToken generateAccessToken(String userID, String consumerKey)
+   public AccessTokenEntry generateAccessToken(String userID, String consumerKey)
    {
       AccessTokenContainer tokenContainer = getTokenContainer();
-      AccessToken token = tokenContainer.createAccessToken();
+      AccessTokenEntry token = tokenContainer.createAccessToken();
       String tokenID = DigestUtils.md5Hex(consumerKey + System.nanoTime());
       String tokenSecret = DigestUtils.md5Hex(consumerKey + System.nanoTime() + tokenID);
       tokenContainer.getAccessTokens().put(tokenID, token);
@@ -78,7 +78,7 @@ public class AccessTokenStorage
       return token;
    }
 
-   public AccessToken getAccessToken(String tokenId)
+   public AccessTokenEntry getAccessToken(String tokenId)
    {
       if(tokenId == null)
       {
@@ -91,7 +91,7 @@ public class AccessTokenStorage
    }
 
    /**
-    * This method is needed to avoid generating multiple AccessToken for
+    * This method is needed to avoid generating multiple AccessTokenEntry for
     * a pair user/consumer in case user uses different browsers or loses
     * cookie
     *
@@ -99,12 +99,12 @@ public class AccessTokenStorage
     * @param consumerKey
     * @return
     */
-   public AccessToken getAccessToken(String userID, String consumerKey)
+   public AccessTokenEntry getAccessToken(String userID, String consumerKey)
    {
-      Collection<AccessToken> allTokens = getAccessTokens();
+      Collection<AccessTokenEntry> allTokens = getAccessTokens();
       if(allTokens != null)
       {
-         for(AccessToken token : allTokens)
+         for(AccessTokenEntry token : allTokens)
          {
             if(token.getUserID().equals(userID) && token.getConsumerKey().equals(consumerKey))
             {
@@ -115,7 +115,7 @@ public class AccessTokenStorage
       return null;
    }
 
-   public Collection<AccessToken> getAccessTokens()
+   public Collection<AccessTokenEntry> getAccessTokens()
    {
       return Collections.unmodifiableCollection(getTokenContainer().getAccessTokens().values());
    }
