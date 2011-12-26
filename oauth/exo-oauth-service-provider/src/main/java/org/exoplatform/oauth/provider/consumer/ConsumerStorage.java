@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+
 /**
  * @author <a href="hoang281283@gmail.com">Minh Hoang TO</a>
  * @date 12/14/11
@@ -48,7 +49,7 @@ public class ConsumerStorage
 
    private TaskExecutor executor;
 
-   public ConsumerStorage(ChromatticManager manager, /* Pico is crap */OrganizationService orgService) throws Exception
+   public ConsumerStorage(ChromatticManager manager) throws Exception
    {
       lifecycle = manager.getLifeCycle("oauth");
       executor = new TaskExecutor(lifecycle);
@@ -56,9 +57,10 @@ public class ConsumerStorage
 
    public void start()
    {
+      ChromatticManager manager = lifecycle.getManager();
       try
       {
-         RequestLifeCycle.begin(ExoContainerContext.getCurrentContainer());
+         manager.startRequest(ExoContainerContext.getCurrentContainer());
 
          //Not a good way to avoid reinitiating of data
          Collection<ConsumerEntry> consumerEntries = getConsumers();
@@ -69,7 +71,7 @@ public class ConsumerStorage
       }
       finally
       {
-         RequestLifeCycle.end();
+         manager.endRequest(ExoContainerContext.getCurrentContainer());
       }
    }
 

@@ -29,7 +29,6 @@ import org.exoplatform.oauth.provider.consumer.ConsumerEntry;
 import org.exoplatform.oauth.provider.consumer.ConsumerStorage;
 import org.exoplatform.oauth.provider.token.AccessTokenEntry;
 import org.exoplatform.oauth.provider.token.AccessTokenStorage;
-import org.exoplatform.services.organization.OrganizationService;
 import org.picocontainer.Startable;
 
 import java.io.IOException;
@@ -61,10 +60,10 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
 
    private ConsumerStorage consumerStorage;
 
-   public SimpleOAuthServiceProvider(ChromatticManager manager, /* Pico is crap */OrganizationService orgService) throws Exception
+   public SimpleOAuthServiceProvider(ChromatticManager manager) throws Exception
    {
       this.tokenStorage = new AccessTokenStorage(manager);
-      this.consumerStorage = new ConsumerStorage(manager, orgService);
+      this.consumerStorage = new ConsumerStorage(manager);
    }
 
    public void start()
