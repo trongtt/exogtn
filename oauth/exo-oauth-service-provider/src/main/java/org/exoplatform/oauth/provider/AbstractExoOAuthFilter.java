@@ -42,9 +42,9 @@ import javax.servlet.http.HttpServletResponse;
  * @author <a href="mailto:ndkhoi168@gmail.com">Nguyen Duc Khoi</a>
  * Dec 8, 2011
  */
-public abstract class ExoOAuthFilter extends AbstractFilter
+public abstract class AbstractExoOAuthFilter extends AbstractFilter
 {
-   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+   final public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
          ServletException
    {
       _doFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);

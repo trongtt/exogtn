@@ -37,7 +37,7 @@ import org.exoplatform.oauth.provider.token.AccessToken;
  *          nguyenanhkien2a@gmail.com
  * Dec 2, 2010  
  */
-public class ExoOAuth2LeggedFilter extends ExoOAuthFilter
+public class ExoOAuth2LeggedFilter extends AbstractExoOAuthFilter
 {
    @Override
    protected HttpServletRequest createSecurityContext(HttpServletRequest request, AccessToken accessToken)

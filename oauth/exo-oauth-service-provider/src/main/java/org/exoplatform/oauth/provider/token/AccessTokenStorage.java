@@ -23,7 +23,7 @@ import org.chromattic.api.ChromatticSession;
 import org.exoplatform.commons.chromattic.ChromatticLifeCycle;
 import org.exoplatform.commons.chromattic.ChromatticManager;
 import org.exoplatform.oauth.provider.RequestToken;
-import org.picocontainer.Startable;
+
 import java.util.Collection;
 import java.util.Collections;
 
@@ -31,7 +31,7 @@ import java.util.Collections;
  * @author <a href="hoang281283@gmail.com">Minh Hoang TO</a>
  * @date 12/13/11
  */
-public class AccessTokenStorage implements Startable
+public class AccessTokenStorage
 {
 
    private ChromatticLifeCycle lifecycle;
@@ -39,10 +39,6 @@ public class AccessTokenStorage implements Startable
    public AccessTokenStorage(ChromatticManager manager) throws Exception
    {
       lifecycle = manager.getLifeCycle("oauth");
-   }
-
-   public void start()
-   {
    }
 
    private AccessTokenContainer getTokenContainer()
@@ -130,9 +126,5 @@ public class AccessTokenStorage implements Startable
       {
          getTokenContainer().getAccessTokens().remove(tokenId);
       }
-   }
-
-   public void stop()
-   {
    }
 }

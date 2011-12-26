@@ -25,7 +25,7 @@ import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.services.organization.OrganizationService;
 import org.gatein.common.io.IOTools;
-import org.picocontainer.Startable;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -41,7 +41,7 @@ import java.util.Properties;
  * @author <a href="hoang281283@gmail.com">Minh Hoang TO</a>
  * @date 12/14/11
  */
-public class ConsumerStorage implements Startable
+public class ConsumerStorage
 {
 
    private ChromatticLifeCycle lifecycle;
@@ -56,8 +56,6 @@ public class ConsumerStorage implements Startable
 
    public void start()
    {
-      scheduleEviction();
-
       try
       {
          RequestLifeCycle.begin(ExoContainerContext.getCurrentContainer());
@@ -73,11 +71,6 @@ public class ConsumerStorage implements Startable
       {
          RequestLifeCycle.end();
       }
-   }
-
-   private void scheduleEviction()
-   {
-      //TODO
    }
 
    private void loadInitConfig()

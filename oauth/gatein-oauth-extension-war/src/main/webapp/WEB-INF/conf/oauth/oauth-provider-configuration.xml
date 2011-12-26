@@ -28,14 +28,6 @@
       <type>net.oauth.SimpleOAuthValidator</type>
    </component>
 
-  <component>
-    <type>org.exoplatform.oauth.provider.token.AccessTokenStorage</type>
-  </component>
-
-  <component>
-    <type>org.exoplatform.oauth.provider.consumer.ConsumerStorage</type>
-  </component>
-
    <component>
       <key>org.exoplatform.oauth.provider.OAuthServiceProvider</key>
       <type>org.exoplatform.oauth.provider.impl.SimpleOAuthServiceProvider</type>

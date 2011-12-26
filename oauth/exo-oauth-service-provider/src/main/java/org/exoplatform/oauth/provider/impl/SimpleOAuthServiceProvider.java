@@ -16,8 +16,11 @@
  */
 package org.exoplatform.oauth.provider.impl;
 
+import net.oauth.OAuthProblemException;
 import net.oauth.server.OAuthServlet;
+
 import org.apache.commons.codec.digest.DigestUtils;
+import org.exoplatform.commons.chromattic.ChromatticManager;
 import org.exoplatform.oauth.provider.Consumer;
 import org.exoplatform.oauth.provider.OAuthServiceProvider;
 import org.exoplatform.oauth.provider.RequestToken;
@@ -25,12 +28,15 @@ import org.exoplatform.oauth.provider.consumer.ConsumerEntry;
 import org.exoplatform.oauth.provider.consumer.ConsumerStorage;
 import org.exoplatform.oauth.provider.token.AccessToken;
 import org.exoplatform.oauth.provider.token.AccessTokenStorage;
+import org.exoplatform.services.organization.OrganizationService;
 import org.picocontainer.Startable;
+
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -52,18 +58,20 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
 
    private ConsumerStorage consumerStorage;
 
-   public SimpleOAuthServiceProvider(AccessTokenStorage tokenStorage, ConsumerStorage consumerInfStorage) throws Exception
+   public SimpleOAuthServiceProvider(ChromatticManager manager, /* Pico is crap */OrganizationService orgService) throws Exception
    {
-      this.tokenStorage = tokenStorage;
-      this.consumerStorage = consumerInfStorage;
+      this.tokenStorage = new AccessTokenStorage(manager);
+      this.consumerStorage = new ConsumerStorage(manager, orgService);
    }
 
    public void start()
    {
+      consumerStorage.start();
    }
 
    public void stop()
    {
+      consumerStorage.stop();
    }
 
    /**

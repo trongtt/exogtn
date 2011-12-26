@@ -45,7 +45,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
  * @author <a href="trongtt@gmail.com">Trong Tran</a>
  * @version $Revision$
  */
-public class ExoOAuth3LeggedFilter extends ExoOAuthFilter
+public class ExoOAuth3LeggedFilter extends AbstractExoOAuthFilter
 {
    private static final String OAUTH_AUTH_METHOD = "OAuth";
 
