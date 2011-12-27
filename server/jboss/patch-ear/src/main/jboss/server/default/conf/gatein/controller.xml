@@ -24,7 +24,7 @@
     separator-escape=":">
 
   <route path="/standalone/{gtn:path}">
-  
+
     <route-param qname="gtn:handler">
       <value>standalone</value>
     </route-param>
@@ -125,6 +125,15 @@
 
   </route>
 
+  <!-- Script handler -->
+  <route path="/scripts/{gtn:scope}/">
+    <route-param qname="gtn:handler">
+      <value>script</value>
+    </route-param>
+    <route path="/{gtn:resource}.js"/>
+    <route path="/{gtn:resource}/{gtn:module}.js"/>
+  </route>
+
   <route path="/{gtn:path}">
     <route-param qname="gtn:handler">
       <value>staticResource</value>
@@ -140,5 +149,4 @@
       <value>default</value>
     </route-param>
   </route>
-
 </controller>
