@@ -19,10 +19,7 @@
 
 package org.exoplatform.oauth.provider;
 
-
 import org.exoplatform.container.ExoContainer;
-import org.exoplatform.container.component.ComponentRequestLifecycle;
-import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.MembershipHandler;
 import org.exoplatform.services.organization.OrganizationService;
@@ -74,6 +71,11 @@ public class ExoOAuth3LeggedFilter extends AbstractExoOAuthFilter
          }
 
          @Override
+         public String getRemoteUser() {
+            return principal.getName();
+         }
+         
+         @Override
          public String getAuthType()
          {
             return OAUTH_AUTH_METHOD;
@@ -103,7 +105,6 @@ public class ExoOAuth3LeggedFilter extends AbstractExoOAuthFilter
       OrganizationService orgService = (OrganizationService) container
             .getComponentInstanceOfType(OrganizationService.class);
       MembershipHandler membershipHandler = orgService.getMembershipHandler();
-      RequestLifeCycle.begin((ComponentRequestLifecycle) orgService);
       try
       {
          Collection<Membership> collection = membershipHandler.findMembershipsByUser(userId);
@@ -116,10 +117,6 @@ public class ExoOAuth3LeggedFilter extends AbstractExoOAuthFilter
       catch (Exception e)
       {
          e.printStackTrace();
-      }
-      finally
-      {
-         RequestLifeCycle.end();
       }
       return roles;
    }

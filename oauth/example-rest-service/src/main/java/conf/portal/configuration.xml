@@ -30,7 +30,10 @@
   </component>
   
   <component>
-    <type>org.exoplatform.oauth.provider.example.rest.SocialRest</type>
+    <type>org.exoplatform.oauth.provider.example.rest.Simple2LegsRest</type>
   </component>
 
+  <component>
+    <type>org.exoplatform.oauth.provider.example.rest.ConsumerManagementRest</type>
+  </component>
 </configuration>

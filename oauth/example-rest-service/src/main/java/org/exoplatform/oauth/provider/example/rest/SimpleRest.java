@@ -19,14 +19,12 @@
 package org.exoplatform.oauth.provider.example.rest;
 
 import org.exoplatform.services.rest.resource.ResourceContainer;
-
-import java.security.Principal;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
@@ -34,35 +32,14 @@ import javax.ws.rs.core.Response;
  * @author <a href="trongtt@gmail.com">Trong Tran</a>
  * @version $Revision$
  */
-@Path("SimpleRest")
+@Path("simple")
 public class SimpleRest implements ResourceContainer
 {
    @GET
-   @Path("/hello/{user}/")
-   public Response helloUser(@PathParam("user") String user)
+   @Produces(MediaType.TEXT_PLAIN)
+   public Response execute(@Context HttpServletRequest request)
    {
-      String response = "Hello " + user;
-      return Response.ok(response).build();
-   }
-
-   @GET
-   @Path("infos")
-   public Response infos(@Context HttpServletRequest request)
-   {
-      String response;
-      Principal principal = request.getUserPrincipal();
-      if (principal == null)
-      {
-         response = "You have no permission to get protected resource";
-      }
-      else if (request.isUserInRole("/platform/administrators"))
-      {
-         response = "Hello " + principal.getName() + ", You have right to access";
-      }
-      else
-      {
-         response = "Hello " + principal.getName() + ", but you're not administrator";
-      }
-      return Response.ok(response).build();
+      String text = "Hello: " + request.getRemoteUser() + ". You are using Simple Rest protected by GateIn OAuth Provider";
+      return Response.ok(text).build();
    }
 }

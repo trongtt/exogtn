@@ -21,7 +21,9 @@ import org.exoplatform.services.rest.resource.ResourceContainer;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
@@ -30,15 +32,14 @@ import javax.ws.rs.core.Response;
  *          nguyenanhkien2a@gmail.com
  * Dec 2, 2010  
  */
-@Path("SocialRest")
-public class SocialRest implements ResourceContainer
+@Path("2legs")
+public class Simple2LegsRest implements ResourceContainer
 {
    @GET
-   @Path("infos")
+   @Produces(MediaType.TEXT_PLAIN)
    public Response execute(@Context HttpServletRequest request)
    {
-      //String response = "{\"entry\":{\"demo\":{\"subject\":\"test\",\"java\":\"oauth\"}}}";
-      String response = "SocialRest hello you";
-      return Response.ok(response).build();
+      String text = "You are viewing the Simple Rest OAuth 2 Legs mechanism";
+      return Response.ok(text).build();
    }
 }

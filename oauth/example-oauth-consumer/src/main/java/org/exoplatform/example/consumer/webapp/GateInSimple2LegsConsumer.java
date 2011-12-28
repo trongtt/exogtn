@@ -30,24 +30,33 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Created by The eXo Platform SAS
- * Author : Nguyen Anh Kien
- *          nguyenanhkien2a@gmail.com
- * Dec 3, 2010  
+ * @author <a href="nguyenanhkien2a@gmail.com">Kien Nguyen</a>
+ * @version $Revision$
  */
-public class GateIn3LeggedConsumer extends HttpServlet
+public class GateInSimple2LegsConsumer extends HttpServlet
 {
+   private static final long serialVersionUID = 1L;
+
    @Override
    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
    {
       OAuthConsumer consumer = null;
       try
       {
-         consumer = CookieConsumer.getConsumer("gatein3", getServletContext());
-         OAuthAccessor accessor = CookieConsumer.getAccessor(request, response, consumer);
+         String oauth_token = request.getParameter("oauth_token");
+         String oauth_token_secret = request.getParameter("oauth_token_secret");
+         if(oauth_token == null || oauth_token_secret == null)
+         {
+            request.getRequestDispatcher("gateintoken.jsp").forward(request, response);
+            return;
+         }
+         consumer = CookieConsumer.getConsumer("gateinSimple2Legs", getServletContext());
+         OAuthAccessor accessor = CookieConsumer.getAccessor(request, response, consumer, true);
+         accessor.accessToken = oauth_token;
+         accessor.tokenSecret = oauth_token_secret;
          OAuthMessage message =
             accessor.newRequestMessage(OAuthMessage.GET,
-               "http://localhost:8080/exo-oauth-provider/rest/SimpleRest/infos", null);
+               "http://localhost:8080/exo-oauth-provider/rest/2legs", null);
          OAuthMessage result = CookieConsumer.CLIENT.invoke(message, ParameterStyle.AUTHORIZATION_HEADER);
 
          CookieConsumer.copyResponse(result, response);

@@ -32,8 +32,8 @@
      <filter-class>org.exoplatform.ws.frameworks.servlet.PortalContainerInitializedFilter</filter-class>
   </filter>
   <filter>
-    <filter-name>InitTransactionFilter</filter-name>
-    <filter-class>org.exoplatform.oauth.provider.InitTransactionFilter</filter-class>
+     <filter-name>InitTransactionFilter</filter-name>
+     <filter-class>org.exoplatform.oauth.provider.InitTransactionFilter</filter-class>
   </filter>
   <filter>
      <filter-name>ExoOAuth3LeggedFilter</filter-name>
@@ -62,11 +62,15 @@
   </filter-mapping>
   <filter-mapping>
      <filter-name>ExoOAuth2LeggedFilter</filter-name>
-     <url-pattern>/rest/SocialRest/*</url-pattern>
+     <url-pattern>/rest/2legs/*</url-pattern>
   </filter-mapping>
   <filter-mapping>
      <filter-name>ExoOAuth3LeggedFilter</filter-name>
-     <url-pattern>/rest/SimpleRest/*</url-pattern>
+     <url-pattern>/rest/simple/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+     <filter-name>ExoOAuth3LeggedFilter</filter-name>
+     <url-pattern>/rest/consumers/*</url-pattern>
   </filter-mapping>
   <filter-mapping>
      <filter-name>ExoOAuth3LeggedFilter</filter-name>

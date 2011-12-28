@@ -1,25 +1,20 @@
 /*
- * Copyright (C) 2011 eXo Platform SAS.
+ * Copyright (C) 2003-2010 eXo Platform SAS.
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
  *
- * This software is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see<http://www.gnu.org/licenses/>.
  */
 package org.exoplatform.example.consumer.webapp;
-
-import static net.oauth.OAuth.RSA_SHA1;
-import static net.oauth.OAuth.OAUTH_SIGNATURE_METHOD;
 
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthConsumer;
@@ -35,24 +30,26 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @author <a href="trongtt@gmail.com">Trong Tran</a>
+ * @author <a href="nguyenanhkien2a@gmail.com">Kien Nguyen</a>
  * @version $Revision$
  */
-public class RSA1BasedGateInConsumer extends HttpServlet
+public class GateInRestManagementConsumer extends HttpServlet
 {
+   private static final long serialVersionUID = 1L;
+
    @Override
    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
    {
       OAuthConsumer consumer = null;
       try
       {
-         consumer = CookieConsumer.getConsumer("gatein_rsa", getServletContext());
+         consumer = CookieConsumer.getConsumer("gateinRestManagement", getServletContext());
          OAuthAccessor accessor = CookieConsumer.getAccessor(request, response, consumer);
          OAuthMessage message =
             accessor.newRequestMessage(OAuthMessage.GET,
-               "http://localhost:8080/exo-oauth-provider/rest/SimpleRest/hello/lambkin", null);
+               "http://localhost:8080/portal/rest/management", null);
+         
          OAuthMessage result = CookieConsumer.CLIENT.invoke(message, ParameterStyle.AUTHORIZATION_HEADER);
-
          CookieConsumer.copyResponse(result, response);
       }
       catch (Exception e)

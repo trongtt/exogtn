@@ -6,23 +6,25 @@
 -  Google account. Instead, you can log in as
 -  <b>example.oauth</b>, with the password
 -  <b>oauth.example</b>.
--  <br />
+   <br />
 -  <a href="Twitter">Twitter</a> Don't allow access to a real Twitter
 -  account. Instead, you can log in as
 -  <b>OAuthExample</b>, with the password
 -  <b>password</b>.
--  <br />
--	 <a href="Twitter2">Twitter sign request (2 legged)</a>
--	 <br />
+   <br />
+-	 <a href="Twitter2">Twitter sign request (2 legs)</a>
+	 <br />
 -  <a href="Yahoo">Yahoo</a>
--  <br />
+   <br />
 -  <a href="Orkut">Orkut</a>
--  <br />
--  <a href="GateIn2">GateIn 2 legged OAuth</a>
--  <br />
--  <a href="GateIn3">GateIn 3 legged OAuth</a>
--  <br />
--  <a href="RSA1BasedGateInConsumer">RSA Based GateIn Consumer</a>
--  <br />
+   <br />
+-  <a href="GateInSimpleConsumer">GateIn Simple Consumer (/rest/simple)</a>
+   <br />
+-  <a href="GateInSimpleRSAConsumer">GateIn Simple Consumer that using RSA key (/rest/simple)</a>
+   <br />
+-  <a href="GateInConsumerManagement">GateIn Consumer Management (/rest/consumers)</a>
+   <br />
+-  <a href="GateInRestManagementConsumer">GateIn Rest Management Consumer (/portal/rest/management)</a>
+   <br />
 </body>
 </HTML>

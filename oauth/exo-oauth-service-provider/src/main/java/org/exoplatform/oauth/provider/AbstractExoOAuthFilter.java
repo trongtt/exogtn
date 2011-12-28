@@ -24,9 +24,10 @@ import net.oauth.OAuthValidator;
 import net.oauth.server.OAuthServlet;
 
 import org.exoplatform.container.ExoContainer;
-import org.exoplatform.container.web.AbstractFilter;
+import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.oauth.provider.impl.SimpleOAuthServiceProvider;
 import org.exoplatform.oauth.provider.validation.AccessorBuilder;
+import org.exoplatform.services.security.web.SetCurrentIdentityFilter;
 
 import java.io.IOException;
 
@@ -41,12 +42,20 @@ import javax.servlet.http.HttpServletResponse;
  * @author <a href="mailto:ndkhoi168@gmail.com">Nguyen Duc Khoi</a>
  * Dec 8, 2011
  */
-public abstract class AbstractExoOAuthFilter extends AbstractFilter
+public abstract class AbstractExoOAuthFilter extends SetCurrentIdentityFilter
 {
    final public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
          ServletException
    {
-      _doFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);
+      try
+      {
+         RequestLifeCycle.begin(getContainer());
+         _doFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);
+      }
+      finally
+      {
+         RequestLifeCycle.end();
+      }
    }
 
    protected void _doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -69,7 +78,7 @@ public abstract class AbstractExoOAuthFilter extends AbstractFilter
             validator.validateMessage(requestMessage, AccessorBuilder.buildAccessor(token, provider));
             request.setAttribute(OAuthKeys.OAUTH_USER_ID, token.getUserId());
             request = createSecurityContext(request, token);
-            chain.doFilter(request, response);
+            super.doFilter(request, response, chain);
          }
       }
       catch (Exception e)

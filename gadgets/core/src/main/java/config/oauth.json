@@ -40,18 +40,25 @@
       }
   },
   "http://localhost:8080/rest/jcr/repository/portal-system/production/app:gadgets/app:SimpleOauth/app:data/app:resources/simple-oauth-gadget.xml" : {
-    "simple-oauth" : {
-      "consumer_key" : "simple-oauth-key",
-      "consumer_secret" : "simple-oauth-secret",
+    "SimpleOAuth" : {
+      "consumer_key" : "gateinSimple",
+      "consumer_secret" : "gateinSimpleSecret9876543210",
       "key_type" : "PLAINTEXT"
     }
   },
   "http://localhost:8080/rest/jcr/repository/portal-system/production/app:gadgets/app:SigningOauth/app:data/app:resources/signing-oauth-gadget.xml" : {
-    "signing-oauth" : {
-      "consumer_key" : "signing-oauth-key",
-      "consumer_secret" : "signing-oauth-secret",
+    "Simple2Legs" : {
+      "consumer_key" : "gateinSimple2Legs",
+      "consumer_secret" : "gateinSimple2LegsSecret",
       "key_type" : "PLAINTEXT"
     }
+  },
+  "http://localhost:8080/rest/jcr/repository/portal-system/production/app:gadgets/app:ServicesManagement/app:data/app:resources/ServicesManagement.xml" : {
+  	"RestManagement" : {
+  		"consumer_key" : "gateinRestManagement",
+  		"consumer_secret" : "gateinRestManagementSecretABCDEFGHIJKLMNOPQRSTUVWXYZ",
+  		"key_type" : "HMAC_SYMMETRIC"
+  	}
   }
 }
   

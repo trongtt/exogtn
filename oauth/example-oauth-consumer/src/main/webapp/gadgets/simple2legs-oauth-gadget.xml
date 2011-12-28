@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-  <ModulePrefs title="Signing OAuth Gadget" scrolling="true">
+  <ModulePrefs title="Simple 2 legs OAuth Gadget" scrolling="true">
     <Require feature="locked-domain"/>
   </ModulePrefs>
   <Content type="html">
@@ -28,10 +28,10 @@
 
     function fetchData() {
       var params = {};
-      url = "http://localhost:8080/exo-oauth-provider/rest/SocialRest/infos";
+      url = "http://localhost:8080/exo-oauth-provider/rest/2legs";
       params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.TEXT;
       params[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.SIGNED;
-      params[gadgets.io.RequestParameters.OAUTH_SERVICE_NAME] = "signing-oauth";
+      params[gadgets.io.RequestParameters.OAUTH_SERVICE_NAME] = "Simple2Legs";
       params[gadgets.io.RequestParameters.METHOD] = gadgets.io.MethodType.GET;
 
       gadgets.io.makeRequest(url, function (response) {

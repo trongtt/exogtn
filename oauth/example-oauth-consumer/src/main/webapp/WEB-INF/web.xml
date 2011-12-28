@@ -56,18 +56,26 @@
       <servlet-class>org.exoplatform.example.consumer.webapp.Orkut2LeggedConsumer</servlet-class>
    </servlet>
    <servlet>
-      <servlet-name>GateIn2LeggedConsumerServlet</servlet-name>
-      <servlet-class>org.exoplatform.example.consumer.webapp.GateIn2LeggedConsumer</servlet-class>
+      <servlet-name>GateInSimple2LegsConsumer</servlet-name>
+      <servlet-class>org.exoplatform.example.consumer.webapp.GateInSimple2LegsConsumer</servlet-class>
    </servlet>
    <servlet>
-      <servlet-name>GateIn3LeggedConsumerServlet</servlet-name>
-      <servlet-class>org.exoplatform.example.consumer.webapp.GateIn3LeggedConsumer</servlet-class>
+      <servlet-name>GateInSimpleConsumer</servlet-name>
+      <servlet-class>org.exoplatform.example.consumer.webapp.GateInSimpleConsumer</servlet-class>
    </servlet>
    <servlet>
-      <servlet-name>RSA1BasedGateInConsumer</servlet-name>
-      <servlet-class>org.exoplatform.example.consumer.webapp.RSA1BasedGateInConsumer</servlet-class>
+      <servlet-name>GateInSimpleRSAConsumer</servlet-name>
+      <servlet-class>org.exoplatform.example.consumer.webapp.GateInSimpleRSAConsumer</servlet-class>
    </servlet>
-
+   <servlet>
+      <servlet-name>GateInConsumerManagement</servlet-name>
+      <servlet-class>org.exoplatform.example.consumer.webapp.GateInConsumerManagement</servlet-class>
+   </servlet>
+   <servlet>
+      <servlet-name>GateInRestManagementConsumer</servlet-name>
+      <servlet-class>org.exoplatform.example.consumer.webapp.GateInRestManagementConsumer</servlet-class>
+   </servlet>
+   
    <servlet-mapping>
       <servlet-name>GoogleContactsConsumer</servlet-name>
       <url-pattern>/Google</url-pattern>
@@ -117,15 +125,23 @@
       <url-pattern>/Orkut</url-pattern>
    </servlet-mapping>
    <servlet-mapping>
-      <servlet-name>GateIn2LeggedConsumerServlet</servlet-name>
-      <url-pattern>/GateIn2</url-pattern>
+      <servlet-name>GateInSimpleConsumer</servlet-name>
+      <url-pattern>/GateInSimpleConsumer</url-pattern>
    </servlet-mapping>
    <servlet-mapping>
-      <servlet-name>GateIn3LeggedConsumerServlet</servlet-name>
-      <url-pattern>/GateIn3</url-pattern>
+      <servlet-name>GateInSimpleRSAConsumer</servlet-name>
+      <url-pattern>/GateInSimpleRSAConsumer</url-pattern>
    </servlet-mapping>
    <servlet-mapping>
-      <servlet-name>RSA1BasedGateInConsumer</servlet-name>
-      <url-pattern>/RSA1BasedGateInConsumer</url-pattern>
+      <servlet-name>GateInConsumerManagement</servlet-name>
+      <url-pattern>/GateInConsumerManagement</url-pattern>
+   </servlet-mapping>
+   <servlet-mapping>
+      <servlet-name>GateInRestManagementConsumer</servlet-name>
+      <url-pattern>/GateInRestManagementConsumer</url-pattern>
+   </servlet-mapping>
+   <servlet-mapping>
+      <servlet-name>GateInSimple2LegsConsumer</servlet-name>
+      <url-pattern>/GateInSimple2LegsConsumer</url-pattern>
    </servlet-mapping>
 </web-app>
