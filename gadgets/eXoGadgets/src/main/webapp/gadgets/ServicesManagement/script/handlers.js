@@ -138,22 +138,64 @@ ServicesManagement.prototype.makeRequest = function(reqUrl, callback, sendData, 
 	if (reqUrl == "") {
 		return;
 	}
-	reqMethod = reqMethod ? reqMethod : "GET";
-	returnType = returnType ? returnType : "json";
+	reqMethod = reqMethod ? reqMethod : gadgets.io.MethodType.GET;
+	returnType = returnType ? returnType : gadgets.io.ContentType.JSON;
+	sendData = sendData ? sendData : null;
 	
-	return $.ajax({
-					  url: reqUrl,
-					  type: reqMethod,					  
-					  success: callback,
-					  contentType: "application/x-www-form-urlencoded",
-					  error: function() {
-						  var prefs = new _IG_Prefs();
-						  alert(prefs.getMsg("badURL"));
-					  },
-					  data: sendData,
-					  dataType: returnType,
-					  beforeSend: function(xhr) {
-					  	xhr.setRequestHeader("If-Modified-Since", "Thu, 1 Jan 1970 00:00:00 GMT");
-					  } 
-					});	
+	var params = {};
+  params[gadgets.io.RequestParameters.CONTENT_TYPE] = returnType;
+  params[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.OAUTH;
+  params[gadgets.io.RequestParameters.OAUTH_SERVICE_NAME] = "RestManagement";
+  params[gadgets.io.RequestParameters.OAUTH_USE_TOKEN] = "always";
+  params[gadgets.io.RequestParameters.METHOD] = reqMethod;
+   params[gadgets.io.RequestParameters.POST_DATA] = sendData;
+
+  gadgets.io.makeRequest(reqUrl, function (response) {
+	  if (response.oauthApprovalUrl) {
+	  	var onOpen = function() {
+	  		eXo.gadget.ServicesManagement.showOneSection('OAuthWaiting');
+	  	}
+	  	
+	  	var onClose = function() {
+	  		eXo.gadget.ServicesManagement.makeRequest(reqUrl, callback);
+	  	}
+	  	
+	    var popup = new gadgets.oauth.Popup(response.oauthApprovalUrl,
+																		      "height=300,width=200",
+																		      onOpen,
+																		      onClose
+																		    );
+	
+	    var personalize = document.getElementById('personalize');
+	    personalize.onclick = popup.createOpenerOnClick();
+	    
+	    var approvaldone = document.getElementById('approvaldone');
+	    approvaldone.onclick = popup.createApprovedOnClick();
+	    eXo.gadget.ServicesManagement.showOneSection('OAuthApproval');
+	  } else if (response.data) {
+	      eXo.gadget.ServicesManagement.showOneSection('GadgetData');
+	      callback.call(this, response.data);
+	  } else {
+	      // The response.oauthError and response.oauthErrorText values may help debug
+	      // problems with your gadget.
+	      var tag = document.getElementById('OAuthError');
+	      var err = document.createTextNode('OAuth error: ' +
+	        response.oauthError + ': ' + response.oauthErrorText);
+	      tag.appendChild(err);
+	      eXo.gadget.ServicesManagement.showOneSection('OAuthError');
+	  }
+	}, params);
+};
+
+ServicesManagement.prototype.showOneSection = function(id) {	
+	var sections = [ 'OAuthError', 'OAuthApproval', 'OAuthWaiting', 'GadgetData' ];
+  for (var i=0; i < sections.length; ++i) {
+    var s = sections[i];
+    var el = document.getElementById(s);
+    if (s === id) {
+      el.style.display = "block";
+    } else {
+      el.style.display = "none";
+    }
+  }
 };

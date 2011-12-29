@@ -57,7 +57,7 @@
   	"RestManagement" : {
   		"consumer_key" : "gateinRestManagement",
   		"consumer_secret" : "gateinRestManagementSecretABCDEFGHIJKLMNOPQRSTUVWXYZ",
-  		"key_type" : "HMAC_SYMMETRIC"
+  		"key_type" : "HMAC-SHA1"
   	}
   }
 }
