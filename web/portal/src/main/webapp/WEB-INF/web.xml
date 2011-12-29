@@ -263,6 +263,7 @@
          <url-pattern>/standalone/*</url-pattern>
          <url-pattern>/g/*</url-pattern>
          <url-pattern>/u/*</url-pattern>
+         <url-pattern>/OAuthLogin</url-pattern>
          <http-method>POST</http-method>
          <http-method>GET</http-method>
       </web-resource-collection>

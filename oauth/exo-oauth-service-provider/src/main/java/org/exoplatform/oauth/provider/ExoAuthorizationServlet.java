@@ -135,7 +135,7 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
       String portal = ExoContainerContext.getCurrentContainer().getContext().getPortalContainerName();
       String loginCtx = "/OAuthLogin";
       String loginUrl =
-         localhost + "/" + portal + loginCtx + "?callback=" + callbackURL + "&oauth_token=" + token.getToken();;
+         localhost + "/" + portal + loginCtx + "?oauth_token=" + token.getToken() + "&callbackURL=" + callbackURL;
 
       response.sendRedirect(response.encodeRedirectURL(loginUrl));
    }
