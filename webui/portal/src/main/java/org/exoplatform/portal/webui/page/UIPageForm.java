@@ -282,9 +282,7 @@ public class UIPageForm extends UIFormTabPane
          uiPage.setTitle(page.getTitle());
          uiPage.setShowMaxWindow(page.isShowMaxWindow());
 
-         uiMaskWS.setUIComponent(null);
-         uiMaskWS.setShow(false);
-         pcontext.addUIComponentToUpdateByAjax(uiMaskWS);
+         uiMaskWS.createEvent("Close", Phase.DECODE, pcontext).broadcast();
          pcontext.getJavascriptManager().addJavascript("eXo.portal.UIPortal.changeComposerSaveButton();");
       }
    }
