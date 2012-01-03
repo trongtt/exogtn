@@ -1,13 +1,24 @@
 <%
    def rcontext = _ctx.getRequestContext() ;
    uicomponent.renderChildren();
+   def scriptsURLs = uicomponent.getScriptsURLs();
+   rcontext.setAttribute("eXo.portal.scriptsURLs", scriptsURLs);
+   def onloadScripts = new StringBuilder("[");
+   for (path in scriptsURLs.keySet()) {
+	   if (scriptsURLs.get(path)) {
+	      onloadScripts.append("'").append(path).append("',");
+	   }
+   }
+   onloadScripts.append("]");
 %>
        </div>
-    <script type="text/javascript">
-
-      <%rcontext.getJavascriptManager().writeJavascript(out.writer)%>
-      eXo.core.Browser.onLoad();
-      <% rcontext.getJavascriptManager().writeCustomizedOnLoadScript(out.writer); %>
+    <script type="text/javascript">      
+	  eXo.core.AsyncLoader.loadJS($onloadScripts, function() {
+	      <%rcontext.getJavascriptManager().writeJavascript(out.writer)%>
+	      eXo.core.Browser.onLoad();
+	      <% rcontext.getJavascriptManager().writeCustomizedOnLoadScript(out.writer); %>		  
+	  	}			  
+	  );
     </script>
   </body>
 </html>
