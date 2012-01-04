@@ -22,6 +22,8 @@ import net.oauth.server.OAuthServlet;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.exoplatform.commons.chromattic.ChromatticManager;
 import org.exoplatform.oauth.provider.Consumer;
+import org.exoplatform.oauth.provider.OAuthException;
+import org.exoplatform.oauth.provider.OAuthKeys;
 import org.exoplatform.oauth.provider.OAuthServiceProvider;
 import org.exoplatform.oauth.provider.OAuthToken;
 import org.exoplatform.oauth.provider.RequestToken;
@@ -98,8 +100,13 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
       }
    }
 
-   public Consumer registerConsumer(String consumerKey, String consumerSecret, String callbackURL, Map<String, String> properties)
+   public Consumer registerConsumer(String consumerKey, String consumerSecret, String callbackURL,
+      Map<String, String> properties) throws OAuthException
    {
+      if (this.getConsumer(consumerKey) != null)
+      {
+         throw new OAuthException(OAuthKeys.OAUTH_DUPLICATE_CONSUMER);
+      }
       return consumerStorage.registerConsumer(consumerKey, consumerSecret, callbackURL, properties).getConsumer();
    }
 
@@ -111,7 +118,7 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
       if (consumer != null)
       {
          //Remove authorized tokens of this consumer
-         Collection<OAuthToken> tokens = this.getAuthorizedTokens();
+         Collection<OAuthToken> tokens = this.getAccessTokens();
          for (OAuthToken t : tokens)
          {
             if (t.getConsumerKey().equals(consumer.getKey()))
@@ -207,7 +214,7 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
       requestTokens.remove(token);
    }
 
-   public List<OAuthToken> getAuthorizedTokens()
+   public List<OAuthToken> getAccessTokens()
    {
       Collection<AccessTokenEntry> tokenEntries = tokenStorage.getAccessTokens();
       List<OAuthToken> tokens = new ArrayList<OAuthToken>();

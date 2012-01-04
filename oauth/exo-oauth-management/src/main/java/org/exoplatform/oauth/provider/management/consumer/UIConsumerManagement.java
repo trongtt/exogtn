@@ -21,6 +21,7 @@ package org.exoplatform.oauth.provider.management.consumer;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.oauth.provider.Consumer;
+import org.exoplatform.oauth.provider.OAuthException;
 import org.exoplatform.oauth.provider.OAuthServiceProvider;
 import org.exoplatform.oauth.provider.OAuthToken;
 import org.juzu.Action;
@@ -137,8 +138,16 @@ public class UIConsumerManagement
             consumerProperties.put("name", consumerName);
             consumerProperties.put("description", consumerDescription);
             consumerProperties.put("website", consumerWebsite);
-            consumer = provider.registerConsumer(consumerKey, consumerSecret, callbackURL, consumerProperties);
-            session.setConsumer(consumer);
+            try
+            {
+               consumer = provider.registerConsumer(consumerKey, consumerSecret, callbackURL, consumerProperties);
+               session.setConsumer(consumer);
+            }
+            catch (OAuthException e)
+            {
+               //Should log this
+               e.printStackTrace();
+            }
             return UIConsumerManagement_.consumerDetail();
          }
       }

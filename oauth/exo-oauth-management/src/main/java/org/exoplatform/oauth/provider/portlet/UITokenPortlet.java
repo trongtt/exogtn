@@ -68,7 +68,7 @@ public class UITokenPortlet extends GenericPortlet
       OAuthServiceProvider provider =
          (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
 
-      List<OAuthToken> tokens = provider.getAuthorizedTokens();
+      List<OAuthToken> tokens = provider.getAccessTokens();
       Map<OAuthToken, Consumer> accessors = new HashMap<OAuthToken, Consumer>();
       for(OAuthToken token : tokens)
       {

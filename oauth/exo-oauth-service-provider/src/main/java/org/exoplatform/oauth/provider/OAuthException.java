@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2011 eXo Platform SAS.
+ * Copyright (C) 2012 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -18,59 +18,30 @@
  */
 package org.exoplatform.oauth.provider;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * This class consists information about OAuth Token <br>
- * <pre>
- * 1. token
- * 2. token secret
- * 3. consumer key
- * 4. user Id
- * 5. properties map contain extra information: expiration time, etc
- * </pre>
- * 
  * @author <a href="kienna@exoplatform.com">Kien Nguyen</a>
  * @version $Revision$
  */
-
-public class RequestToken extends OAuthToken
+public class OAuthException extends Exception
 {
-   private final Map<String, Object> properties = new HashMap<String, Object>();
-
-   public RequestToken()
+   protected OAuthException()
    {
    }
 
-   @Override
-   public RequestToken clone()
+   public OAuthException(String message)
    {
-      try
-      {
-         return (RequestToken)super.clone();
-      }
-      catch (CloneNotSupportedException e)
-      {
-         throw new RuntimeException(e);
-      }
+      super(message);
    }
 
-   public Object getProperty(String name)
+   public OAuthException(Throwable cause)
    {
-      return properties.get(name);
+      super(cause);
    }
 
-   public void setProperty(String name, Object value)
+   public OAuthException(String message, Throwable cause)
    {
-      properties.put(name, value);
+      super(message, cause);
    }
 
-   /**
-    * @return the properties
-    */
-   public Map<String, Object> getProperties()
-   {
-      return properties;
-   }
+   private static final long serialVersionUID = 1L;
 }

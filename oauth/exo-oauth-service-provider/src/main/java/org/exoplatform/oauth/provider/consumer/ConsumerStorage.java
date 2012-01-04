@@ -22,8 +22,6 @@ import org.chromattic.api.ChromatticSession;
 import org.exoplatform.commons.chromattic.ChromatticLifeCycle;
 import org.exoplatform.commons.chromattic.ChromatticManager;
 import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.container.component.RequestLifeCycle;
-import org.exoplatform.services.organization.OrganizationService;
 import org.gatein.common.io.IOTools;
 
 import java.io.IOException;

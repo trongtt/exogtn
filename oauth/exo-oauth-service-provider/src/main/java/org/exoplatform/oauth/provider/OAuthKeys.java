@@ -43,4 +43,6 @@ public class OAuthKeys
    public static final String OAUTH_VERIFIER = "oauth_verifier";
    public static final String OAUTH_VERIFIER_INVALID = "oauth_verifier_invalid";
    public static final String OAUTH_LOGIN_TOKEN = "oauth_login_token";
+   
+   public static final String OAUTH_DUPLICATE_CONSUMER = "oauth_duplicate_consumer";
 }

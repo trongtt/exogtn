@@ -12,7 +12,7 @@
 <div class="OAuthToken"><c:choose>
 	<c:when test="${not empty accessors}">
 		<div><h1>Your
-		authorized tokens</h1></div>
+		access tokens</h1></div>
 		<br />
 		<table align="center" border="1">
 				<tr bgcolor="#99CCFF">
@@ -35,7 +35,7 @@
 	</c:when>
 	<c:otherwise>
 		<div><h1>You
-		don't have any Authorized Tokens</h1></div>
+		don't have any access Tokens</h1></div>
 	</c:otherwise>
 </c:choose><br />
 

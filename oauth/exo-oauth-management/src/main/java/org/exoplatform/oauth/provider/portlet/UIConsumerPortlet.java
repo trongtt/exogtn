@@ -21,7 +21,10 @@ package org.exoplatform.oauth.provider.portlet;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.oauth.provider.Consumer;
+import org.exoplatform.oauth.provider.OAuthException;
 import org.exoplatform.oauth.provider.OAuthServiceProvider;
+import org.gatein.common.logging.Logger;
+import org.gatein.common.logging.LoggerFactory;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
@@ -46,6 +49,8 @@ import javax.portlet.RenderResponse;
 
 public class UIConsumerPortlet extends GenericPortlet
 {
+   private final Logger log = LoggerFactory.getLogger(UIConsumerPortlet.class);
+   
    @Override
    protected void doHeaders(RenderRequest request, RenderResponse response)
    {
@@ -103,7 +108,14 @@ public class UIConsumerPortlet extends GenericPortlet
          properties.put("name", consumerName);
          properties.put("description", consumerDescription);
          properties.put("website", consumerWebsite);
-         provider.registerConsumer(consumerKey, consumerSecret, callbackURL, properties);
+         try
+         {
+            provider.registerConsumer(consumerKey, consumerSecret, callbackURL, properties);
+         }
+         catch (OAuthException e)
+         {
+            log.error("Error during register consumer into system", e);
+         }
       }
       else
       {

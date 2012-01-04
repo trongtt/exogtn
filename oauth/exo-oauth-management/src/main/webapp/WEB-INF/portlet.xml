@@ -27,14 +27,14 @@
    <portlet>
       <description xml:lang="EN">The portlet manages the OAuth authorized token</description>
       <portlet-name>OAuthTokenManagementPortlet</portlet-name>
-      <display-name>OAuth Authorized Tokens</display-name>
+      <display-name>OAuth Access Tokens</display-name>
       <portlet-class>org.exoplatform.oauth.provider.portlet.UITokenPortlet</portlet-class>
       <supports>
          <mime-type>text/html</mime-type>
       </supports>
       <supported-locale>en</supported-locale>
       <portlet-info>
-         <title>OAuth Authorized Tokens</title>
+         <title>OAuth Access Tokens</title>
          <short-title>oToken</short-title>
          <keywords>System</keywords>
       </portlet-info>
@@ -90,7 +90,7 @@
    </portlet>
    <portlet>
       <portlet-name>UITokenManagement</portlet-name>
-      <display-name xml:lang="EN">OAuth Authorized Tokens</display-name>
+      <display-name xml:lang="EN">OAuth Access Tokens</display-name>
       <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
       <init-param>
          <name>juzu.app_name</name>
@@ -108,7 +108,7 @@
          <mime-type>text/html</mime-type>
       </supports>
       <portlet-info>
-         <title>OAuth Authorized Tokens</title>
+         <title>OAuth Access Tokens</title>
          <keywords>juzu</keywords>
       </portlet-info>
    </portlet>

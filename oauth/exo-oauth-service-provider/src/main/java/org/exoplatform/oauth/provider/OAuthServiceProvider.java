@@ -22,9 +22,9 @@ import java.util.Map;
 /**
  * The OAuthServiceProvider defines an API to deal with
  *
- * 1. ConsumerEntry information
- * 2. AccessTokenEntry
- * 3. RequestToken
+ * 1. Consumer information
+ * 2. Access Token
+ * 3. Request Token
  *
  * @author <a href="trongtt@gmail.com">Trong Tran</a>
  * @version $Revision$
@@ -32,28 +32,31 @@ import java.util.Map;
 public interface OAuthServiceProvider
 {
    /**
-    * Return a ConsumerEntry registered under key consumerKey or {@code null} if no such ConsumerEntry exists
+    * Return a Consumer registered under key consumerKey or {@code null} if no such Consumer exists
     *
     * @param consumerKey
-    * @return
+    * @return Consumer has this key
     */
    public Consumer getConsumer(String consumerKey);
 
    /**
-    * Register a ConsumerEntry with provided params: consumerKey, consumerSecret, callbackURL and properties
+    * Register a Consumer with provided params: consumerKey, consumerSecret, callbackURL and properties
     *
-    * In case another ConsumerEntry has been registered under the same consumerKey, this method overrides
+    * In case another Consumer has been registered under the same consumerKey, this method overrides
     * former one.
     *
     * @param consumerKey
     * @param consumerSecret
     * @param callbackURL
     * @param properties
+    * @throws OAuthException if has problem during register consumer, such as duplicate consumer key, etc
+    * @return Consumer if register is successful or {@code null} if register is failure
     */
-   public Consumer registerConsumer(String consumerKey, String consumerSecret, String callbackURL, Map<String, String> properties);
+   public Consumer registerConsumer(String consumerKey, String consumerSecret, String callbackURL,
+      Map<String, String> properties) throws OAuthException;
 
    /**
-    * Remove ConsumerEntry registered under key consumerKey. All AccessTokenEntry instances associated with this ConsumerEntry
+    * Remove Consumer registered under key consumerKey. All Access Token instances associated with this Consumer
     * must be clean from storage
     *
     * @param consumerKey
@@ -69,7 +72,7 @@ public interface OAuthServiceProvider
       
    /**
     * Generate request token from consumer information (name or key)
-    * request token is a transient token, it will be removed after AccessTokenEntry is created or configurable short time
+    * request token is a transient token, it will be removed after AccessToken is created or configurable short time
     * 
     * @return RequestToken
     */
@@ -85,16 +88,16 @@ public interface OAuthServiceProvider
    
    /**
     *
-    * This method attempts first to find AccessTokenEntry associated with pair (userID, consumer)
+    * This method attempts first to find Access Token associated with pair (userID, consumer)
     *
     * 1. If such AccessTokenEntry exists, the method returns it immediately
     *
-    * 2. If no such AccessTokenEntry is found, the method generates an AccessTokenEntry from (userID, consumer)
+    * 2. If no such Access Token is found, the method generates an Access Token from (userID, consumer)
     * then persists it
     *
     * @param userID
     * @param consumerKey
-    * @return AccessTokenEntry
+    * @return OAuthToken is Access Token
     */
    public OAuthToken generateAccessToken(String userID, String consumerKey);
    
@@ -107,17 +110,17 @@ public interface OAuthServiceProvider
    public RequestToken getRequestToken(String token);
    
    /**
-    * Find an AccessTokenEntry stored under the token string: token and return it.
-    * This method returns {@code null} if no such AccessTokenEntry is found
+    * Find an Access Token stored under the token string: token and return it.
+    * This method returns {@code null} if no such Access Token is found
     *
     * @param key
-    * @return AccessTokenEntry
+    * @return OAuthToken is Access Token
     */
    public OAuthToken getAccessToken(String token);
 
    /**
-    * Find an AccessTokenEntry associated with the pair (userID, consumerKey) and return it.
-    * This method returns {@code null} if no such AccessTokenEntry is found
+    * Find an Access Token associated with the pair (userID, consumerKey) and return it.
+    * This method returns {@code null} if no such Access Token is found
     *
     * @param userID
     * @param consumerKey
@@ -140,9 +143,9 @@ public interface OAuthServiceProvider
    public void revokeRequestToken(String token);
 
    /**
-    * Return a collection of all persistent AccessTokenEntry.
+    * Return a list of all persistent Access Token.
     * 
     * @return
     */
-   public List<OAuthToken> getAuthorizedTokens();
+   public List<OAuthToken> getAccessTokens();
 }
