@@ -21,6 +21,8 @@
  * A class that manages a popup window
  */
 eXo.webui.UIPopupWindow = {
+  superClass : eXo.webui.UIPopup,
+  
   /**
    * 1. Popup window 's bottom 's height is required to set correctly 'Resize'
    * button during resize process
@@ -33,63 +35,97 @@ eXo.webui.UIPopupWindow = {
    * bottom), we store its height in a global variable
    */
   POPUP_WINDOW_BOTTOM_HEIGHT : 50,
-
+  
+  // TODO: manage zIndex properties
   /**
-   * Inits a popup window, with these parameters : . sets the superClass as
-   * eXo.webui.UIPopup . sets the popup hidden . inits the drag and drop . inits
-   * the resize area if the window is resizable
+   * Shows the popup window passed in parameter gets the highest z-index
+   * property of the elements in the page : . gets the z-index of the maskLayer .
+   * gets all the other popup windows . gets the highest z-index from these, if
+   * it's still at 0, set an arbitrary value of 2000 sets the position of the
+   * popup on the page (top and left properties)
    */
-  init : function(popupId, isShow, isResizable, showCloseButton, isShowMask) {
+  show : function(popupId, isShowMask, middleBrowser) {
     var DOMUtil = eXo.core.DOMUtil;
-    this.superClass = eXo.webui.UIPopup;
     var popup = document.getElementById(popupId);
-    if (popup == null)
-      return;
-    popup.style.visibility = "hidden";
+    if (popup == null) return;        
 
     // TODO Lambkin: this statement create a bug in select box component in
     // Firefox
-    // this.superClass.init(popup) ;
-    if (isShow) {
-      popup.style.display = "block";
-    }
-    var contentBlock = DOMUtil.findFirstDescendantByClass(popup, 'div',
-        'PopupContent');
-    if (contentBlock
-        && (eXo.core.Browser.getBrowserHeight() - 100 < contentBlock.offsetHeight)) {
-      contentBlock.style.height = (eXo.core.Browser.getBrowserHeight() - 100)
-          + "px";
-    }
-    var popupBar = DOMUtil.findFirstDescendantByClass(popup, 'span',
-        'PopupTitle');
+    // this.superClass.init(popup) ;    
+    var popupBar = DOMUtil.findFirstDescendantByClass(popup, 'span', 'PopupTitle');
+    popupBar.onmousedown = this.initDND;    
+    
+    var resizeBtn = DOMUtil.findFirstDescendantByClass(popup, "span", "ResizeButton");
+    if (resizeBtn) {
+    	resizeBtn.style.display = 'block';
+    	resizeBtn.onmousedown = this.startResizeEvt;
+    }    	
 
-    popupBar.onmousedown = this.initDND;
-
-    if (isShow == false) {
-      this.superClass.hide(popup);
-      if (isShowMask)
-        eXo.webui.UIPopupWindow.showMask(popup, false);
-    }
-
-    if (isResizable) {
-      var resizeBtn = DOMUtil.findFirstDescendantByClass(popup, "span",
-          "ResizeButton");
-      resizeBtn.style.display = 'block';
-      resizeBtn.onmousedown = this.startResizeEvt;
-    }
-
+    if (isShowMask)
+    	eXo.webui.UIPopupWindow.showMask(popup, true);
     popup.style.visibility = "hidden";
-    if (isShow == true) {
-      var iframes = DOMUtil.findDescendantsByTagName(popup, "iframe");
-      if (iframes.length > 0) {
-        setTimeout("eXo.webui.UIPopupWindow.show('" + popupId + "',"
-            + isShowMask + ")", 500);
-      } else {
-        this.show(popup, isShowMask);
-      }
+    this.superClass.show(popup);
+    
+    var iframes = DOMUtil.findDescendantsByTagName(popup, "iframe");
+    if (iframes.length > 0) {
+    	setTimeout(function() {eXo.webui.UIPopupWindow.setupWindow(popup, middleBrowser);}, 500);
+    } else {
+    	this.setupWindow(popup, middleBrowser);
     }
   },
+  
+  setupWindow : function(popup, middleBrowser) {	    	
+	var DOMUtil = eXo.core.DOMUtil;
+    var contentBlock = DOMUtil.findFirstDescendantByClass(popup, 'div', 'PopupContent');
+    if (contentBlock && (eXo.core.Browser.getBrowserHeight() - 100 < contentBlock.offsetHeight)) {
+      contentBlock.style.height = (eXo.core.Browser.getBrowserHeight() - 100) + "px";
+    }
+    
+    var scrollY = 0, offsetParent = popup.offsetParent;
+    if (window.pageYOffset != undefined)
+      scrollY = window.pageYOffset;
+    else if (document.documentElement && document.documentElement.scrollTop)
+      scrollY = document.documentElement.scrollTop;
+    else
+      scrollY = document.body.scrollTop;
+    // reference
+    if (offsetParent) {
+      var middleWindow = (DOMUtil.hasClass(offsetParent, "UIPopupWindow") || DOMUtil.hasClass(offsetParent, "UIWindow"));
+      if (middleWindow) {
+        popup.style.top = Math.ceil((offsetParent.offsetHeight - popup.offsetHeight) / 2) + "px";
+      }
+      if (middleBrowser || !middleWindow) {
+        popup.style.top = Math.ceil((eXo.core.Browser.getBrowserHeight() - popup.offsetHeight) / 2) + scrollY + "px";
+      }
+      // Todo: set popup of UIPopup always display in the center browsers in case UIMaskWorkspace
+      if (eXo.core.DOMUtil.hasClass(offsetParent, "UIMaskWorkspace")) {
+        popup.style.top = Math.ceil((offsetParent.offsetHeight - popup.offsetHeight) / 2) + "px";
+      }
+      
+      // hack for position popup alway top in IE6.
+      var checkHeight = popup.offsetHeight > 300;
 
+      if (document.getElementById("UIDockBar") && checkHeight) {
+        popup.style.top = "6px";
+      }
+      if (eXo.core.I18n.lt)
+        popup.style.left = Math.ceil((offsetParent.offsetWidth - popup.offsetWidth) / 2) + "px";
+      else
+        popup.style.right = Math.ceil((offsetParent.offsetWidth - popup.offsetWidth) / 2) + "px";
+    }
+    if (eXo.core.Browser.findPosY(popup) < 0)
+      popup.style.top = scrollY + "px";
+        
+    popup.style.visibility = "visible";	  
+  },
+  
+  hide : function(popupId, isShowMask) {
+	var popup = document.getElementById(popupId);
+	if (popup == null) return;     
+    this.superClass.hide(popup);
+    if (isShowMask) eXo.webui.UIPopupWindow.showMask(popup, false);
+  },
+  
   showMask : function(popup, isShowPopup) {
     var mask = popup.previousSibling;
     // Make sure mask is not TextNode because of previousSibling property
@@ -110,125 +146,8 @@ eXo.webui.UIPopupWindow = {
       if (mask)
         eXo.core.UIMaskLayer.removeMask(mask);
     }
-  },
-
-  // TODO: manage zIndex properties
-  /**
-   * Shows the popup window passed in parameter gets the highest z-index
-   * property of the elements in the page : . gets the z-index of the maskLayer .
-   * gets all the other popup windows . gets the highest z-index from these, if
-   * it's still at 0, set an arbitrary value of 2000 sets the position of the
-   * popup on the page (top and left properties)
-   */
-  show : function(popup, isShowMask, middleBrowser) {
-    var DOMUtil = eXo.core.DOMUtil;
-    if (typeof (popup) == "string")
-      popup = document.getElementById(popup);
-    var portalApp = document.getElementById("UIPortalApplication");
-
-    var maskLayer = DOMUtil.findFirstDescendantByClass(portalApp, "div",
-        "UIMaskWorkspace");
-    var zIndex = 0;
-    var currZIndex = 0;
-    if (maskLayer != null) {
-      currZIndex = DOMUtil.getStyle(maskLayer, "zIndex");
-      if (!isNaN(currZIndex) && currZIndex > zIndex)
-        zIndex = currZIndex;
-    }
-    var popupWindows = DOMUtil.findDescendantsByClass(portalApp, "div",
-        "UIPopupWindow");
-    var len = popupWindows.length;
-    for ( var i = 0; i < len; i++) {
-      currZIndex = DOMUtil.getStyle(popupWindows[i], "zIndex");
-      if (!isNaN(currZIndex) && currZIndex > zIndex)
-        zIndex = currZIndex;
-    }
-    if (zIndex == 0)
-      zIndex = 2000;
-    // We don't increment zIndex here because it is done in the superClass.show
-    // function
-    if (isShowMask)
-      eXo.webui.UIPopupWindow.showMask(popup, true);
-    popup.style.visibility = "hidden";
-    this.superClass.show(popup);
-    var offsetParent = popup.offsetParent;
-    var scrollY = 0;
-    if (window.pageYOffset != undefined)
-      scrollY = window.pageYOffset;
-    else if (document.documentElement && document.documentElement.scrollTop)
-      scrollY = document.documentElement.scrollTop;
-    else
-      scrollY = document.body.scrollTop;
-    // reference
-    if (offsetParent) {
-      var middleWindow = (eXo.core.DOMUtil.hasClass(offsetParent,
-          "UIPopupWindow") || eXo.core.DOMUtil.hasClass(offsetParent,
-          "UIWindow"));
-      if (middleWindow) {
-        popup.style.top = Math
-            .ceil((offsetParent.offsetHeight - popup.offsetHeight) / 2)
-            + "px";
-      }
-      if (middleBrowser || !middleWindow) {
-        popup.style.top = Math
-            .ceil((eXo.core.Browser.getBrowserHeight() - popup.offsetHeight) / 2)
-            + scrollY + "px";
-      }
-      // Todo: set popup of UIPopup always display in the center browsers in
-      // case
-      // UIMaskWorkspace
-      if (eXo.core.DOMUtil.hasClass(offsetParent, "UIMaskWorkspace")) {
-        // if(eXo.core.Browser.browserType=='ie') offsetParent.style.position =
-        // "relative";
-        popup.style.top = Math
-            .ceil((offsetParent.offsetHeight - popup.offsetHeight) / 2)
-            + "px";
-      }
-
-      // hack for position popup alway top in IE6.
-      var checkHeight = popup.offsetHeight > 300;
-
-      if (document.getElementById("UIDockBar") && checkHeight) {
-        popup.style.top = "6px";
-      }
-      if (eXo.core.I18n.lt)
-        popup.style.left = Math
-            .ceil((offsetParent.offsetWidth - popup.offsetWidth) / 2)
-            + "px";
-      else
-        popup.style.right = Math
-            .ceil((offsetParent.offsetWidth - popup.offsetWidth) / 2)
-            + "px";
-
-    }
-    if (eXo.core.Browser.findPosY(popup) < 0)
-      popup.style.top = scrollY + "px";
-    popup.style.visibility = "visible";
-  },
-  /**
-   * @param {Object}
-   *          evt
-   */
-  increasezIndex : function(popup) {
-    var DOMUtil = eXo.core.DOMUtil;
-    if (typeof (popup) == "string")
-      popup = document.getElementById(popup);
-    var portalApp = document.getElementById("UIPortalApplication");
-    var uiLogin = DOMUtil.findFirstDescendantByClass(portalApp, "div",
-        "UILoginForm");
-    if (uiLogin) {
-      var curMaskzIndex = parseInt(DOMUtil.getStyle(document
-          .getElementById('UIMaskWorkspace'), "zIndex"));
-      popup.style.zIndex = ++curMaskzIndex + "";
-    }
-  },
-
-  /**
-   * Hides (display: none) the popup window when the close button is clicked
-   */
-  closePopupEvt : function(evt) {
-    eXo.core.DOMUtil.findAncestorByClass(this, "UIDragObject").style.display = "none";
-  },
+  },  
+  
   /**
    * Called when the window starts being resized sets the onmousemove and
    * onmouseup events on the portal application (not the popup) associates these
@@ -268,7 +187,7 @@ eXo.webui.UIPopupWindow = {
     targetPopup.style.height = "auto";
 
     if (isRTL) {
-      pointerX = (-1) * pointerX
+      pointerX = (-1) * pointerX;
     }
 
     if (pointerX > 200)
@@ -349,4 +268,4 @@ eXo.webui.UIPopupWindow = {
     var dragBlock = eXo.core.DOMUtil.findAncestorByClass(this, "UIDragObject");
     DragDrop.init(null, clickBlock, dragBlock, evt);
   }
-}
+};
