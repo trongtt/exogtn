@@ -561,25 +561,25 @@ skin/Stylesheet.css</programlisting>
 .MyTheme .MinimizedIcon {
   background-position: center 44px;
 }
-.MyTheme .OverMinimizedIcon {
+.MyTheme .MinimizedIcon:hover {
   background-position: center 140px;
 }
 .MyTheme .MaximizedIcon {
   background-position: center 68px;
 }
-.MyTheme .OverMaximizedIcon {
+.MyTheme .MaximizedIcon:hover {
   background-position: center 164px;
 }
 .MyTheme .RestoreIcon {
   background-position: center 92px;
 }
-.MyTheme .OverRestoreIcon {
+.MyTheme .RestoreIcon:hover {
   background-position: center 188px;
 }
 .MyTheme .NormalIcon {
   background-position: center 92px;
 }
-.MyTheme .OverNormalIcon {
+.MyTheme .NormalIcon:hover {
   background-position: center 188px;
 }
 .UIPageDesktop .MyTheme .ResizeArea {
