@@ -13,13 +13,6 @@
   import org.exoplatform.portal.controller.resource.ResourceScope;
   
 	String popupId = uicomponent.getId();
-	
-	def rcontext = _ctx.getRequestContext();
-	rcontext.getJavascriptManager().loadJavascript(ResourceScope.SHARED, "webui");
-	
-	def errors = uicomponent.getErrors();
-	def warnings = uicomponent.getWarnings();
-	def infos = uicomponent.getInfos();
 
 	boolean printTab(List messages, String title, boolean isSelected) {
 		String cssClass = "NormalTab";
@@ -44,6 +37,7 @@
 		""";
 		return isSelected;
 	}
+
 	boolean printMessages(List messages, String messType, boolean isSelected) {
 		String style = "style=\"display: none;\"";
 		if(messages.size() > 0 && !isSelected) {
@@ -64,9 +58,21 @@
 		println "		</ul>";
 		return isSelected;
 	}
-
 %>
 <div class="UIPopupWindow UIDragObject ExoMessageDecorator" id="$popupId" style="width: 550px; display: none;">
+  <%
+  
+    def rcontext = _ctx.getRequestContext();
+
+    if(uicomponent.hasMessage()){
+      rcontext.getJavascriptManager().loadJavascript(ResourceScope.SHARED, "webui");
+
+      rcontext.getJavascriptManager().addJavascript("eXo.webui.UIPopupWindow.show('$popupId', $uicomponent.showMask);");
+
+      def errors = uicomponent.getErrors();
+      def warnings = uicomponent.getWarnings();
+      def infos = uicomponent.getInfos();  
+  %>
 	<div class="OverflowContainer ClearFix">
 		<a class="CloseButton" title="<%=_ctx.appRes("UIPopupMessages.Close")%>" onclick="<%=uicomponent.event("Close")%>"></a>
 		<span class="PopupTitle"><%=_ctx.appRes("UIPopupMessages.title.exoMessages")%></span>
@@ -96,11 +102,9 @@
 			</div>
 		</div>						
 	</div>
-</div>
 	<%
-		if(uicomponent.hasMessage()){
-			rcontext.getJavascriptManager().addJavascript("eXo.webui.UIPopupWindow.show('$popupId', $uicomponent.showMask);");
-		} else if (rcontext.useAjax()) {
-		   	rcontext.getJavascriptManager().addJavascript("eXo.webui.UIPopupWindow.hide('$popupId', $uicomponent.showMask);");
-		}
+    } else if (rcontext.useAjax()) {
+        rcontext.getJavascriptManager().addJavascript("eXo.webui.UIPopupWindow.hide('$popupId', $uicomponent.showMask);");
+    }
 	%>
+</div>
