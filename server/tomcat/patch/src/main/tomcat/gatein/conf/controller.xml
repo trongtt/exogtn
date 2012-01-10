@@ -126,10 +126,13 @@
   </route>
 
   <!-- Script handler -->
-  <route path="/scripts/{gtn:scope}/">
+  <route path="/scripts/{gtn:version}/{gtn:scope}/">
     <route-param qname="gtn:handler">
       <value>script</value>
     </route-param>
+    <path-param qname="gtn:version" encoding="preserve-path">
+      <pattern>[^/]*</pattern>
+    </path-param>
     <route path="/{gtn:resource}-min.js">
       <route-param qname="gtn:minified">
         <value>true</value>
