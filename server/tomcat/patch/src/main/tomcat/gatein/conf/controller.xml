@@ -130,17 +130,12 @@
     <route-param qname="gtn:handler">
       <value>script</value>
     </route-param>
-    <route path="/{gtn:resource}.js">
-      <route-param qname="gtn:minified">
-        <value>false</value>
-      </route-param>
-    </route>
     <route path="/{gtn:resource}-min.js">
       <route-param qname="gtn:minified">
         <value>true</value>
       </route-param>
     </route>
-    <route path="/{gtn:resource}/{gtn:module}.js">
+    <route path="/{gtn:resource}.js">
       <route-param qname="gtn:minified">
         <value>false</value>
       </route-param>
@@ -148,6 +143,11 @@
     <route path="/{gtn:resource}/{gtn:module}-min.js">
       <route-param qname="gtn:minified">
         <value>true</value>
+      </route-param>
+    </route>
+    <route path="/{gtn:resource}/{gtn:module}.js">
+      <route-param qname="gtn:minified">
+        <value>false</value>
       </route-param>
     </route>
   </route>
