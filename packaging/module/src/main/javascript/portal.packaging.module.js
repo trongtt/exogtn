@@ -48,6 +48,7 @@ function getModule(params)
    var jcipVersion = "${jcip.version}";
    var simplecapthaVersion = "${nl.captcha.simplecaptcha.version}";
    var staxnavVersion = "${org.staxnav.version}";
+   var closureVersion = "${com.google.javascript.version}";
 
    //TODO versions for gatein components
    
@@ -115,7 +116,8 @@ function getModule(params)
       addDependency(module.component.scripting);
 
     module.component.web.resources =
-    new Project("org.exoplatform.portal", "exo.portal.component.web.resources", "jar", module.version);;
+    new Project("org.exoplatform.portal", "exo.portal.component.web.resources", "jar", module.version).
+      addDependency(new Project("com.google.javascript", "closure-compiler", "jar", closureVersion));
 
    module.component.web.api =
    new Project("org.exoplatform.portal", "exo.portal.component.web.api", "jar", module.version);

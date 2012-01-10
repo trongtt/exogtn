@@ -61,6 +61,7 @@
       <version.reflext>1.1.0</version.reflext>
       <org.staxnav.version>0.9.6</org.staxnav.version>
       <jcip.version>1.0</jcip.version>
+      <com.google.javascript.version>r1592</com.google.javascript.version>
 
       <!-- EXOGTN-106 : forced at packaging level -->
       <antlr.version>2.7.6rc1</antlr.version>
@@ -144,6 +145,13 @@
             <version>${org.gatein.dep.version}</version>
             <type>pom</type>
             <scope>import</scope>
+         </dependency>
+
+         <!-- to move to gatein-dep -->
+         <dependency>
+           <groupId>com.google.javascript</groupId>
+           <artifactId>closure-compiler</artifactId>
+           <version>${com.google.javascript.version}</version>
          </dependency>
 
          <!-- eXo JCR stack -->
