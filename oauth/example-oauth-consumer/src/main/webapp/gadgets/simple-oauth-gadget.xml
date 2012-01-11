@@ -2,6 +2,7 @@
 <Module>
   <ModulePrefs title="Simple OAuth Gadget" scrolling="true">
     <Require feature="locked-domain"/>
+    <Require feature="oauthpopup" />
     <OAuth>
       <Service name="SimpleOAuth">
         <Access url="http://localhost:8080/exo-oauth-provider/access_token" method="GET" />
@@ -12,9 +13,6 @@
   </ModulePrefs>
   <Content type="html">
   <![CDATA[
-
-  <!-- shindig oauth popup handling code -->
-  <script src="popup.js"></script>
 
   <style>
   #main {
@@ -39,18 +37,6 @@
   </div>
 
   <script type="text/javascript">
-    // Display UI depending on OAuth access state of the gadget (see <divs> above).
-    // If user hasn't approved access to data, provide a "Personalize this gadget" link
-    // that contains the oauthApprovalUrl returned from makeRequest.
-    //
-    // If the user has opened the popup window but hasn't yet approved access, display
-    // text prompting the user to confirm that s/he approved access to data.  The user
-    // may not ever need to click this link, if the gadget is able to automatically
-    // detect when the user has approved access, but showing the link gives users
-    // an option to fetch their data even if the automatic detection fails.
-    //
-    // When the user confirms access, the fetchData() function is invoked again to
-    // obtain and display the user's data.
     function showOneSection(toshow) {
       var sections = [ 'main', 'approval', 'waiting' ];
       for (var i=0; i < sections.length; ++i) {
@@ -72,16 +58,8 @@
       var nameNode = document.createTextNode(result);
       titleElement.appendChild(nameNode);
       document.getElementById("main").appendChild(titleElement);
-      
     }
 
-    // Invoke makeRequest() to fetch data from the service provider endpoint.
-    // Depending on the results of makeRequest, decide which version of the UI
-    // to ask showOneSection() to display. If user has approved access to his
-    // or her data, display data.
-    // If the user hasn't approved access yet, response.oauthApprovalUrl contains a
-    // URL that includes a Google-supplied request token. This is presented in the
-    // gadget as a link that the user clicks to begin the approval process.
     function fetchData() {
       var params = {};
       url = "http://localhost:8080/exo-oauth-provider/rest/simple";
@@ -93,20 +71,19 @@
 
       gadgets.io.makeRequest(url, function (response) {
         if (response.oauthApprovalUrl) {
-          // Create the popup handler. The onOpen function is called when the user
-          // opens the popup window. The onClose function is called when the popup
-          // window is closed.
-          var popup = shindig.oauth.popup({
-            destination: response.oauthApprovalUrl,
-            windowOptions: null,
-            onOpen: function() { showOneSection('waiting'); },
-            onClose: function() { fetchData(); }
-          });
-          // Use the popup handler to attach onclick handlers to UI elements.  The
-          // createOpenerOnClick() function returns an onclick handler to open the
-          // popup window.  The createApprovedOnClick function returns an onclick
-          // handler that will close the popup window and attempt to fetch the user's
-          // data again.
+          var onOpen = function() {
+      	  	showOneSection('waiting');
+      	  }
+      	  	
+      	  var onClose = function() {
+      	  	fetchData();
+      	  }
+          var popup = new gadgets.oauth.Popup(response.oauthApprovalUrl,
+                                                "height=300,width=200",
+                                                onOpen,
+                                                onClose
+                                              );
+                                              
           var personalize = document.getElementById('personalize');
           personalize.onclick = popup.createOpenerOnClick();
           var approvaldone = document.getElementById('approvaldone');
@@ -116,8 +93,6 @@
             showOneSection('main');
             showResults(response.data);
         } else {
-            // The response.oauthError and response.oauthErrorText values may help debug
-            // problems with your gadget.
             var main = document.getElementById('main');
             var err = document.createTextNode('OAuth error: ' +
               response.oauthError + ': ' + response.oauthErrorText);

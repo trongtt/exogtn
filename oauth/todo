@@ -1,5 +1,4 @@
 1. Make a service to invalidate automatically request tokens effectively
 2. Move default configuration files (consumer.properties, login enpoint, etc) to gatein/conf folder
-3. Enhance sample gadgets and rest services
 4. Design UI stylesheet for two portlets, authorization screen (authorize.jsp file)
 5. Documentation
