@@ -28,6 +28,7 @@ import org.juzu.Action;
 import org.juzu.Path;
 import org.juzu.Response;
 import org.juzu.View;
+import org.juzu.impl.application.InternalApplicationContext;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -51,6 +52,7 @@ public class UITokenManagement
    public void index()
    {
       ExoContainer container = ExoContainerContext.getCurrentContainer();
+      String currentUser = InternalApplicationContext.getCurrentRequest().getSecurityContext().getRemoteUser();
       OAuthServiceProvider provider =
          (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
 
@@ -58,7 +60,7 @@ public class UITokenManagement
       Map<OAuthToken, Consumer> accessors = new HashMap<OAuthToken, Consumer>();
       for (OAuthToken token : tokens)
       {
-         if ("root".equals(token.getUserId()))
+         if (currentUser != null && currentUser.equals(token.getUserId()))
          {
             Consumer consumer = provider.getConsumer(token.getConsumerKey());
             accessors.put(token, consumer);

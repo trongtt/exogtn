@@ -28,6 +28,7 @@ import org.juzu.Action;
 import org.juzu.Path;
 import org.juzu.Response;
 import org.juzu.View;
+import org.juzu.impl.application.InternalApplicationContext;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -84,7 +85,8 @@ public class UIConsumerManagement
          (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
       Consumer consumer = oauthProvider.getConsumer(consumerKey);
       session.setConsumer(consumer);
-      session.setAccessToken(oauthProvider.getAccessToken("root", consumerKey));
+      session.setAccessToken(oauthProvider.getAccessToken(InternalApplicationContext.getCurrentRequest()
+         .getSecurityContext().getRemoteUser(), consumerKey));
       return UIConsumerManagement_.consumerDetail();
    }
 
@@ -173,7 +175,9 @@ public class UIConsumerManagement
       OAuthServiceProvider provider =
          (OAuthServiceProvider)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
             OAuthServiceProvider.class);
-      OAuthToken token = provider.generateAccessToken( "root", consumerKey);
+      OAuthToken token =
+         provider.generateAccessToken(InternalApplicationContext.getCurrentRequest().getSecurityContext()
+            .getRemoteUser(), consumerKey);
       session.setAccessToken(token);
       return UIConsumerManagement_.consumerDetail();
    }
