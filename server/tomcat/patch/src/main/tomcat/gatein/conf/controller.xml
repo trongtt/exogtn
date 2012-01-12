@@ -19,8 +19,8 @@
 
 <controller
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.gatein.org/xml/ns/gatein_controller_1_0 http://www.gatein.org/xml/ns/gatein_controller_1_0"
-    xmlns="http://www.gatein.org/xml/ns/gatein_controller_1_0"
+    xsi:schemaLocation="http://www.gatein.org/xml/ns/gatein_controller_1_1 http://www.gatein.org/xml/ns/gatein_controller_1_1"
+    xmlns="http://www.gatein.org/xml/ns/gatein_controller_1_1"
     separator-escape=":">
 
   <route path="/standalone/{gtn:path}">    
@@ -133,25 +133,21 @@
     <path-param qname="gtn:version" encoding="preserve-path">
       <pattern>[^/]*</pattern>
     </path-param>
-    <route path="/{gtn:resource}-min.js">
-      <route-param qname="gtn:minified">
-        <value>true</value>
-      </route-param>
+    <route path="/{gtn:resource}{gtn:compress}.js">
+      <path-param qname="gtn:resource">
+        <pattern>[^/]+?</pattern>
+      </path-param>
+      <path-param qname="gtn:compress" capture-group="true">
+        <pattern>-(min)|</pattern>
+      </path-param>
     </route>
-    <route path="/{gtn:resource}.js">
-      <route-param qname="gtn:minified">
-        <value>false</value>
-      </route-param>
-    </route>
-    <route path="/{gtn:resource}/{gtn:module}-min.js">
-      <route-param qname="gtn:minified">
-        <value>true</value>
-      </route-param>
-    </route>
-    <route path="/{gtn:resource}/{gtn:module}.js">
-      <route-param qname="gtn:minified">
-        <value>false</value>
-      </route-param>
+    <route path="/{gtn:resource}/{gtn:module}{gtn:compress}.js">
+      <path-param qname="gtn:module">
+        <pattern>[^/]+?</pattern>
+      </path-param>
+      <path-param qname="gtn:compress" capture-group="true">
+        <pattern>-(min)|</pattern>
+      </path-param>
     </route>
   </route>
 
