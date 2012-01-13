@@ -19,6 +19,8 @@
 
 package org.exoplatform.oauth.provider;
 
+import net.oauth.OAuth.Problems;
+
 import net.oauth.OAuthProblemException;
 
 import net.oauth.OAuth;
@@ -64,7 +66,7 @@ public class ExoAuthorizationServlet extends AbstractHttpServlet
          RequestToken token = provider.getRequestToken(requestMessage.getToken());
          if (token == null)
          {
-            throw new OAuthProblemException(OAuthKeys.OAUTH_TOKEN_EXPIRED);
+            throw new OAuthProblemException(Problems.TOKEN_EXPIRED);
          }
 
          //Initialize oauth_callback that get from consumer and mark it into token

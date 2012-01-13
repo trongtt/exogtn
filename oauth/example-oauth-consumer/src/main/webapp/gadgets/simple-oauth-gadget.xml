@@ -79,7 +79,7 @@
       	  	fetchData();
       	  }
           var popup = new gadgets.oauth.Popup(response.oauthApprovalUrl,
-                                                "height=300,width=200",
+                                                "height=300,width=600",
                                                 onOpen,
                                                 onClose
                                               );

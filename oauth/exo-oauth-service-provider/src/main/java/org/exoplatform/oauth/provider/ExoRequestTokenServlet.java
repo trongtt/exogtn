@@ -19,6 +19,8 @@
 
 package org.exoplatform.oauth.provider;
 
+import net.oauth.OAuth.Problems;
+
 import net.oauth.OAuth.Parameter;
 
 
@@ -73,7 +75,7 @@ public class ExoRequestTokenServlet extends AbstractHttpServlet
          if (consumer == null)
          {
             OAuthProblemException problem =
-               new OAuthProblemException(OAuthKeys.OAUTH_TOKEN_REJECTED + ": ConsumerEntry hasn't yet registered with provider");
+               new OAuthProblemException(Problems.TOKEN_REJECTED);
             throw problem;
          }
 

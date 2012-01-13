@@ -18,6 +18,8 @@
  */
 package org.exoplatform.oauth.provider;
 
+import net.oauth.OAuth.Problems;
+
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthProblemException;
 import net.oauth.OAuthValidator;
@@ -70,7 +72,7 @@ public abstract class AbstractExoOAuthFilter extends SetCurrentIdentityFilter
          OAuthToken token = provider.getAccessToken(requestMessage.getToken());
          if (token == null || token.getToken() == null)
          {
-            throw new OAuthProblemException(OAuthKeys.OAUTH_TOKEN_EXPIRED);
+            throw new OAuthProblemException(Problems.TOKEN_EXPIRED);
          }
          else
          {

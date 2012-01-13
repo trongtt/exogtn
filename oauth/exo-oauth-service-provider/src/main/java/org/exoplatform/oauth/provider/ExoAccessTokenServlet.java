@@ -19,6 +19,8 @@
 
 package org.exoplatform.oauth.provider;
 
+import net.oauth.OAuth.Problems;
+
 import net.oauth.OAuth;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthProblemException;
@@ -63,7 +65,7 @@ public class ExoAccessTokenServlet extends AbstractHttpServlet
          RequestToken token = provider.getRequestToken(requestMessage.getToken());
          if(token == null)
          {
-            throw new OAuthProblemException(OAuthKeys.OAUTH_TOKEN_EXPIRED);
+            throw new OAuthProblemException(Problems.PERMISSION_DENIED);
          }
          
          //Verify secure string oauth_verifier that is created in authorization step
@@ -83,7 +85,7 @@ public class ExoAccessTokenServlet extends AbstractHttpServlet
          // make sure token is authorized
          if (!Boolean.TRUE.equals(token.getProperty(OAuthKeys.OAUTH_AUTHORIZED)))
          {
-            throw new OAuthProblemException(OAuthKeys.OAUTH_PERMISSION_DENIED);
+            throw new OAuthProblemException(Problems.PERMISSION_DENIED);
          }
 
          OAuthToken accessToken = provider.generateAccessToken(token);
