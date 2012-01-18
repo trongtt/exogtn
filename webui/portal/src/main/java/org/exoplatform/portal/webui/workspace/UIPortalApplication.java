@@ -359,6 +359,9 @@ public class UIPortalApplication extends UIApplication
 
       //
       JavascriptConfigService service = getApplicationComponent(JavascriptConfigService.class);
+      
+      // We need the locale
+      Locale locale = prc.getLocale();
 
       try
       {
@@ -369,7 +372,8 @@ public class UIPortalApplication extends UIApplication
             prc.getControllerContext(), 
             Collections.singleton(new ResourceId(ResourceScope.SHARED, "bootstrap")), 
             !PropertyManager.isDevelopping(), 
-            !PropertyManager.isDevelopping());
+            !PropertyManager.isDevelopping(),
+            locale);
          for (Map.Entry<String, FetchMode> entry : bootstrap.entrySet())
          {
             // False : means load now without loader
@@ -381,7 +385,8 @@ public class UIPortalApplication extends UIApplication
             prc.getControllerContext(),
             resourceIds,
             !PropertyManager.isDevelopping(),
-            !PropertyManager.isDevelopping());
+            !PropertyManager.isDevelopping(),
+            locale);
 
          // Remove bootstrap if any since it's already there
          urls.keySet().removeAll(bootstrap.keySet());
