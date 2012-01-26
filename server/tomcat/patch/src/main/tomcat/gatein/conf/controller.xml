@@ -135,7 +135,7 @@
     </path-param>
     <route path="/{gtn:resource}{gtn:lang}{gtn:compress}.js">
       <path-param qname="gtn:resource">
-        <pattern>[^/]+?</pattern>
+        <pattern>.+?</pattern>
       </path-param>
       <path-param qname="gtn:lang" capture-group="true">
         <pattern>-([A-Za-z]{2}(-[A-Za-z]{2})?)|</pattern>
@@ -146,7 +146,7 @@
     </route>
     <route path="/{gtn:resource}/{gtn:module}{gtn:lang}{gtn:compress}.js">
       <path-param qname="gtn:module">
-        <pattern>[^/]+?</pattern>
+        <pattern>.+?</pattern>
       </path-param>
       <path-param qname="gtn:lang" capture-group="true">
         <pattern>-([A-Za-z]{2}(-[A-Za-z]{2})?)|</pattern>
