@@ -34,8 +34,6 @@ import com.gargoylesoftware.htmlunit.html.HTMLParserListener;
 import java.io.IOException;
 import java.net.URLEncoder;
 
-import javax.servlet.http.HttpServletResponse;
-
 /**
  * Base class for end-to-end tests.
  *
@@ -44,7 +42,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class EndToEndTest extends AbstractPortalTest
 {
-   private static final String[] EXPECTED_RESOURCES = {"hello.xml", "testframework.js"};
+   private static final String[] EXPECTED_RESOURCES = {"hello.xml", "coreFeatures.xml", "testframework.js"};
 
    static private EndToEndServer server = null;
 
@@ -73,39 +71,11 @@ public class EndToEndTest extends AbstractPortalTest
       assertTrue(pageAsText.contains("Hello, world!"));
    }
 
-   public void testMessageBundles() throws Exception
+   public void testCoreFeature() throws Exception
    {
-      executeAllPageTests("messageBundle");
-   }
-
-   public void testMessageBundlesRtl() throws Exception
-   {
-      // Repeat the messageBundle tests, but with the language set to "ar"
-      language = "ar";
-
-      executeAllPageTests("messageBundle");
-   }
-
-   public void testMakeRequest() throws Exception
-   {
-      executeAllPageTests("makeRequestTest");
-   }
-
-   public void testJsonParse() throws Exception
-   {
-      executeAllPageTests("jsonTest");
-   }
-
-   public void testNotFoundError() throws Exception
-   {
-      server.setDataServiceError(HttpServletResponse.SC_NOT_FOUND, "Not Found");
-      executePageTest("errorTest", "notFoundError");
-   }
-
-   public void testBadRequest() throws Exception
-   {
-      server.setDataServiceError(HttpServletResponse.SC_BAD_REQUEST, "Bad Request");
-      executePageTest("errorTest", "badRequestError");
+      HtmlPage page = executeAllPageTests("coreFeatures");
+      final String pageAsText = page.asText();
+      assertTrue(pageAsText.contains("Core Features Test Cases!"));
    }
 
    @Override
@@ -143,11 +113,6 @@ public class EndToEndTest extends AbstractPortalTest
     * @param testMethod name of the javascript method to execute
     * @return the parsed HTML page
     */
-   private HtmlPage executePageTest(String testName, String testMethod) throws IOException
-   {
-      return executePageTest(testName, testMethod, false /* caja */);
-   }
-
    private HtmlPage executePageTest(String testName, String testMethod, boolean caja) throws IOException
    {
       if (!testName.endsWith(".xml"))
