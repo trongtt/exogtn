@@ -42,7 +42,15 @@
                     <dependentWarExcludes>WEB-INF/web**</dependentWarExcludes>
                 </configuration>
             </plugin>
-        </plugins>
+         </plugins>
+         <testResources>
+            <testResource>
+              <directory>src/test/resources</directory>
+            </testResource>
+            <testResource>
+              <directory>src/main/webapp</directory>
+            </testResource>
+         </testResources>
     </build>
 
     <dependencies>
