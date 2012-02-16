@@ -168,10 +168,6 @@ eXo.webui.UIPopupWindow = {
     var delta = eXo.core.Browser.findPosYInContainer(content, targetPopup)
         + content.style.borderWidth + content.style.padding
         + content.style.margin;
-    // var
-    // bottomLevel=eXo.core.DOMUtil.findDescendantsByClass(targetPopup,"div","BCPortalComposer");
-    // TODO: Check if the bottom is not null before assign new value to
-    // 'content.style.height'
     if ((pointerY - delta) > 0)
       content.style.height = (pointerY - delta - eXo.webui.UIPopupWindow.POPUP_WINDOW_BOTTOM_HEIGHT)
           + "px";
