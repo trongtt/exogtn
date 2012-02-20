@@ -173,7 +173,7 @@ function LoadingScripts(fragment) {
 	var onloads = DOMUtil.findFirstChildByClass(fragment, "div", "OnloadScripts").innerHTML;
 	onloads = onloads.replace(/^\s*/, '').split(",");
 	for (var i = 0; i < onloads.length; i++) {
-		if (headers[i] !== "") {
+		if (onloads[i] !== "") {
 			this.onloadScripts.push(onloads[i]);
 		}
 	}
@@ -200,6 +200,10 @@ function createScriptNode(elem) {
 	var script = document.createElement('script');	
 	script.type = 'text/javascript';
 	script.className = elem.className;
+	if (elem.defer) {
+		script.defer = elem.defer;
+	}
+	
 	//check if contains source attribute
 	if(elem.src) {
 	  script.src = elem.src;
@@ -453,9 +457,7 @@ function HttpResponseHandler(){
 		    }
 		  }
 	  } 
-	} ;
-
-	        
+	};	        
 
 	instance.updateHtmlHead = function(response) {
 		if (!response) return;      
@@ -492,20 +494,24 @@ function HttpResponseHandler(){
 	function cleanHtmlHead(response) {
 		var DOMUtil = eXo.core.DOMUtil;
 		var head = document.getElementsByTagName("head")[0];            
-		var portletResponses = response.portletResponses;
-		if (portletResponses) {
-			for (var i = 0; i < portletResponses.length; i++) {
-				removeExtraHead(portletResponses[i].portletId);
+		if (response) {
+			var portletResponses = response.portletResponses;
+			if (portletResponses) {
+				for (var i = 0; i < portletResponses.length; i++) {
+					removeExtraHead(portletResponses[i].portletId);
+				}
 			}
-		}
-
-		if (response.data) {
-			var portletFragments = DOMUtil.findDescendantsByClass(response.data, "div", "PORTLET-FRAGMENT");
-			for (var i = 0; i < portletFragments.length; i++) {
-				removeExtraHead(portletFragments[i].parentNode.id);
+			
+			if (response.data) {
+				var portletFragments = DOMUtil.findDescendantsByClass(response.data, "div", "PORTLET-FRAGMENT");
+				for (var i = 0; i < portletFragments.length; i++) {
+					removeExtraHead(portletFragments[i].parentNode.id);
+				}
 			}
+			return;
 		}
 		
+		//This code will be run after we've finished update html
 		var uiWorkingWorkspace = document.getElementById("UIWorkingWorkspace") ;
 		var portletFragsInWS = DOMUtil.findDescendantsByClass(uiWorkingWorkspace, "div", "PORTLET-FRAGMENT");           
 		var exHeads = DOMUtil.getElementsBy(function(elem) {
@@ -672,6 +678,8 @@ function HttpResponseHandler(){
 	  }
 	  //Handle the portal responses
 	  instance.updateBlocks(response.blocksToUpdate) ;
+	  //After handle html response. We need to remove extra markup header of removed portlets
+	  cleanHtmlHead();
 	  var onloadScripts = loadingScripts ? loadingScripts.onloadScripts : [];
 	  eXo.core.AsyncLoader.loadJS(onloadScripts, function() {		  
 		  instance.executeScript(response.script);		  
