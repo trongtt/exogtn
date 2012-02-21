@@ -19,7 +19,8 @@
                 In this tutorial, the SSO server is installed in a Tomcat installation. Tomcat can be obtained from <ulink type="http" url="http://tomcat.apache.org">http://tomcat.apache.org</ulink>.
             </para>
             <para>
-				All the packages required for setup can be found in a zip file located at <ulink type="http" url="https://repository.jboss.org/nexus/content/groups/public/org/gatein/sso/sso-packaging/1.1.0-GA/sso-packaging-1.1.0-GA.zip">here</ulink>. In this document, $GATEIN_SSO_HOME is called as the directory where the file is extracted.
+				   All the packages required for setup can be found in a zip file located at <ulink type="http" url="https://repository.jboss.org/nexus/content/groups/public/org/gatein/sso/sso-packaging/1.1.1-CR01/sso-packaging-1.1.1-CR01.zip">here</ulink>.
+               In this document, $GATEIN_SSO_HOME is called as the directory where the file is extracted.
             </para>
             <para>
                 Users are advised to not run any portal extensions that could override the data when manipulating the <filename>gatein.ear</filename> file directly.
@@ -27,6 +28,303 @@
         </section>
 
     </section>
+
+
+
+   <section id="sect-Reference_Guide_eXo_JCR_1.14-SSO_Single_Sign_On-Enabling_SSO_using_JBoss_SSO_Valve">
+      <title>Enabling SSO using JBoss SSO Valve</title>
+<!--   Source Metadata
+URL: https://issues.jboss.org/browse/JBQA-4530
+Author [w/email]:  Marek Posolda  (mposolda@redhat.com)
+
+URL: http://community.jboss.org/wiki/JBossWebSingleSignOn
+Author [w/email]: Brian Stansberry (bstansberry@jboss.com)
+
+URL: https://issues.jboss.org/browse/JBEPP-615
+Author [w/email]: Marek Posolda  (mposolda@redhat.com)
+  -->
+      <para>
+         The JBoss SSO valve is useful to authenticate a user on one &PRODUCT; node in a cluster and have that authentication automatically carry across to other nodes in the cluster.
+      </para>
+
+      <para>
+         This authentication can also be used in any other web applications which may require authentication, <emphasis role="bold">provided that these applications use same roles as the main portal instance</emphasis>. Attempting to use an SSO authentication in an application that uses different roles may create authorization errors (<emphasis role="bold">403</emphasis> errors, for example).
+      </para>
+
+      <note>
+         <para>
+            This behaviour is coming from the fact that same JAAS principal is added by SSO valve to all HTTP requests, even to other web applications.
+            So the same roles are required because of it. There is alternative that you can configure SSO valve with parameter <emphasis role="bold">requireReauthentication=true</emphasis>
+            , which will force SSO valve to perform reauthentication with saved credentials in each HTTP request against security domain of particular web application where the request is coming.
+            This will enforce that new principal for that web application will be created with updated roles for that web application.
+            In other words, when requireReauthentication is <emphasis role="bold">false</emphasis> (default state), you need to have same roles among web applications.
+            When requireReauthentication is <emphasis role="bold">true</emphasis> you need to have same username and passwords.
+         </para>
+      </note>
+
+      <para>
+         More info about the JBoss SSO valve can be found at <ulink type="http" url="http://community.jboss.org/wiki/JBossWebSingleSignOn" />.
+      </para>
+
+      <para>
+         To successfully implement SSO integration, do the following:
+      </para>
+
+      <procedure id="proc-Reference_Guide_eXo_JCR_1.14-Enabling_SSO_using_JBoss_SSO_Valve-SSO_Integration">
+         <title>SSO Integration</title>
+
+         <step>
+            <para>
+               Open the <filename>/<replaceable>&lt;JBOSS_HOME&gt;</replaceable>/server/<replaceable>&lt;PROFILE&gt;</replaceable>/deploy/jbossweb.sar/server.xml</filename> file and uncomment one of the two <parameter>Valve</parameter> entries:
+            </para>
+
+            <itemizedlist>
+               <listitem>
+                  <para>
+                     For a <emphasis>non-clustered</emphasis> implementation, uncomment:
+                  </para>
+<programlisting language="XML" role="XML">&lt;Valve className="org.apache.catalina.authenticator.SingleSignOn" /&gt;
+</programlisting>
+               </listitem>
+
+               <listitem>
+                  <para>
+                     For a <emphasis>clustered</emphasis> implementation, uncomment:
+                  </para>
+<programlisting language="XML" role="XML">&lt;Valve className="org.jboss.web.tomcat.service.sso.ClusteredSingleSignOn" /&gt;
+</programlisting>
+               </listitem>
+            </itemizedlist>
+         </step>
+
+         <step>
+            <para>
+               For integration of SSO valve among different nodes of cluster, you need to ensure that all these nodes share the same domain (for example <emphasis>node1.yourdomain.com</emphasis> and <emphasis>node2.yourdomain.com</emphasis>).
+               This domain needs to be configured with parameter <emphasis role="bold">cookieDomain</emphasis> of SSO valve. Thing is that SSO valve is adding cookie <emphasis role="bold">JSESSIONIDSSO</emphasis>,
+               which is by default bound only to host where the request is coming. When used cookieDomain parameter, cookie is bound to domain (like <emphasis>yourdomain.com</emphasis>),
+               which will ensure that it is shared among both hosts <emphasis>node1.yourdomain.com</emphasis> and <emphasis>node2.yourdomain.com</emphasis>. So in this case, valve configuration can look like this:
+            </para>
+<programlisting language="XML" role="XML">&lt;Valve className="org.jboss.web.tomcat.service.sso.ClusteredSingleSignOn"
+   cookieDomain="yourdomain.com" /&gt;
+</programlisting>
+         </step>
+
+         <step>
+            <para>
+               Another important thing is that both cluster nodes needs to be on same cluster (using same parameter <emphasis role="bold">-g</emphasis> and same parameter <emphasis role="bold">-u</emphasis> and also using parameter <emphasis role="bold">-Dexo.profiles=cluster</emphasis>).
+               It's also needed for them to share the same NFS directory and same database and apply all the configuration needed for &PRODUCT; cluster.
+            </para>
+         </step>
+      </procedure>
+
+      <formalpara id="form-Reference_Guide_eXo_JCR_1.14-Enabling_SSO_using_JBoss_SSO_Valve-Enabling_SSO_in_a_physical_cluster">
+         <title>Testing SSO in a physical cluster</title>
+
+         <para>
+            In this example, we will try to simulate testing on more physical machines by simply using virtual hosts on single machine.
+         </para>
+      </formalpara>
+
+      <procedure>
+         <step>
+            <para>
+               If you are on Linux, you can configure file <emphasis role="bold">/etc/hosts</emphasis> to contain these lines:
+             </para>
+<programlisting>
+127.0.1.1 machine1.yourdomain.com
+127.0.1.2 machine2.yourdomain.com
+</programlisting>
+         </step>
+         <step>
+            <para>
+               Open the <filename><replaceable>&lt;JBOSS_HOME&gt;</replaceable>/server/all/deploy/jbossweb.sar/server.xml</filename> file.
+            </para>
+         </step>
+
+         <step>
+            <para>
+               Uncomment the line:
+            </para>
+<programlisting language="XML" role="XML">&lt;!--
+&lt;Valve className="org.jboss.web.tomcat.service.sso.ClusteredSingleSignOn" /&gt;
+--&gt;
+</programlisting>
+         </step>
+
+         <step>
+            <para>
+               And edit it to match the following:
+            </para>
+<programlisting language="XML" role="XML">&lt;Valve className="org.jboss.web.tomcat.service.sso.ClusteredSingleSignOn"
+   cookieDomain="yourdomain.com" /&gt;
+</programlisting>
+            <para>
+               This will ensure the <literal>JSESSIONIDSSO</literal> cookie is used in the correct domain, allowing the SSO authentication to occur.
+            </para>
+         </step>
+
+         <step>
+            <para>
+               Copy server configuration <emphasis role="bold">all</emphasis> and create another two configurations <emphasis role="bold">node1</emphasis> and <emphasis role="bold">node2</emphasis> from it.
+            </para>
+         </step>
+
+         <step>
+            <para>
+               Start both cluster nodes with commands:
+            </para>
+<programlisting>
+./run.sh -c node1 -b machine1.yourdomain.com -Dexo.profiles=cluster -Djboss.messaging.ServerPeerID=0 &amp;
+./run.sh -c node2 -b machine2.yourdomain.com -Dexo.profiles=cluster -Djboss.messaging.ServerPeerID=1 &amp;
+</programlisting>
+         </step>
+
+         <step>
+            <para>
+               Let's go to <ulink type="http" url="http://machine1.yourdomain.com:8080/portal">http://machine1.yourdomain.com:8080/portal</ulink> and login as some user.
+            </para>
+         </step>
+
+         <step>
+            <para>
+               Access some private url on second host like <ulink type="http" url="http://machine2.yourdomain.com:8080/portal/dologin">http://machine2.yourdomain.com:8080/portal/dologin</ulink>.
+               Now you should be logged directly into machine2 thanks to SSO valve.
+            </para>
+         </step>
+
+         <step>
+            <para>
+               Logout from SSO initiating machine1.yourdomain.com should also logged you out from other cluster nodes. So you should be logout directly from machine2 as well.
+            </para>
+         </step>
+
+      </procedure>
+
+      <formalpara id="form-Reference_Guide_eXo_JCR_1.14-Enabling_SSO_using_JBoss_SSO_Valve-Enabling_SSO_with_Other_Web_Applications">
+         <title>Enabling SSO with Other Web Applications</title>
+
+         <para>
+            As mentioned earlier, in order to use SSO authentication between JBoss Enterprise Portal Platform instances and other web applications, the roles defined in the web application must match those used in the portal instance
+            (unless you have <emphasis>requireReauthentication=true</emphasis> as mentioned above).
+         </para>
+      </formalpara>
+
+      <para>
+         As an example, to use the SSO Valve to authenticate a user in both a portal instance and the JMX Console, the following actions would be required:
+      </para>
+
+      <procedure>
+         <title></title>
+
+         <step>
+            <para>
+               Open the <filename><replaceable>&lt;JBOSS_HOME&gt;</replaceable>/server/node1/deploy/jmx-console.war/WEB-INF/web.xml</filename> file and edit it as follows:
+            </para>
+
+            <substeps>
+               <step>
+                  <para>
+                     Change the <parameter>&lt;role-name&gt;</parameter> entry in the <parameter>&lt;auth-constraint&gt;</parameter> element (line <literal>110</literal>) from <literal>JBossAdmin</literal> to <literal>users</literal>:
+                  </para>
+<programlisting language="XML" role="XML">&lt;auth-constraint&gt;
+  &lt;!--&lt;role-name&gt;JBossAdmin&lt;/role-name&gt;--&gt;
+  &lt;role-name&gt;users&lt;/role-name&gt;
+&lt;/auth-constraint&gt;</programlisting>
+               </step>
+
+               <step>
+                  <para>
+                     Change the <parameter>&lt;role-name&gt;</parameter> entry in the <parameter>&lt;security-role&gt;</parameter> element (line <literal>120</literal>) from <literal>JBossAdmin</literal> to <literal>users</literal>
+                  </para>
+<programlisting language="XML" role="XML">&lt;security-role&gt;
+  &lt;!--&lt;role-name&gt;JBossAdmin&lt;/role-name&gt;--&gt;
+  &lt;role-name&gt;users&lt;/role-name&gt;
+&lt;/security-role&gt;</programlisting>
+               </step>
+            </substeps>
+         </step>
+      </procedure>
+
+      <formalpara id="form-Reference_Guide_eXo_JCR_1.14-Enabling_SSO_using_JBoss_SSO_Valve-Testing_SSO_With_Other_Web_Applications">
+         <title>Testing SSO With Other Web Applications</title>
+
+         <para>
+            To test that SSO authentication is enabled from portal instances to other web applications (in this case, the JMX Console), do the following:
+         </para>
+      </formalpara>
+
+      <procedure id="proc-Reference_Guide_eXo_JCR_1.14-Enabling_SSO_using_JBoss_SSO_Valve-Test_SSO_Between_Portal_and_JMX_Console">
+         <title>Test SSO Between Portal and JMX Console</title>
+
+         <step>
+            <para>
+               Start a portal instance on one node:
+            </para>
+<programlisting>./run.sh -c node1 -b machine1.yourdomain.com -Dexo.profiles=cluster -Djboss.messaging.ServerPeerID=0 &amp;
+</programlisting>
+         </step>
+
+         <step>
+            <para>
+               Navigate to <ulink type="http" url="http://machine1.yourdomain.com:8080/portal/private/classic" /> and authenticate with the pre-configured user account "<systemitem> root </systemitem>" (password "<systemitem> gtn </systemitem>").
+            </para>
+         </step>
+
+         <step>
+            <para>
+               Navigate to <ulink type="http" url="http://machine1.yourdomain.com:8080/jmx-console" />. You should be automatically authenticated into the JMX Console.
+            </para>
+         </step>
+      </procedure>
+
+      <formalpara id="form-Reference_Guide_eXo_JCR_1.14-Enabling_SSO_using_JBoss_SSO_Valve-Using_SSO_to_Authenticate_From_the_Public_Page">
+         <title>Using SSO to Authenticate From the Public Page</title>
+
+         <para>
+            The previous configuration changes in this section are useful if a user is using a secured URL ( <ulink type="http" url="http://localhost:8080/portal/private/classic" />, for example) to log in to the portal instance.
+         </para>
+      </formalpara>
+
+      <para>
+         Further changes are needed however, if SSO authentication is required to work with the <guilabel>Sign In</guilabel> button on the front page of the portal ( <ulink type="http" url="http://localhost:8080/portal/classic" /> ).
+      </para>
+
+      <para>
+         To enable this functionality, the <guilabel>Sign In</guilabel> link must redirect to some secured URL, which will ensure that JAAS authentication will be enforced directly without showing login dialog.
+      </para>
+
+      <procedure id="proc-Reference_Guide_eXo_JCR_1.14-Enabling_SSO_using_JBoss_SSO_Valve-Redirect_to_Use_SSO_Valve_Authentication">
+         <title>Redirect to Use SSO Valve Authentication</title>
+
+         <step>
+            <para>
+               Open the <filename><replaceable>&lt;JBOSS_HOME&gt;</replaceable>/server/<replaceable>&lt;PROFILE&gt;</replaceable>/deploy/gatein.ear/web.war/groovy/groovy/webui/component/UIBannerPortlet.gtml</filename> file and edit the line:
+            </para>
+<programlisting language="Java" role="java">&lt;a class="Login"
+   onclick="$signInAction"&gt;&lt;%=_ctx.appRes("UILoginForm.label.Signin")%&gt;&lt;/a&gt;
+</programlisting>
+            <para>
+               To read:
+            </para>
+<programlisting language="Java" role="java">&lt;a class="Login"
+   href="/portal/private/classic"&gt;&lt;%=_ctx.appRes("UILoginForm.label.Signin")%&gt;&lt;/a&gt;
+</programlisting>
+         </step>
+
+         <step>
+            <para>
+               Open the <filename><replaceable>&lt;JBOSS_HOME&gt;</replaceable>/server/<replaceable>&lt;PROFILE&gt;</replaceable>/deploy/gatein.ear/web.war/groovy/portal/webui/component/UILogoPortlet.gtmpl</filename> file and change the line:
+            </para>
+<programlisting language="Java" role="java">&lt;a onclick="$signInAction"&gt;&lt;%=_ctx.appRes("UILogoPortlet.action.signin")%&gt;&lt;/a&gt;
+</programlisting>
+            <para>
+               To read:
+            </para>
+<programlisting language="Java" role="java">&lt;a href="/portal/private/classic"&gt;&lt;%=_ctx.appRes("UILogoPortlet.action.signin")%&gt;&lt;/a&gt;
+</programlisting>
+         </step>
+      </procedure>
+   </section>
     
     <section id="sect-Reference_Guide-Single_Sign_On-CAS_Central_Authentication_Service">
         <title>Central Authentication Service (CAS)</title>
@@ -39,7 +337,7 @@
         <section id="sect-Reference_Guide-CAS_Central_Authentication_Service-CAS_server">
             <title>CAS server</title>
             <para>
-				First, set up the server to authenticate against the portal login module. In this example, the CAS server is installed on Tomcat.
+                First, set up the server to authenticate against the portal login module. In this example, the CAS server is installed on Tomcat.
             </para>
             <section id="sect-Reference_Guide-CAS_server-Obtaining_CAS">
                 <title>Obtaining CAS</title>
@@ -55,7 +353,7 @@
             <section id="sect-Reference_Guide-CAS_server-Modifying_CAS_server">
                 <title>Modifying the CAS server</title>
                 <para>
-					To configure the web archive as desired, the simplest way is to make the necessary changes directly in the CAS codebase.
+                    To configure the web archive as desired, the simplest way is to make the necessary changes directly in the CAS codebase.
                 </para>
             <note>
                <para>
@@ -64,10 +362,10 @@
                </para>
             </note>
                 <para>
-					First, change the default authentication handler with the one provided by &PRODUCT;.
+                    First, change the default authentication handler with the one provided by &PRODUCT;.
                 </para>
                 <para>
-					The CAS Server Plugin makes secure authentication callbacks to a RESTful service installed on the remote &PRODUCT; server to authenticate a user.
+                    The CAS Server Plugin makes secure authentication callbacks to a RESTful service installed on the remote &PRODUCT; server to authenticate a user.
                 </para>
                 <para>
                     In order for the plugin to function correctly, it needs to be properly configured to connect to this service. This configuration is done via the <filename>cas.war/WEB-INF/deployerConfigContext.xml </filename> file.
@@ -160,7 +458,7 @@
                             Change the default port to avoid a conflict with the default &PRODUCT; (for testing purposes). Edit <filename>TOMCAT_HOME/conf/server.xml</filename> and replace the 8080 port to 8888.
                             <note>
                                 <para>
-									If &PRODUCT; is running on the same machine as Tomcat, other ports need to be changed in addition to 8080 to avoid port conflicts.
+                                    If &PRODUCT; is running on the same machine as Tomcat, other ports need to be changed in addition to 8080 to avoid port conflicts.
                            They can be changed to any free port. For example, you can change admin port from 8005 to 8805, and AJP port from 8009 to 8809.
                                 </para>
                             </note>
@@ -216,7 +514,7 @@
                     <itemizedlist>
                         <listitem>
                             <para>
-							In JBoss AS, edit <filename>gatein.ear/META-INF/gatein-jboss-beans.xml</filename> and uncomment on this section:
+                            In JBoss AS, edit <filename>gatein.ear/META-INF/gatein-jboss-beans.xml</filename> and uncomment on this section:
                             </para>
 <programlisting>
 <![CDATA[
@@ -236,7 +534,7 @@
                         </listitem>
                         <listitem>
                             <para>
-							In Tomcat, edit <filename>GATEIN_HOME/conf/jaas.conf</filename>, uncomment on this section and comment other parts:
+                            In Tomcat, edit <filename>GATEIN_HOME/conf/jaas.conf</filename>, uncomment on this section and comment other parts:
                             </para>         
 <programlisting>org.gatein.sso.agent.login.SSOLoginModule required;
 org.exoplatform.services.security.j2ee.TomcatLoginModule required
@@ -390,18 +688,18 @@ realmName=gatein-domain;
     <section id="sect-Reference_Guide-Single_Sign_On-JOSSO">
         <title>JOSSO</title>
         <para>
-			This Single-Sign-On plugin enables the seamless integration between &PRODUCT; and the JOSSO Single-Sign-On Framework. Details about JOSSO can be found <ulink url="http://www.josso.org">here</ulink>.
+            This Single-Sign-On plugin enables the seamless integration between &PRODUCT; and the JOSSO Single-Sign-On Framework. Details about JOSSO can be found <ulink url="http://www.josso.org">here</ulink>.
         </para>
         <para>
-			Setting up this integration consists of two steps: installing/configuring a JOSSO server, and setting up the portal to use the JOSSO server.
+            Setting up this integration consists of two steps: installing/configuring a JOSSO server, and setting up the portal to use the JOSSO server.
         </para>
         <section id="sect-Reference_Guide-JOSSO-JOSSO_server">
             <title>JOSSO server</title>
             <para>
-				This section describes how to set up the JOSSO server to authenticate against the &PRODUCT; login module.
+                This section describes how to set up the JOSSO server to authenticate against the &PRODUCT; login module.
             </para>
             <para>
-				In this example, the JOSSO server will be installed on Tomcat.
+                In this example, the JOSSO server will be installed on Tomcat.
             </para>
             <section id="sect-Reference_Guide-JOSSO_server-Obtaining_JOSSO">
                 <title>Obtaining JOSSO</title>
@@ -412,7 +710,7 @@ realmName=gatein-domain;
                     Once downloaded, extract the package into what will be called <filename>JOSSO_HOME</filename> in this example.
                 </para>
         <warning>
-          <para>The steps described later are only correct in case of JOSSO v.1.8.1.</para>
+          <para>The steps described later are only correct in case of JOSSO v.1.8</para>
         </warning>
             </section>
             
@@ -421,7 +719,10 @@ realmName=gatein-domain;
                 <procedure>
                     <step>
                         <para>
-                            Copy the files from <filename>GATEIN_SSO_HOME/josso/plugin</filename> into the Tomcat directory (<filename>JOSSO_HOME</filename>).
+                            If you have JOSSO 1.8.1, then copy the files from <filename>GATEIN_SSO_HOME/josso/josso-181/plugin</filename> into the Tomcat directory (<filename>JOSSO_HOME</filename>).
+                        </para>
+                        <para>
+                          If you have JOSSO 1.8.2 or newer, then copy the files from <filename>GATEIN_SSO_HOME/josso/josso-182/plugin</filename> into the Tomcat directory (<filename>JOSSO_HOME</filename>).
                         </para>
                         <para>
                             This action should replace or add the following files to the <filename>JOSSO_HOME/webapps/josso/WEB-INF/lib</filename> directory:
@@ -478,15 +779,20 @@ realmName=gatein-domain;
         
         <section id="sect-Reference_Guide-JOSSO-Setup_the_JOSSO_client">
             <title>Setup the JOSSO client</title>
+            <note>
+               There are some changes in JOSSO agent api among versions 1.8.1 and 1.8.2, which means that we need to use different modules for different JOSSO versions.
+               In next section, we will use directory with key <emphasis role="bold">josso-18X</emphasis>, which will be directory <emphasis>josso-181</emphasis> if you
+               have JOSSO 1.8.1 and <emphasis>josso-182</emphasis> if you have JOSSO 1.8.2 or newer.
+            </note>
             <procedure>
                 <step>
                     <para>
-                        Copy the library files from <filename>GATEIN_SSO_HOME/josso/gatein.ear/lib</filename> into <filename>gatein.ear/lib</filename> (or into <filename>GATEIN_HOME/lib</filename> if &PRODUCT; is  running in Tomcat)
+                        Copy the library files from <filename>GATEIN_SSO_HOME/josso/josso-18X/gatein.ear/lib</filename> into <filename>gatein.ear/lib</filename> (or into <filename>GATEIN_HOME/lib</filename> if &PRODUCT; is  running in Tomcat)
                     </para>
                 </step>
             <step>
                <para>
-                  Copy the file <filename>GATEIN_SSO_HOME/josso/gatein.ear/portal.war/WEB-INF/classes/josso-agent-config.xml</filename> into <filename>gatein.ear/02portal.war/WEB-INF/classes</filename> (or into <filename>GATEIN_HOME/webapps/portal.war/WEB-INF/classes</filename>, or <filename>GATEIN_HOME/conf</filename> if &PRODUCT; is  running in Tomcat)
+                  Copy the file <filename>GATEIN_SSO_HOME/josso/josso-18X/gatein.ear/portal.war/WEB-INF/classes/josso-agent-config.xml</filename> into <filename>gatein.ear/02portal.war/WEB-INF/classes</filename> (or into <filename>GATEIN_HOME/webapps/portal.war/WEB-INF/classes</filename>, or <filename>GATEIN_HOME/conf</filename> if &PRODUCT; is  running in Tomcat)
                </para>
             </step>
                 <step>
@@ -684,7 +990,7 @@ realmName=gatein-domain;
             </section>
             
             <section id="sect-Reference_Guide-OpenSSO_server-Modifying_OpenSSO_server">
-				<title>Modifying the OpenSSO server</title>
+                <title>Modifying the OpenSSO server</title>
                 <para>
                      To configure the web server as desired, it is simpler to directly modify the sources. 
                 </para>
@@ -692,7 +998,7 @@ realmName=gatein-domain;
                     The first step is to add the &PRODUCT; Authentication Plugin:
                 </para>
                 <para>
-					The plugin makes secure authentication callbacks to a RESTful service installed on the remote &PRODUCT; server to authenticate a user.
+                    The plugin makes secure authentication callbacks to a RESTful service installed on the remote &PRODUCT; server to authenticate a user.
                 </para>
                 <para>
                     In order for the plugin to function correctly, it needs to be properly configured to connect to this service. This configuration is done via the <filename>opensso.war/config/auth/default/AuthenticationPlugin.xml</filename> file.
@@ -705,7 +1011,7 @@ realmName=gatein-domain;
                     </step>
                     <step>
                         <para>
-							Change the default port to avoid a conflict with the default &PRODUCT; port (for testing purposes) by editing <filename>TOMCAT_HOME/conf/server.xml</filename> and replacing the 8080 port with 8888.
+                            Change the default port to avoid a conflict with the default &PRODUCT; port (for testing purposes) by editing <filename>TOMCAT_HOME/conf/server.xml</filename> and replacing the 8080 port with 8888.
                             <note>
                                 <para>
                            If &PRODUCT; is running on the same machine as Tomcat, other ports need to be changed in addition to 8080 to avoid port conflicts.
@@ -843,7 +1149,7 @@ realmName=gatein-domain;
                         </listitem>
                         <listitem>
                             <para>
-								If you are running &PRODUCT; in Tomcat, edit $GATEIN_HOME/conf/jaas.conf, uncomment on this section and comment other parts:
+                                If you are running &PRODUCT; in Tomcat, edit $GATEIN_HOME/conf/jaas.conf, uncomment on this section and comment other parts:
                             </para>
 <programlisting>org.gatein.sso.agent.login.SSOLoginModule required;
 org.exoplatform.services.security.j2ee.TomcatLoginModule required
@@ -1275,7 +1581,7 @@ network.negotiate-auth.using-native-gsslib = true
                         adding the 'SPNEGO' authenticators property.
           </para>
 
-<programlisting language="xml">
+<programlisting language="XML">
 <![CDATA[<deployment xmlns="urn:jboss:bean-deployer:2.0">
 <property name="authenticators">
   <map class="java.util.Properties" keyClass="java.lang.String" valueClass="java.lang.String">
@@ -1328,7 +1634,7 @@ network.negotiate-auth.using-native-gsslib = true
                         Modify the <emphasis role="bold">JBOSS_HOME/server/defaut/deploy/gatein.ear/META-INF/gatein-jboss-beans.xml</emphasis> file as below:
                     </para>
 
-                        <programlisting language="xml"><![CDATA[
+                        <programlisting language="XML"><![CDATA[
 <deployment xmlns="urn:jboss:bean-deployer:2.0">
 
   <application-policy xmlns="urn:jboss:security-beans:1.0" name="gatein-form-auth-domain">
@@ -1394,7 +1700,7 @@ network.negotiate-auth.using-native-gsslib = true
                     <para>
                         Modify <emphasis role="bold">JBOSS_HOME/server/default/deploy/gatein.ear/02portal.war/WEB-INF/web.xml</emphasis> as below.</para>
 
-                        <programlisting language="xml"><![CDATA[
+                        <programlisting language="XML"><![CDATA[
 <!--	<login-config>
 	  <auth-method>FORM</auth-method>
 	  <realm-name>gatein-domain</realm-name>

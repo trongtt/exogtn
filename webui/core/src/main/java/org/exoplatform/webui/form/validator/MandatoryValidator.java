@@ -19,10 +19,6 @@
 
 package org.exoplatform.webui.form.validator;
 
-import org.exoplatform.web.application.ApplicationMessage;
-import org.exoplatform.webui.core.UIComponent;
-import org.exoplatform.webui.exception.MessageException;
-import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormInput;
 
 import java.io.Serializable;
@@ -38,31 +34,27 @@ import java.io.Serializable;
  * is mandatory in your form, add it this validator. A '*' character will be automatically added
  * during the rendering phase to specify the user
  */
-public class MandatoryValidator implements Validator, Serializable
+public class MandatoryValidator extends AbstractValidator implements Serializable
 {
 
    public void validate(UIFormInput uiInput) throws Exception
    {
-      if ((uiInput.getValue() != null) && ((String)uiInput.getValue()).trim().length() > 0)
+      String value = (String)uiInput.getValue();
+      if (value == null || value.trim().isEmpty())
       {
-         return;
+         throw createMessageException("EmptyFieldValidator.msg.empty-input", uiInput);
       }
+   }
 
-      //modified by Pham Dinh Tan
-      UIComponent uiComponent = (UIComponent)uiInput;
-      UIForm uiForm = uiComponent.getAncestorOfType(UIForm.class);
-      String label;
-      try
-      {
-         label = uiForm.getId() + ".label." + uiInput.getName();
-      }
-      catch (Exception e)
-      {
-         label = uiInput.getName();
-      }
-      label = label.trim();
-      Object[] args = {label};
-      throw new MessageException(new ApplicationMessage("EmptyFieldValidator.msg.empty-input", args,
-         ApplicationMessage.WARNING));
+   @Override
+   protected String getMessageLocalizationKey()
+   {
+      return "EmptyFieldValidator.msg.empty-input";
+   }
+
+   @Override
+   protected boolean isValid(String value, UIFormInput uiInput)
+   {
+      throw new UnsupportedOperationException("Unneeded by this implementation");
    }
 }

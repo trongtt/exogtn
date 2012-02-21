@@ -272,6 +272,12 @@ public class MOPConsumerStructureProvider extends Listener<DataStorage, org.exop
 
       public void addWindow(String windowName, String uuid)
       {
+         // if we don't have a window name, use the UUID
+         if(ParameterValidation.isNullOrEmpty(windowName))
+         {
+            windowName = uuid;
+         }
+
          // add suffix in case we have several windows with the same name in the page
          if (childrenWindows.containsKey(windowName))
          {

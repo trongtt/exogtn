@@ -200,7 +200,7 @@ gadgets.IfrGadgetService.prototype.setHeight = function(height) {
 gadgets.IfrGadgetService.prototype.setTitle = function(title) {
   var element = document.getElementById(this.f);
   element = eXo.core.DOMUtil.findAncestorByClass(element, "UIGadget");
-  element = eXo.core.DOMUtil.findFirstDescendantByClass(element, "div", "GadgetTitle");
+  element = eXo.core.DOMUtil.findFirstDescendantByClass(element, "span", "GadgetTitle");
 
   if (element) {
     element.innerHTML = title.replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -653,8 +653,12 @@ gadgets.IfrGadget.prototype.generateForm = function(gadget) {
                 theText = document.createTextNode(value.displayValue);
                 optEl.appendChild(theText);
                 optEl.setAttribute("value", value.value);
-                if(userValue && value.value == userValue)
-                    optEl.setAttribute("selected", "selected");  
+                if(userValue && value.value == userValue) {
+                    optEl.setAttribute("selected", "selected");
+                }
+                else if (prefs[att].defaultValue && value.value == prefs[att].defaultValue) {
+                    optEl.setAttribute("selected", "selected");
+                }
                 el.appendChild(optEl);
             }
             el.id = elID;
@@ -667,6 +671,9 @@ gadgets.IfrGadget.prototype.generateForm = function(gadget) {
             if (userPrefs[att]) {
                 el.value = userPrefs[att];
             }
+            else if (prefs[att].defaultValue) {
+                el.value = prefs[att].defaultValue;
+            }
             attEl.appendChild(el);
         }
         else if (type == "bool") {
@@ -677,6 +684,9 @@ gadgets.IfrGadget.prototype.generateForm = function(gadget) {
             if ((userPrefs[att] && userPrefs[att] == "true") ||
             		prefs[att]["default"] == "true") {
                 el.checked = true;
+            }
+            else {
+                el.checked = prefs[att].defaultValue;
             }
             attEl.appendChild(el);
         }

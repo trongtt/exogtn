@@ -22,7 +22,7 @@
 
 <project name="module-repository" basedir="." default="modules">
 
-    <property name="output.dir" value="target/jboss-as-${version.jboss.as.release}"/>
+    <property name="output.dir" value="target/${exo.projects.app.jboss7.version}"/>
 
     <import file="lib.xml"/>
 
@@ -265,9 +265,6 @@
        <module-def name="org.slf4j" slot="gatein">
            <maven-resource group="org.slf4j" artifact="slf4j-api" />
            <maven-resource group="org.jboss.slf4j" artifact="slf4j-jboss-logmanager" />
-       </module-def>
-
-       <module-def name="sun.jdk.xml">
        </module-def>
 
        <module-def name="org.hsqldb">
