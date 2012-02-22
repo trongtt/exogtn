@@ -69,6 +69,8 @@ public class PortalRequestHandler extends WebRequestHandler
    /** . */
    public static final QualifiedName LANG = QualifiedName.create("gtn", "lang");
 
+   protected PortalApplication application;
+
    public String getHandlerName()
    {
       return "portal";
@@ -77,9 +79,9 @@ public class PortalRequestHandler extends WebRequestHandler
    @Override
    public void onInit(WebAppController controller, ServletConfig sConfig) throws Exception
    {
-      PortalApplication application = new PortalApplication(sConfig);
+      application = new PortalApplication(sConfig);
       application.onInit();
-      controller.addApplication(application);
+//      controller.addApplication(application);
    }
 
    /**
@@ -107,14 +109,10 @@ public class PortalRequestHandler extends WebRequestHandler
     */
    @SuppressWarnings("unchecked")
    @Override
-   public boolean execute(ControllerContext controllerContext) throws Exception
+   public boolean execute(ControllerContext controllerContext, HttpServletRequest request, HttpServletResponse response) throws Exception
    {
-      HttpServletRequest req = controllerContext.getRequest();
-      HttpServletResponse res = controllerContext.getResponse();
-
-
-      log.debug("Session ID = " + req.getSession().getId());
-      res.setHeader("Cache-Control", "no-cache");
+      log.debug("Session ID = " + request.getSession().getId());
+      response.setHeader("Cache-Control", "no-cache");
 
       //
       String requestPath = controllerContext.getParameter(REQUEST_PATH);
@@ -134,11 +132,11 @@ public class PortalRequestHandler extends WebRequestHandler
       }
 
       if (requestSiteName == null) {
-         res.sendRedirect(req.getContextPath());
+         response.sendRedirect(request.getContextPath());
          return true;
       }
-      PortalApplication app = controllerContext.getController().getApplication(PortalApplication.PORTAL_APPLICATION_ID);
-      PortalRequestContext context = new PortalRequestContext(app, controllerContext, requestSiteType, requestSiteName, requestPath, requestLocale);
+
+      PortalRequestContext context = new PortalRequestContext(application, controllerContext, request, response, requestSiteType, requestSiteName, requestPath, requestLocale);
       if (context.getUserPortalConfig() == null)
       {
          DataStorage storage = (DataStorage)PortalContainer.getComponent(DataStorage.class);
@@ -147,7 +145,7 @@ public class PortalRequestHandler extends WebRequestHandler
          {
             return false;
          }
-         else if(req.getRemoteUser() == null)
+         else if(request.getRemoteUser() == null)
          {
             context.requestAuthenticationLogin();
          }
@@ -158,7 +156,7 @@ public class PortalRequestHandler extends WebRequestHandler
       }
       else
       {
-         processRequest(context, app);
+         processRequest(context, application);
       }
       return true;
    }

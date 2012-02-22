@@ -20,7 +20,6 @@
 package org.exoplatform.web;
 
 import org.exoplatform.commons.utils.Safe;
-import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.container.xml.InitParams;
@@ -338,7 +337,7 @@ public class WebAppController
                      }
 
                      //
-                     processed = handler.execute(new ControllerContext(this, router, req, res, parameters));
+                     processed = handler.execute(new ControllerContext(router, parameters), req, res);
                   }
                   else
                   {

@@ -34,20 +34,23 @@ import org.exoplatform.webui.core.UIApplication;
 
 import java.util.Locale;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 public class StandaloneAppRequestContext extends PortalRequestContext
 {
    protected static Log log = ExoLogger.getLogger(StandaloneAppRequestContext.class);
 
-   public StandaloneAppRequestContext(StandaloneApplication app, ControllerContext controllerContext, String requestPath)
-      throws Exception
+   public StandaloneAppRequestContext(PortalApplication app, ControllerContext controllerContext,
+      HttpServletRequest request, HttpServletResponse response, String requestPath) throws Exception
    {
-      super(app, controllerContext, SiteType.USER.name(), controllerContext.getRequest().getRemoteUser(), requestPath, null);    
+      super(app, controllerContext, request, response, SiteType.USER.name(), request.getRemoteUser(), requestPath, null);    
    }
 
    @Override
    public <R, U extends PortalURL<R, U>> U newURL(ResourceType<R, U> resourceType, URLFactory urlFactory)
    {
-      StandaloneAppURLContext context = new StandaloneAppURLContext(getControllerContext());
+      StandaloneAppURLContext context = new StandaloneAppURLContext(getControllerContext(), request_);
       U url = urlFactory.newURL(resourceType, context);
       if (url != null)
       {

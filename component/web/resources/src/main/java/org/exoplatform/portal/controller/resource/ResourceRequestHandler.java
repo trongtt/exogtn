@@ -31,6 +31,7 @@ import org.gatein.common.logging.Logger;
 import org.gatein.common.logging.LoggerFactory;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
@@ -118,7 +119,7 @@ public class ResourceRequestHandler extends WebRequestHandler
    }
 
    @Override
-   public boolean execute(ControllerContext context) throws Exception
+   public boolean execute(ControllerContext context, HttpServletRequest request, HttpServletResponse response) throws Exception
    {
       String resourceParam = context.getParameter(RESOURCE_QN);
       String scopeParam = context.getParameter(SCOPE_QN);
@@ -145,7 +146,6 @@ public class ResourceRequestHandler extends WebRequestHandler
          }
          catch (IllegalArgumentException e)
          {
-            HttpServletResponse response = context.getResponse();
             String msg = "Unrecognized scope " + scopeParam;
             log.error(msg);
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, msg);
@@ -164,7 +164,6 @@ public class ResourceRequestHandler extends WebRequestHandler
 
          //
          ScriptResult result = cache.get(context, key);
-         HttpServletResponse response = context.getResponse();
 
          //
          if (result instanceof ScriptResult.Resolved)
@@ -209,7 +208,6 @@ public class ResourceRequestHandler extends WebRequestHandler
       }
       else
       {
-         HttpServletResponse response = context.getResponse();
          String msg = "Missing scope or resource param";
          log.error(msg);
          response.sendError(HttpServletResponse.SC_BAD_REQUEST, msg);

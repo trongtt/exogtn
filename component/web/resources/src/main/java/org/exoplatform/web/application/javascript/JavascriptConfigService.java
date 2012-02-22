@@ -21,6 +21,7 @@ package org.exoplatform.web.application.javascript;
 
 import org.exoplatform.commons.utils.CompositeReader;
 import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.container.PortalContainer;
 import org.exoplatform.portal.controller.resource.ResourceId;
 import org.exoplatform.portal.controller.resource.ResourceScope;
 import org.exoplatform.portal.controller.resource.script.FetchMode;
@@ -149,7 +150,6 @@ public class JavascriptConfigService extends AbstractResourceService implements 
    public Map<String, FetchMode> resolveURLs(
       ControllerContext controllerContext,
       Map<ResourceId, FetchMode> ids,
-      boolean merge,
       boolean minified,
       Locale locale) throws IOException
    {
@@ -176,6 +176,11 @@ public class JavascriptConfigService extends AbstractResourceService implements 
                   urls.put(((Module.Remote)module).getURI(), mode);
                }
             }
+            
+            // Append portal context path
+            String contextPath = PortalContainer.getInstance().getPortalContext().getContextPath();
+            writer.append(contextPath);
+
             controllerContext.renderURL(resource.getParameters(minified, locale), writer);
             urls.put(buffer.toString(), mode);
             buffer.setLength(0);

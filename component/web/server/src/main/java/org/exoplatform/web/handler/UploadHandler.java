@@ -26,7 +26,6 @@ import org.exoplatform.upload.UploadResource;
 import org.exoplatform.upload.UploadService;
 import org.exoplatform.upload.UploadService.UploadLimit;
 import org.exoplatform.web.ControllerContext;
-import org.exoplatform.web.WebAppController;
 import org.exoplatform.web.WebRequestHandler;
 import org.gatein.common.text.EntityEncoder;
 
@@ -55,13 +54,13 @@ public class UploadHandler extends WebRequestHandler
    }
 
    @Override
-   public boolean execute(ControllerContext context) throws Exception
+   public boolean execute(ControllerContext context, HttpServletRequest request, HttpServletResponse response) throws Exception
    {
-      execute(context.getController(), context.getRequest(), context.getResponse());
+      execute(request, response);
       return true;
    }
 
-   public void execute(WebAppController controller, HttpServletRequest req, HttpServletResponse res) throws Exception
+   private void execute(HttpServletRequest req, HttpServletResponse res) throws Exception
    {
       String action = req.getParameter("action");
       String[] uploadIds = req.getParameterValues("uploadId");

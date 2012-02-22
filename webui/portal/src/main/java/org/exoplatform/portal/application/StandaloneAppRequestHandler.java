@@ -52,27 +52,22 @@ public class StandaloneAppRequestHandler extends PortalRequestHandler
    @Override
    public void onInit(WebAppController controller, ServletConfig sConfig) throws Exception
    {
-      StandaloneApplication standaloneApplication = new StandaloneApplication(sConfig);
-      standaloneApplication.setWebUIConfigPath(webuiConfigPath);
-      standaloneApplication.onInit();
-      controller.addApplication(standaloneApplication);
+      application = new StandaloneApplication(sConfig);
+      ((StandaloneApplication)application).setWebUIConfigPath(webuiConfigPath);
+      application.onInit();
    }
    
    @Override
-   public boolean execute(ControllerContext controllerContext) throws Exception
+   public boolean execute(ControllerContext controllerContext, HttpServletRequest request, HttpServletResponse response) throws Exception
    {
-      HttpServletRequest req = controllerContext.getRequest();
-      HttpServletResponse res = controllerContext.getResponse();
-
-      log.debug("Session ID = " + req.getSession().getId());
-      res.setHeader("Cache-Control", "no-cache");
+      log.debug("Session ID = " + request.getSession().getId());
+      response.setHeader("Cache-Control", "no-cache");
 
       //
       String requestPath = controllerContext.getParameter(REQUEST_PATH);
 
-      StandaloneApplication app = controllerContext.getController().getApplication(StandaloneApplication.STANDALONE_APPLICATION_ID);
-      StandaloneAppRequestContext context = new StandaloneAppRequestContext(app, controllerContext, requestPath);
-      processRequest(context, app);
+      StandaloneAppRequestContext context = new StandaloneAppRequestContext(application, controllerContext, request, response, requestPath);
+      processRequest(context, application);
       return true;
    }
 }

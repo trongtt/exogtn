@@ -31,6 +31,8 @@ import org.exoplatform.web.url.URLContext;
 import org.gatein.common.io.UndeclaredIOException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
@@ -54,9 +56,12 @@ public class PortalURLContext implements URLContext
    /** . */
    private StringBuilder buffer;
 
+   private HttpServletRequest req;
+
    public PortalURLContext(
       ControllerContext controllerContext,
-      SiteKey siteKey)
+      SiteKey siteKey,
+      HttpServletRequest request)
    {
       if (controllerContext == null)
       {
@@ -66,6 +71,7 @@ public class PortalURLContext implements URLContext
       //
       this.controllerContext = controllerContext;
       this.siteKey = siteKey;
+      this.req = request;
       this.writer = null;
       this.buffer = null;
    }
@@ -101,7 +107,6 @@ public class PortalURLContext implements URLContext
       }
 
       //
-      HttpServletRequest req = controllerContext.getRequest();
       if (url.getSchemeUse())
       {
          buffer.append(req.getScheme());
@@ -173,6 +178,10 @@ public class PortalURLContext implements URLContext
             parameters.put(parameterName, parameterValue);
          }
       }
+
+      // Append portal context path
+      writer.append("/");
+      writer.appendSegment(req.getContextPath().substring(1));
 
       // Render url via controller
       controllerContext.renderURL(parameters, writer);
