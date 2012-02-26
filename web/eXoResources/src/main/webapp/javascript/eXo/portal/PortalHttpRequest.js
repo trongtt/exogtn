@@ -513,6 +513,8 @@ function HttpResponseHandler(){
 		
 		//This code will be run after we've finished update html
 		var uiWorkingWorkspace = document.getElementById("UIWorkingWorkspace") ;
+		if (!uiWorkingWorkspace) return;
+		
 		var portletFragsInWS = DOMUtil.findDescendantsByClass(uiWorkingWorkspace, "div", "PORTLET-FRAGMENT");           
 		var exHeads = DOMUtil.getElementsBy(function(elem) {
 			return elem.tagName != "TITLE" && elem.className.indexOf("ExHead-") == 0;

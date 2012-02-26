@@ -82,14 +82,4 @@ public class StandaloneAppRequestContext extends PortalRequestContext
    {
       return ((UIStandaloneApplication)uiApplication_).getOrientation();
    }
-
-   public Locale getLocale()
-   {
-      return ((UIStandaloneApplication)uiApplication_).getLocale();
-   }
-
-   public String getPortalOwner()
-   {
-      return null;
-   }
 }

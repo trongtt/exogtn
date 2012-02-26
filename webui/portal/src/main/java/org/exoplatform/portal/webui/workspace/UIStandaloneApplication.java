@@ -19,13 +19,35 @@
 
 package org.exoplatform.portal.webui.workspace;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import org.exoplatform.commons.utils.PropertyManager;
 import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.application.StandaloneAppRequestContext;
+import org.exoplatform.portal.controller.resource.ResourceId;
+import org.exoplatform.portal.controller.resource.ResourceScope;
+import org.exoplatform.portal.controller.resource.script.FetchMap;
+import org.exoplatform.portal.controller.resource.script.FetchMode;
 import org.exoplatform.portal.resource.Skin;
 import org.exoplatform.portal.resource.SkinService;
 import org.exoplatform.portal.webui.application.UIStandaloneAppContainer;
 import org.exoplatform.portal.webui.util.Util;
+import org.exoplatform.services.resources.LocaleConfig;
+import org.exoplatform.services.resources.LocaleConfigService;
+import org.exoplatform.services.resources.LocaleContextInfo;
 import org.exoplatform.services.resources.Orientation;
+import org.exoplatform.web.application.JavascriptManager;
 import org.exoplatform.web.application.javascript.JavascriptConfigService;
 import org.exoplatform.web.url.MimeType;
 import org.exoplatform.webui.application.WebuiRequestContext;
@@ -33,36 +55,40 @@ import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.UIApplication;
 import org.exoplatform.webui.core.UIComponent;
 import org.exoplatform.webui.url.ComponentURL;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
 
 @ComponentConfig(lifecycle = UIStandaloneApplicationLifecycle.class, template = "system:/groovy/portal/webui/workspace/UIStandaloneApplication.gtmpl")
 public class UIStandaloneApplication extends UIApplication
-{
-   public static final int NORMAL_MODE = 0;
-
-   //modeState, locale, skin_, orientation will be used when we display portlet in standalone mode
-   private int modeState = NORMAL_MODE;
-
-   private Locale locale_ = Locale.ENGLISH;
-
+{         
    private String skin_ = "Default";
 
    private Orientation orientation_ = Orientation.LT;
-
-   private boolean isSessionOpen = false;
-
+   
    public static final UIComponent EMPTY_COMPONENT = new UIComponent(){
       public String getId() { return "{portal:componentId}"; };
    };
 
    public UIStandaloneApplication() throws Exception
    {
+      WebuiRequestContext context = WebuiRequestContext.getCurrentInstance();
+      LocaleConfigService localeConfigService = getApplicationComponent(LocaleConfigService.class);
+      Locale locale = context.getLocale();
+      if (locale == null)
+      {
+         if (log.isWarnEnabled())
+            log.warn("No locale set on StandaloneAppRequestContext! Falling back to 'en'.");
+         locale = Locale.ENGLISH;
+      }
+
+      String localeName = LocaleContextInfo.getLocaleAsString(locale);
+      LocaleConfig localeConfig = localeConfigService.getLocaleConfig(localeName);
+      if (localeConfig == null)
+      {
+         if (log.isWarnEnabled())
+            log.warn("Unsupported locale set on PortalRequestContext: " + localeName + "! Falling back to 'en'.");
+         localeConfig = localeConfigService.getLocaleConfig(Locale.ENGLISH.getLanguage());
+      }
+      setOrientation(localeConfig.getOrientation());
+      
       addChild(UIStandaloneAppContainer.class, null, null);
    }  
 
@@ -115,20 +141,107 @@ public class UIStandaloneApplication extends UIApplication
             }
          }
          w.write("</div>");
-
+         
+         w.write("<div class=\"MarkupHeadElements\"></div>");
+         w.write("<div class=\"LoadingScripts\">");
+         writeLoadingScripts(pcontext);
+         w.write("</div>");
          w.write("<div class=\"PortalResponseScript\">");
-         pcontext.getJavascriptManager().writeJavascript(w);
-         w.write("eXo.core.Browser.onLoad();\n");
-         pcontext.getJavascriptManager().writeCustomizedOnLoadScript(w);
+         JavascriptManager jsManager = pcontext.getJavascriptManager();         
+         w.write(jsManager.getJavaScripts());
          w.write("</div>");
          w.write("</div>");
       }
    }
 
-    public Collection<String> getJavascriptURLs()
+   public Map<String, Boolean> getScriptsURLs()
    {
+      PortalRequestContext prc = PortalRequestContext.getCurrentInstance();
+      
+      // Obtain the resource ids involved
+      // we clone the fetch map by safety
+      JavascriptManager jsMan = prc.getJavascriptManager();
+      FetchMap<ResourceId> requiredResources = new FetchMap<ResourceId>(jsMan.getScriptResources());
+
+      // Need to add bootstrap as immediate since it contains the loader
+      requiredResources.add(new ResourceId(ResourceScope.SHARED, "bootstrap"), FetchMode.IMMEDIATE);
+
+      //
+      log.debug("Resource ids to resolve: " + requiredResources);
+
+      //
       JavascriptConfigService service = getApplicationComponent(JavascriptConfigService.class);
-      return service.getAvailableScriptsPaths();
+      
+      // We need the locale
+      Locale locale = prc.getLocale();
+
+      try
+      {
+         LinkedHashMap<String, Boolean> ret = new LinkedHashMap<String, Boolean>();
+
+         //
+         FetchMap<String> urls = new FetchMap<String>(service.resolveURLs(
+            prc.getControllerContext(),
+            requiredResources,
+            !PropertyManager.isDevelopping(),
+            !PropertyManager.isDevelopping(),
+            locale));
+         urls.addAll(jsMan.getExtendedScriptURLs());
+         
+         //
+         log.info("Resolved URLS for urls: " + urls);
+         
+         // Here we get the list of stuff to load on demand or not
+         // according to the boolean value in the map
+         // Convert the map to what the js expects to have
+         for (Map.Entry<String, FetchMode> entry : urls.entrySet())
+         {
+            ret.put(entry.getKey(), entry.getValue() == FetchMode.ON_LOAD);
+         }
+
+         return ret;
+      }
+      catch (IOException e)
+      {
+         log.error("Could not resolve URLs", e);
+         return Collections.emptyMap();
+      }
+   }
+   
+   private void writeLoadingScripts(PortalRequestContext context) throws Exception
+   {
+      Writer w = context.getWriter();
+      Map<String, Boolean> scriptURLs = getScriptsURLs();
+      List<String> onloadJS = new LinkedList<String>();
+      for (String url : scriptURLs.keySet()) 
+      {
+         if (scriptURLs.get(url))
+         {
+            onloadJS.add(url);
+         }
+      }
+      w.write("<div class=\"OnloadScripts\">");
+      for (String url : onloadJS)
+      {
+         w.write(url);
+         w.write(",");
+      }
+      w.write("</div>");
+      w.write("<div class=\"ImmediateScripts\">");
+      scriptURLs.keySet().removeAll(onloadJS);
+      for (String url : scriptURLs.keySet())
+      {
+         w.write(url);
+         w.write(",");
+      }
+      
+      JavascriptManager jsManager = context.getJavascriptManager();
+      for (String url : jsManager.getImportedJavaScripts())
+      {
+         w.write(url);
+         w.write(",");
+      }
+      w.write("</div>");      
    }
 
    public Collection<Skin> getPortalSkins()
@@ -136,22 +249,6 @@ public class UIStandaloneApplication extends UIApplication
       SkinService skinService = getApplicationComponent(SkinService.class);
       Collection<Skin> skins = new ArrayList<Skin>(skinService.getPortalSkins(skin_));
       return skins;
-   }
-
-   public Set<Skin> getPortletSkins()
-   {
-      Set<Skin> skins = new HashSet<Skin>();
-      return skins;
-   }
-   
-   public boolean isSessionOpen()
-   {
-      return isSessionOpen;
-   }
-
-   public void setSessionOpen(boolean isSessionOpen)
-   {
-      this.isSessionOpen = isSessionOpen;
    }
 
    public String getSkin()
@@ -171,22 +268,8 @@ public class UIStandaloneApplication extends UIApplication
 
    public Locale getLocale()
    {
-      return locale_;
-   }
-
-   public void setLocale(Locale locale)
-   {
-      locale_ = locale;
-   }
-
-   public void setModeState(int mode)
-   {
-      this.modeState = mode;
-   }
-
-   public int getModeState()
-   {
-      return modeState;
+      WebuiRequestContext context = WebuiRequestContext.getCurrentInstance();
+      return context != null ? context.getLocale() : null;
    }
 
    /**
