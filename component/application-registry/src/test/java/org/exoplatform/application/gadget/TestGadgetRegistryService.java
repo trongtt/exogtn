@@ -36,6 +36,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Created by The eXo Platform SAS Author : Pham Thanh Tung
@@ -88,6 +90,58 @@ public class TestGadgetRegistryService extends AbstractApplicationRegistryTest
       assertNull(service_.getGadget(gadgetName));
    }
 
+   public void testSaveAndUpdateGadget() throws Exception
+   {
+      String gadgetName = "remote";
+      Gadget gadget = new Gadget();
+      gadget.setName(gadgetName);
+      gadget.setUrl("http://www.labpixies.com/campaigns/weather/weather.xml");
+      gadget.setLocal(false);
+      gadget.setTitle("Remote Gadget");
+      service_.saveGadget(gadget);
+      assertEquals(1, service_.getAllGadgets().size());
+      assertEquals(gadgetName, service_.getGadget(gadgetName).getName());
+      assertEquals("http://www.labpixies.com/campaigns/weather/weather.xml", service_.getGadgetURL(gadgetName));
+      
+      gadget.setTitle("New Remote Title");
+      service_.saveGadget(gadget);
+      assertEquals(1, service_.getAllGadgets().size());
+      assertEquals(gadgetName, service_.getGadget(gadgetName).getName());
+      assertEquals("http://www.labpixies.com/campaigns/weather/weather.xml", service_.getGadgetURL(gadgetName));
+      assertEquals("New Remote Title", service_.getGadget(gadgetName).getTitle());
+      
+      service_.removeGadget(gadgetName);
+      assertNull(service_.getGadget(gadgetName));
+   }
+   
+   public void testManyGadgets() throws Exception
+   {
+      String localName = "local_gadget";
+      String remoteName = "remote_gadget";
+      TestGadgetImporter importer1 = new TestGadgetImporter(configurationManager, remoteName, "http://www.labpixies.com/campaigns/weather/weather.xml", false);
+      TestGadgetImporter importer2 = new TestGadgetImporter(configurationManager, localName, "org/exoplatform/application/gadgets/weather.xml", true);
+      importer1.doImport();
+      importer2.doImport();
+      
+      assertEquals("http://www.labpixies.com/campaigns/weather/weather.xml", service_.getGadgetURL(remoteName));      
+      assertEquals(2, service_.getAllGadgets().size());
+      
+      List<Gadget> gadgets = service_.getAllGadgets(new Comparator<Gadget>()
+      {         
+         public int compare(Gadget o1, Gadget o2)
+         {
+            return o1.getName().compareToIgnoreCase(o2.getName());
+         }
+      });
+      assertEquals(2, gadgets.size());
+      assertEquals(localName, gadgets.get(0).getName());
+      assertEquals(remoteName, gadgets.get(1).getName());
+      
+      service_.removeGadget(localName);
+      service_.removeGadget(remoteName);
+      assertEquals(0, service_.getAllGadgets().size());
+   }
+   
    class TestGadgetImporter extends GadgetImporter
    {
       private boolean local_;
