@@ -70,12 +70,12 @@
       <dependency>
          <groupId>org.juzu</groupId>
          <artifactId>juzu-core</artifactId>
-         <version>0.4.3-SNAPSHOT</version>
+         <version>${org.juzu.version}</version>
       </dependency>
       <dependency>
          <groupId>org.juzu</groupId>
          <artifactId>juzu-overlay-gatein</artifactId>
-         <version>0.4.3-SNAPSHOT</version>
+         <version>${org.juzu.version}</version>
          <type>war</type>
       </dependency>
    </dependencies>

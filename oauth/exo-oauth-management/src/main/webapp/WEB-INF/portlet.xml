@@ -78,7 +78,7 @@
       </init-param>
       <init-param>
          <name>juzu.inject</name>
-         <value>spring</value>
+         <value>weld</value>
       </init-param>
       <supports>
          <mime-type>text/html</mime-type>
@@ -102,7 +102,7 @@
       </init-param>
       <init-param>
          <name>juzu.inject</name>
-         <value>spring</value>
+         <value>weld</value>
       </init-param>
       <supports>
          <mime-type>text/html</mime-type>

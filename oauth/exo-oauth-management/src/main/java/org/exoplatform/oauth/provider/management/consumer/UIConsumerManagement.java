@@ -62,19 +62,19 @@ public class UIConsumerManagement
       ExoContainer container = ExoContainerContext.getCurrentContainer();
       OAuthServiceProvider oauthProvider =
          (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
-      allConsumers.consumers(oauthProvider.getAllConsumers()).render();
+      allConsumers.with().consumers(oauthProvider.getAllConsumers()).render();
    }
 
    @View
    public void consumerDetail()
    {
-      consumerDetail.session(session).render();
+      consumerDetail.with().session(session).render();
    }
 
    @View
    public void addConsumer()
    {
-      addConsumer.session(session).render();
+      addConsumer.with().session(session).render();
    }
 
    @Action

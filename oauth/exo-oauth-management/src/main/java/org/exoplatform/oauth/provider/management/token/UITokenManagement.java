@@ -67,7 +67,7 @@ public class UITokenManagement
          }
       }
 
-      allTokens.accessors(accessors).render();
+      allTokens.with().accessors(accessors).render();
    }
 
    @Action

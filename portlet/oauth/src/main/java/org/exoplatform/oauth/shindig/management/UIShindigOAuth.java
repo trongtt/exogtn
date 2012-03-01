@@ -80,13 +80,13 @@ public class UIShindigOAuth
       OAuthStoreConsumerService store =
          (OAuthStoreConsumerService)PortalContainer.getInstance().getComponentInstanceOfType(OAuthStoreConsumerService.class);
       List<OAuthStoreConsumer> allConsumers = store.getAllConsumers();
-      oauthList.allConsumers(allConsumers).render();
+      oauthList.with().allConsumers(allConsumers).render();
    }
    
    @View
    public void addNewConsumer()
    {
-      newConsumer.session(session).message(message).render();
+      newConsumer.with().session(session).message(message).render();
    }
    
    @View
@@ -95,13 +95,13 @@ public class UIShindigOAuth
       OAuthStoreConsumerService store =
          (OAuthStoreConsumerService)PortalContainer.getInstance().getComponentInstanceOfType(OAuthStoreConsumerService.class);
       List<OAuthStoreConsumer> allConsumers = store.getAllConsumers();
-      newMapping.allConsumers(allConsumers).render();
+      newMapping.with().allConsumers(allConsumers).render();
    }
    
    @View
    public void consumerDetail()
    {
-      consumerDetail.consumer(session.getConsumer()).render();
+      consumerDetail.with().consumer(session.getConsumer()).render();
    }
    
    @Action

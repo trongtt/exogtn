@@ -50,7 +50,6 @@ function getProduct(version) {
   product.addDependencies(portal.sample.skin) ;
 
   product.addDependencies(portal.oauth.oauthProviderService);  
-  product.addDependencies(portal.oauth.oauthProviderWebapp);
   product.addDependencies(portal.oauth.exampleConsumer) ;
   product.addDependencies(portal.oauth.exampleRest) ;
   product.addDependencies(portal.oauth.oauthManagement) ;
