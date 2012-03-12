@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -51,7 +52,7 @@ public class UIConsumerManagement extends Controller
    @Inject
    @Path("index.gtmpl")
    org.exoplatform.oauth.provider.management.consumer.templates.index index;
-   
+
    @Inject
    @Path("list.gtmpl")
    org.exoplatform.oauth.provider.management.consumer.templates.list list;
@@ -64,6 +65,14 @@ public class UIConsumerManagement extends Controller
    @Path("add.gtmpl")
    org.exoplatform.oauth.provider.management.consumer.templates.add add;
 
+   @Inject
+   @Path("consumerInputs.gtmpl")
+   org.exoplatform.oauth.provider.management.consumer.templates.consumerInputs consumerInputs;
+
+   @Inject
+   @Path("consumerFields.gtmpl")
+   org.exoplatform.oauth.provider.management.consumer.templates.consumerFields consumerFields;
+   
    @Inject
    Session session;
 
@@ -102,7 +111,7 @@ public class UIConsumerManagement extends Controller
       {
          pattern = Pattern.compile(".*" + Pattern.quote(value.trim()) + ".*", Pattern.CASE_INSENSITIVE);
       }
-      
+
       ExoContainer container = ExoContainerContext.getCurrentContainer();
       OAuthServiceProvider provider =
          (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
@@ -138,13 +147,13 @@ public class UIConsumerManagement extends Controller
          {
             info = c.getConsumerKey();
          }
-         
+
          if (pattern.matcher(c.getConsumerKey()).matches())
          {
             results.add(c);
          }
       }
-      
+
       return results;
    }
 
@@ -208,10 +217,9 @@ public class UIConsumerManagement extends Controller
          {
             try
             {
-               consumer = provider.registerConsumer(params.remove("key"), 
-                                                    params.remove("secret"),
-                                                    params.remove("callback_url"), 
-                                                    params);
+               consumer =
+                  provider.registerConsumer(params.remove("key"), params.remove("secret"),
+                     params.remove("callback_url"), params);
                session.setConsumer(consumer);
             }
             catch (OAuthException e)
@@ -236,15 +244,53 @@ public class UIConsumerManagement extends Controller
       session.setAccessToken(token);
       return UIConsumerManagement_.consumerDetail();
    }
-   
-   @Action
-   public void editConsumerAction(String key)
+
+   @Ajax
+   @Resource
+   public void submitConsumerAction()
+   {
+      Map<String, String> params = convert(resourceContext.getParameters());
+      if (!parseParameters(params))//Missing required parameters
+      {
+         consumerInputs.with().render();
+      }
+      else
+      {
+         OAuthServiceProvider provider =
+            (OAuthServiceProvider)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
+               OAuthServiceProvider.class);
+         Consumer consumer = provider.update(params.remove("key"), 
+                                    params.remove("secret"), 
+                                    params.remove("callback_url"), 
+                                    params);
+         if (consumer != null)
+         {
+            session.setConsumer(consumer);
+         }
+         consumerFields.with().render();
+      }
+   }
+
+   @Ajax
+   @Resource
+   public void editAction(String key)
    {
       OAuthServiceProvider provider =
-               (OAuthServiceProvider)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
-                  OAuthServiceProvider.class);
-      session.setConsumer(provider.getConsumer(key));
-      UIConsumerManagement_.addConsumer();
+         (OAuthServiceProvider)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
+            OAuthServiceProvider.class);
+      Consumer consumer = provider.getConsumer(key);
+      Map<String, String> params = new HashMap<String, String>();
+      params.put("key", consumer.getConsumerKey());
+      params.put("secret", consumer.getConsumerSecret());
+      params.put("callback_url", consumer.getCallbackURL());
+
+      for (Entry<String, String> entry : consumer.getProperties().entrySet())
+      {
+         params.put(entry.getKey(), entry.getValue());
+      }
+
+      session.setParameters(params);
+      consumerInputs.render();
    }
 
    private boolean parseParameters(Map<String, String> params)
@@ -253,22 +299,22 @@ public class UIConsumerManagement extends Controller
       String key = params.get("key");
       String secret = params.get("secret");
       String callback_url = params.get("callback_url");
-      
+
       if (key == null || key.length() <= 0)
       {
          errors.put("key", "Consumer key is required");
       }
-      
+
       if (secret == null || secret.length() <= 0)
       {
          errors.put("secret", "Consumer secret is required");
       }
-      
+
       if (callback_url == null || callback_url.length() <= 0)
       {
          errors.put("callback_url", "Callback Url is required");
       }
-      
+
       if (errors.size() > 0)
       {
          session.setErrors(errors);
@@ -279,10 +325,10 @@ public class UIConsumerManagement extends Controller
       {
          session.setParameters(params);
       }
-      
+
       return true;
    }
-   
+
    //Temporary during juzu support transmission Map<String, String> params
    private Map<String, String> convert(Map<String, String[]> params)
    {

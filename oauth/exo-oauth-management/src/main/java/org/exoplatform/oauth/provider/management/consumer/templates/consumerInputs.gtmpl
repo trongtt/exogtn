@@ -1,0 +1,64 @@
+<%
+	def message = session.getMessage();
+	def props = session.getPropertyNames();
+	def key, secret, callback_url, properties;
+
+	def params = session.getParameters();
+	if (params != null && params.size() > 0) {
+		key = params.remove("key");
+		secret = params.remove("secret");
+		callback_url = params.remove("callback_url");
+	}
+	
+	def errors = session.getErrors();
+	def keyErr = "";
+	def secretErr = "";
+	def callback_urlErr = "";
+	if (errors != null) {
+		keyErr = errors.get('key');
+		secretErr = errors.get('secret');
+		callback_urlErr = errors.get('callback_url');
+	}
+%>
+
+<div class="consumer-inputs">		
+	<table>
+		<tr>
+			<td>Consumer key:</td>
+			<td>
+				<input class="key" type="text" name="key" value="${key}" readonly="readonly" /> *
+			</td>
+			<td>
+				<div class="oauth-message">${keyErr}</div>
+			</td>
+		</tr>
+		<tr>
+			<td>Consumer secret:</td>
+			<td>
+				<input type="text" name="secret" value="${secret}" /> *
+			</td>
+			<td>
+				<div class="oauth-message">${secretErr}</div>
+			</td>
+		</tr>
+		<tr>
+			<td>Callback Url:</td>
+			<td>
+				<input type="text" name="callback_url" value="${callback_url}" /> *
+			</td>
+			<td>
+				<div class="oauth-message">${callback_urlErr}</div>
+			</td>
+		</tr>
+		<% for (def prop : props) {
+         def propValue = params.get(prop);
+      %>
+			<tr>
+				<td>${prop}:</td>
+				<td><input type="text" name="${prop}" value="${propValue}" /></td>
+			</tr>
+		<% } %>
+	</table>		
+	<input type="submit" class="submit" value="Save" />
+	<br />
+</div>

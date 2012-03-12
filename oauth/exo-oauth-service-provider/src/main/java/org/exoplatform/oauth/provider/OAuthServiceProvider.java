@@ -54,6 +54,19 @@ public interface OAuthServiceProvider
     */
    public Consumer registerConsumer(String consumerKey, String consumerSecret, String callbackURL,
       Map<String, String> properties) throws OAuthException;
+   
+   /**
+    * Update information of existing consumer. If there is no consumer, do nothing.
+    * @param consumerKey
+    * @param consumerSecret
+    * @param callbackURL
+    * @param properties
+    * @return Consumer that is updated OR
+    *         {@code null} if has an error during updating or no existing consumer with consumerKey
+    * @throws OAuthException
+    */
+   public Consumer update(String consumerKey, String consumerSecret, String callbackURL, 
+      Map<String, String> properties);
 
    /**
     * Remove Consumer registered under key consumerKey. All Access Token instances associated with this Consumer

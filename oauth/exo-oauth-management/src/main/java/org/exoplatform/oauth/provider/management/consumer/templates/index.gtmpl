@@ -5,7 +5,7 @@
 <div class="all-consumer">
 	<div><h1>OAuth
 	Provider: Manage Consumer Applications</h1></div>
-	<div>
+	<div class="search-form">
 		<input type="text" class="text">
 		<select class="type">
 	        <option value="key">Consumer Key</option>

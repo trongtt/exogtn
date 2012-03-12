@@ -20,13 +20,13 @@
 .edit-icon {
 	width: 16px;
 	height: 16px;
-	background-image: url("../image/edit.png");
+	background-image: url("../image/edit.gif");
 }
 
 .delete-icon {
 	width: 16px;
 	height: 16px;
-	background-image: url("../image/delete.png");
+	background-image: url("../image/delete.gif");
 }
 
 .row-over {

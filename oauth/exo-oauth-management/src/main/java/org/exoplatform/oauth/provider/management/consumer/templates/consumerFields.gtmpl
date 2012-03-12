@@ -1,0 +1,33 @@
+<%
+	def consumer = session.getConsumer();
+	def props = session.getPropertyNames();
+%>
+
+<table align="center" class="info-table">
+  <tbody>
+	<tr>
+		<td class="label">Consumer key</td>
+		<td class="value key">${consumer.consumerKey}</td>
+	</tr>
+	<tr>
+		<td class="label">Consumer Secret</td>
+		<td class="value">${consumer.consumerSecret}</td>
+	</tr>
+	<tr>
+		<td class="label">Callback Url</td>
+		<td class="value">${consumer.getCallbackURL()}</td>
+	</tr>
+	<% for (def prop : props) {
+		def propValue = consumer.getProperty(prop);
+	%>
+		<tr>
+			<td class="label">${prop}</td>
+			<td class="value">${propValue}</td>
+		</tr>
+	<% } %>
+  </tbody>
+</table>
+	
+
+
+	

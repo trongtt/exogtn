@@ -1,9 +1,28 @@
 $(function() {
   var search = function(elt) {
-	var searchAction = elt.ConsumerApplication().search();
-    elt.$find(".result").load(searchAction, 
+	var action = elt.ConsumerApplication().search();
+    elt.$find(".result").load(action, 
     						{value : elt.$find('.text').val(), type : elt.$find('.type').val()}, 
     						function() {});
+  }
+  
+  var edit = function(elt) {
+		var action = elt.ConsumerApplication().editAction();
+	    elt.$find(".info-consumer").load(action, 
+	    						{key: elt.$find("table.info-table td.key").html()}, 
+	    						function() {});
+  }
+  
+  var submit = function(elt) {
+		var action = elt.ConsumerApplication().submitConsumerAction();
+		var params = {};
+		var inputs = elt.$find("table :input");
+		inputs.each(function() {
+			params[this.name] = $(this).val();
+		});
+	    elt.$find(".info-consumer").load(action, 
+	    						params, 
+	    						function() {});
   }
 
   function hideBox() {
@@ -12,11 +31,11 @@ $(function() {
 			}, 1000 );
   }
 	
-  $(".jz").on("click", ".submit", function() {
+  $(".search-form").on("click", ".submit", function() {
 		search(this);
   });
   
-  $(".jz").find(".text").keyup(function(event) {
+  $(".search-form").find(".text").keyup(function(event) {
 		if(event.keyCode == 13) {
 			search(this);
 		}
@@ -55,6 +74,12 @@ $(function() {
   	}
   );
   
+  $(".edit-icon").click(
+  	function() {
+  		edit(this);
+  	}
+  );
+  
   $(".help-icon").hover(
   	function() {
   		$(this).css("size", "200%");
@@ -74,5 +99,9 @@ $(function() {
 		  });
   	}
   );
+  
+  $(".consumer-inputs").find(".submit").live("click", function() {
+		submit(this);
+  });
   
 });

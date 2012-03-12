@@ -28,6 +28,7 @@ import org.exoplatform.oauth.provider.OAuthServiceProvider;
 import org.exoplatform.oauth.provider.OAuthToken;
 import org.exoplatform.oauth.provider.RequestToken;
 import org.exoplatform.oauth.provider.consumer.ConsumerEntry;
+import org.exoplatform.oauth.provider.consumer.ConsumerProperty;
 import org.exoplatform.oauth.provider.consumer.ConsumerStorage;
 import org.exoplatform.oauth.provider.token.AccessTokenEntry;
 import org.exoplatform.oauth.provider.token.AccessTokenStorage;
@@ -108,6 +109,29 @@ public class SimpleOAuthServiceProvider implements OAuthServiceProvider, Startab
          throw new OAuthException(OAuthKeys.OAUTH_DUPLICATE_CONSUMER);
       }
       return consumerStorage.registerConsumer(consumerKey, consumerSecret, callbackURL, properties).getConsumer();
+   }
+   
+   public Consumer update(String consumerKey, String consumerSecret, String callbackURL, 
+      Map<String, String> properties)
+   {
+      ConsumerEntry consumerEntry = consumerStorage.getConsumer(consumerKey);
+      if (consumerEntry != null)
+      {
+         consumerEntry.setSecret(consumerSecret);
+         consumerEntry.setCallbackURL(callbackURL);
+         if (properties != null)
+         {
+            for (Map.Entry<String, String> entry : properties.entrySet())
+            {
+               ConsumerProperty property = consumerEntry.createProperty();
+               consumerEntry.getProperties().remove(entry.getKey());
+               consumerEntry.getProperties().put(entry.getKey(), property);
+               property.setPropertyValue(entry.getValue());
+            }
+         }
+         return consumerEntry.getConsumer();
+      }
+      return null;
    }
 
    public void removeConsumer(String consumerKey)
