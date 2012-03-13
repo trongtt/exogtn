@@ -1,50 +1,23 @@
 $(function() {
-  var search = function(elt) {
+  /* Search consumer with give information */
+  $(".search-form").on("click", ".submit", function() {
+	searchConsumer(this);
+  });
+  
+  $(".search-form").find(".text").keyup(function(event) {
+	if(event.keyCode == 13) {
+		searchConsumer(this);
+	}
+  });
+  
+  var searchConsumer = function(elt) {
 	var action = elt.ConsumerApplication().search();
     elt.$find(".result").load(action, 
     						{value : elt.$find('.text').val(), type : elt.$find('.type').val()}, 
     						function() {});
   }
   
-  var edit = function(elt) {
-		var action = elt.ConsumerApplication().editAction();
-	    elt.$find(".info-consumer").load(action, 
-	    						{key: elt.$find("table.info-table td.key").html()}, 
-	    						function() {});
-  }
-  
-  var submit = function(elt) {
-		var action = elt.ConsumerApplication().submitConsumerAction();
-		var params = {};
-		var inputs = elt.$find("table :input");
-		inputs.each(function() {
-			params[this.name] = $(this).val();
-		});
-	    elt.$find(".info-consumer").load(action, 
-	    						params, 
-	    						function() {});
-  }
-
-  function hideBox() {
-			setTimeout(function() {
-				$(".add-consumer .help-notification").removeAttr("style").fadeOut();
-			}, 1000 );
-  }
-	
-  $(".search-form").on("click", ".submit", function() {
-		search(this);
-  });
-  
-  $(".search-form").find(".text").keyup(function(event) {
-		if(event.keyCode == 13) {
-			search(this);
-		}
-  });
-  
-  $(".help").click(function() {
-  	$(".add-consumer .help-notification").show("Fold", { to: { width: 280, height: 185 }}, 500, hideBox);
-  });
-  
+  /* Navigation hover event */
   $(".navigation-normal").hover(
   	function() {
   		$(this).removeClass().addClass("navigation-over");
@@ -54,6 +27,7 @@ $(function() {
   	}
   );
   
+  /* table row hover events */
   $(".all-consumer tr").live("mouseover",
   	function() {
   		$(this).removeClass().addClass("row-over");
@@ -65,21 +39,48 @@ $(function() {
   	}
   );
   
-  $(".consumer-detail tr").hover(
+  $(".consumer-detail tr").live("mouseover",
   	function() {
   		$(this).removeClass().addClass("row-over");
-  	},
+  });
+  
+  $(".consumer-detail tr").live("mouseout",
   	function() {
   		$(this).removeClass().addClass("row-normal");
   	}
   );
   
+  /* edit consumer information */
   $(".edit-icon").click(
   	function() {
   		edit(this);
   	}
   );
   
+  var edit = function(elt) {
+	var action = elt.ConsumerApplication().editAction();
+	elt.$find(".info-consumer").load(action, 
+		    						{key: elt.$find("table.info-table td.key").html()}, 
+		    						function() {});
+  }
+  
+  $(".consumer-inputs").find(".submit").live("click", function() {
+	submitSaveConsumer(this);
+  });
+  
+  var submitSaveConsumer = function(elt) {
+	var action = elt.ConsumerApplication().submitConsumerAction();
+	var params = {};
+	var inputs = elt.$find("table :input");
+	inputs.each(function() {
+		params[this.name] = $(this).val();
+	});
+    elt.$find(".info-consumer").load(action, 
+    						params, 
+    						function() {});
+  }
+  
+  /* view help information */
   $(".help-icon").hover(
   	function() {
   		$(this).css("size", "200%");
@@ -90,18 +91,26 @@ $(function() {
   );
   
   $(".help-icon").click(function() {
-		$('.help-notification').animate({
-		    opacity: 0.25,
-		    left: '+=50',
-		    height: 'toggle'
-		  }, 5000, function() {
-		    // Animation complete.
-		  });
+	  if($('.help-detail').html() == "") {
+		$('.help-detail').html("Input full information of your consumer:" +
+				"				\n Consumer key is represent as identifier of consumer in system" +
+				"				\n Consumer secret is string that consumer will use to authenticate in system" +
+				"				\n Callback URL is used by system when consumer authenticate sucessfully" +
+				"				\n System will return to this URL for consumer")
+							.fadeIn(1000, function() {
+		});
+	  } else {
+		$('.help-detail').html("")
+							.fadeOut(1000, function() {
+		});
+	  }
   	}
   );
   
-  $(".consumer-inputs").find(".submit").live("click", function() {
-		submit(this);
-  });
+  function hideBox() {
+	setTimeout(function() {
+		$(".add-consumer .help-notification").removeAttr("style").fadeOut();
+	}, 1000 );
+  }
   
 });

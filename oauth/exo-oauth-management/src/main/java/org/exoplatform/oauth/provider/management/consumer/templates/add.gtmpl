@@ -35,8 +35,8 @@
 <div class="add-consumer">
 	<form action="@{UIConsumerManagement.addNewConsumer()}" method="post" align="center">
 		<div>
-			<h2>Add new Consumer</h2>
-			<p class="help-icon" alt="Help"></p>
+			<h2>Add new Consumer  <span title="Help" alt="Help" class="help-icon" style=""></span></h2>
+         <p class="help-detail"></p>
 		</div>
 		
 		<table>

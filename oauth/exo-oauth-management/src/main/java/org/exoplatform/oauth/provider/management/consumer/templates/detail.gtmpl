@@ -8,9 +8,13 @@
 
 <div class="consumer-detail">
 	<% if (consumer != null) { %>
-	<div>
-      <h2>Consumer Information</h2>
-      <p class="edit-icon" alt="Edit information"></p>
+	<div style="display: inline-block;">
+      <image src="/eXoResources/skin/sharedImages/Icon80x80/DefaultPortlet.png" class="app-icon" width="80" height="80" >
+      <span>${consumer.consumerKey}</span>
+   </div>
+   <div>
+      <h2>Information <span class="edit-icon" alt="Edit information" title="Edit information"></span></h2>
+      <p style="font-style:italic">General information of consumer application</p>
    </div>
    <div class="info-consumer">
    	<table align="center" class="info-table">
@@ -41,7 +45,8 @@
 	<% } %>
 	<br />
 	<% if (accessToken != null) { %>
-		<h2>Your access token for this consumer</h2>
+		<h2>Access token</h2>
+      <p style="font-style:italic">Use these tokens to sign OAuth requests</p>
 		<table class="token">
 		  <tbody>
 			<tr>
@@ -57,7 +62,7 @@
 		<br />
 		<a class="oauth-submit" href="@{UIConsumerManagement.createAccessToken(consumerKey = consumer.consumerKey)}">Recreate the Access Token</a>
 	<% } else { %>
-		<h2>Create an Access Token for this consumer</h2>
+		<h2>Create Access Token for this consumer</h2>
 		<br />
 		<a class="oauth-submit" href="@{UIConsumerManagement.createAccessToken(consumerKey = consumer.consumerKey)}">Create the Access Token</a>
 	<% } %>
