@@ -36,7 +36,7 @@
 	<form action="@{UIConsumerManagement.addNewConsumer()}" method="post" align="center">
 		<div>
 			<h2>Add new Consumer  <span title="Help" alt="Help" class="help-icon" style=""></span></h2>
-         <p class="help-detail"></p>
+         <p id="help-detail" class="help-detail" title="Consumer Helper"></p>
 		</div>
 		
 		<table>
@@ -74,12 +74,8 @@
 				</tr>
 			<% } %>
 		</table>
-		
-		<div class="help-notification ui-widget-content ui-corner-all" style="display: none; ">
-		</div>
-		
+      <br />		
 		<input type="submit" value="Submit" />
-		<input type="submit" value="Clear" />
 		<br />
 	</form>
 </div>

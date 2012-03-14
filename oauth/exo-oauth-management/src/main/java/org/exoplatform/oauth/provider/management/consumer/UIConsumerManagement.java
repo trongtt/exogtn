@@ -74,6 +74,10 @@ public class UIConsumerManagement extends Controller
    org.exoplatform.oauth.provider.management.consumer.templates.consumerFields consumerFields;
    
    @Inject
+   @Path("tokenFields.gtmpl")
+   org.exoplatform.oauth.provider.management.consumer.templates.tokenFields tokenFields;
+   
+   @Inject
    Session session;
 
    @View
@@ -127,28 +131,20 @@ public class UIConsumerManagement extends Controller
          {
             info = c.getConsumerSecret();
          }
-         else if (type.equalsIgnoreCase(Constants.CONSUMER_NAME))
+         else if (type.equalsIgnoreCase(Constants.CONSUMER_CALLBACK_URL))
          {
             info = c.getCallbackURL();
          }
-         else if (type.equalsIgnoreCase(Constants.CONSUMER_CALLBACK_URL))
+         else if (session.getPropertyNames().contains(type))
          {
-            info = c.getProperty(Constants.CONSUMER_CALLBACK_URL).toString();
-         }
-         else if (type.equalsIgnoreCase(Constants.CONSUMER_DESCRIPTION))
-         {
-            info = c.getProperty(Constants.CONSUMER_DESCRIPTION).toString();
-         }
-         else if (type.equalsIgnoreCase(Constants.CONSUMER_WEBSITE))
-         {
-            info = c.getProperty(Constants.CONSUMER_WEBSITE).toString();
+            info = c.getProperty(type).toString();
          }
          else
          {
             info = c.getConsumerKey();
          }
 
-         if (pattern.matcher(c.getConsumerKey()).matches())
+         if (pattern.matcher(info).matches())
          {
             results.add(c);
          }
@@ -232,19 +228,6 @@ public class UIConsumerManagement extends Controller
       }
    }
 
-   @Action
-   public Response createAccessToken(String consumerKey)
-   {
-      OAuthServiceProvider provider =
-         (OAuthServiceProvider)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
-            OAuthServiceProvider.class);
-      OAuthToken token =
-         provider.generateAccessToken(InternalApplicationContext.getCurrentRequest().getSecurityContext()
-            .getRemoteUser(), consumerKey);
-      session.setAccessToken(token);
-      return UIConsumerManagement_.consumerDetail();
-   }
-
    @Ajax
    @Resource
    public void submitConsumerAction()
@@ -293,6 +276,20 @@ public class UIConsumerManagement extends Controller
       consumerInputs.render();
    }
 
+   @Ajax
+   @Resource
+   public void refreshTokenAction(String key)
+   {
+      OAuthServiceProvider provider =
+               (OAuthServiceProvider)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
+                  OAuthServiceProvider.class);
+      OAuthToken token =
+         provider.generateAccessToken(InternalApplicationContext.getCurrentRequest().getSecurityContext()
+            .getRemoteUser(), key);
+      session.setAccessToken(token);
+      tokenFields.with().render();
+   }
+   
    private boolean parseParameters(Map<String, String> params)
    {
       Map<String, String> errors = new HashMap<String, String>();

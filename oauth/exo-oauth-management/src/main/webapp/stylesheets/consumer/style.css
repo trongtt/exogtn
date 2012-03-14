@@ -36,6 +36,14 @@
 	cursor:pointer;
 }
 
+.refresh-icon {
+	width: 24px;
+	height: 24px;
+	background-image: url("../image/refresh.gif");
+	display: inline-block;
+	cursor:pointer;
+}
+
 .row-over {
 	background-color: #F8F8F8;
 }
@@ -147,13 +155,4 @@
 .add-consumer table {
 	text-align: left;
 	padding: 1em;
-}
-
-.add-consumer .help-detail {
-	background:  #ADD8E6;
-  border: none;
-  border-radius: 1px 40px 40px 40px;
-  padding: 5px 5px 5px 5px;
-  width: 200px;
-  margin-left: 2px;
 }

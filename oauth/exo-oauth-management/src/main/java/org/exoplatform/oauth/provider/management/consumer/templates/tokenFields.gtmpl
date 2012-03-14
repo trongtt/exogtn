@@ -1,0 +1,18 @@
+<%
+	def accessToken = session.getAccessToken();
+%>
+<table class="token">
+  <tbody>
+	<tr>
+		<td class="label">Access Token</td>
+		<td class="value">${accessToken.getToken()}<td>
+	</tr>
+	<tr>
+		<td class="label">Token Secret</td>
+		<td class="value">${accessToken.getTokenSecret()}</td>
+	</tr>
+  </tbody>
+</table>
+
+
+	

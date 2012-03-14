@@ -44,28 +44,25 @@
    </div>
 	<% } %>
 	<br />
-	<% if (accessToken != null) { %>
-		<h2>Access token</h2>
-      <p style="font-style:italic">Use these tokens to sign OAuth requests</p>
-		<table class="token">
-		  <tbody>
-			<tr>
-				<td class="label">Access Token</td>
-				<td class="value">${accessToken.getToken()}<td>
-			</tr>
-			<tr>
-				<td class="label">Token Secret</td>
-				<td class="value">${accessToken.getTokenSecret()}</td>
-			</tr>
-		  </tbody>
-		</table>
-		<br />
-		<a class="oauth-submit" href="@{UIConsumerManagement.createAccessToken(consumerKey = consumer.consumerKey)}">Recreate the Access Token</a>
-	<% } else { %>
-		<h2>Create Access Token for this consumer</h2>
-		<br />
-		<a class="oauth-submit" href="@{UIConsumerManagement.createAccessToken(consumerKey = consumer.consumerKey)}">Create the Access Token</a>
-	<% } %>
+	<h2>Access token <span class="refresh-icon" alt="create/refresh token" title="create/refresh token"></span></h2>
+   <p style="font-style:italic">Use these tokens to sign OAuth requests</p>
+   <div class="info-token">
+      <% if (accessToken != null) { %>
+         <table class="token">
+   		  <tbody>
+   			<tr>
+   				<td class="label">Access Token</td>
+   				<td class="value">${accessToken.getToken()}<td>
+   			</tr>
+   			<tr>
+   				<td class="label">Token Secret</td>
+   				<td class="value">${accessToken.getTokenSecret()}</td>
+   			</tr>
+   		  </tbody>
+   		</table>
+      	<br />
+      <% } %>
+   </div>
 </div>
 
 

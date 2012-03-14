@@ -80,37 +80,28 @@ $(function() {
     						function() {});
   }
   
-  /* view help information */
-  $(".help-icon").hover(
+  /* refresh token*/
+  $(".refresh-icon").click(
   	function() {
-  		$(this).css("size", "200%");
-  	},
-  	function() {
-  		$(this).css("size", "100%");
+  		refreshToken(this);
   	}
   );
   
-  $(".help-icon").click(function() {
-	  if($('.help-detail').html() == "") {
-		$('.help-detail').html("Input full information of your consumer:" +
-				"				\n Consumer key is represent as identifier of consumer in system" +
-				"				\n Consumer secret is string that consumer will use to authenticate in system" +
-				"				\n Callback URL is used by system when consumer authenticate sucessfully" +
-				"				\n System will return to this URL for consumer")
-							.fadeIn(1000, function() {
-		});
-	  } else {
-		$('.help-detail').html("")
-							.fadeOut(1000, function() {
-		});
-	  }
-  	}
-  );
-  
-  function hideBox() {
-	setTimeout(function() {
-		$(".add-consumer .help-notification").removeAttr("style").fadeOut();
-	}, 1000 );
+  var refreshToken = function(elt) {
+	var action = elt.ConsumerApplication().refreshTokenAction();
+	elt.$find(".info-token").load(action, 
+		    						{key: elt.$find("table.info-table td.key").html()}, 
+		    						function() {});
   }
+  
+  /* view help information */ 
+  $(".help-icon").click(function() {	  
+	  $('#help-detail').html("Input full information of your consumer:" +
+				"				\n Consumer key is represent as identifier of consumer in system." +
+				"				\n Consumer secret is string that consumer will use to authenticate in system." +
+				"				\n Callback URL is used by system when consumer authenticate sucessfully, " +
+				"				\n system will return to this URL for consumer").dialog();
+  	}
+  );
   
 });

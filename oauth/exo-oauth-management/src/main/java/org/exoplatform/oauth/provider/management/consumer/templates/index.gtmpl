@@ -24,7 +24,7 @@
 	
 	<br />
 	<p>
-  	 <a class="oauth-submit ui-corner-all" href="@{UIConsumerManagement.showAddConsumer()}">Add a new Consumer</a>
+  	 <a class="oauth-submit" href="@{UIConsumerManagement.showAddConsumer()}">Add a new Consumer</a>
 	</p>
 
 </div>
