@@ -23,7 +23,6 @@ import org.exoplatform.oauth.provider.OAuthToken;
 import org.juzu.SessionScoped;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -100,10 +99,6 @@ public class Session implements Serializable
 
    public List<String> getPropertyNames()
    {
-      propertyNames = new ArrayList<String>();
-      propertyNames.add("name");
-      propertyNames.add("description");
-      propertyNames.add("website");
       return propertyNames;
    }
 

@@ -31,9 +31,10 @@ import org.juzu.Resource;
 import org.juzu.Response;
 import org.juzu.plugin.ajax.Ajax;
 import org.juzu.View;
-import org.juzu.impl.application.InternalApplicationContext;
+import org.juzu.impl.request.Request;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,7 @@ import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
+import javax.portlet.PortletPreferences;
 
 /**
  * @author <a href="kienna@exoplatform.com">Kien Nguyen</a>
@@ -79,10 +81,15 @@ public class UIConsumerManagement extends Controller
    
    @Inject
    Session session;
+   
+   @Inject
+   PortletPreferences preferences;
 
    @View
    public void index()
    {
+      String[] pros =  preferences.getValue("extProperties", "name|description|website").split("[|]");
+      session.setPropertyNames(Arrays.asList(pros));
       ExoContainer container = ExoContainerContext.getCurrentContainer();
       OAuthServiceProvider oauthProvider =
          (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
@@ -161,8 +168,7 @@ public class UIConsumerManagement extends Controller
          (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
       Consumer consumer = oauthProvider.getConsumer(consumerKey);
       session.setConsumer(consumer);
-      session.setAccessToken(oauthProvider.getAccessToken(InternalApplicationContext.getCurrentRequest()
-         .getSecurityContext().getRemoteUser(), consumerKey));
+      session.setAccessToken(oauthProvider.getAccessToken(Request.getCurrent().getBridge().getSecurityContext().getRemoteUser(), consumerKey));
       return UIConsumerManagement_.consumerDetail();
    }
 
@@ -284,7 +290,7 @@ public class UIConsumerManagement extends Controller
                (OAuthServiceProvider)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(
                   OAuthServiceProvider.class);
       OAuthToken token =
-         provider.generateAccessToken(InternalApplicationContext.getCurrentRequest().getSecurityContext()
+         provider.generateAccessToken(Request.getCurrent().getBridge().getSecurityContext()
             .getRemoteUser(), key);
       session.setAccessToken(token);
       tokenFields.with().render();

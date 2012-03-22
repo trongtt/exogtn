@@ -28,7 +28,7 @@ import org.juzu.Action;
 import org.juzu.Path;
 import org.juzu.Response;
 import org.juzu.View;
-import org.juzu.impl.application.InternalApplicationContext;
+import org.juzu.impl.request.Request;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -52,7 +52,7 @@ public class UITokenManagement
    public void index()
    {
       ExoContainer container = ExoContainerContext.getCurrentContainer();
-      String currentUser = InternalApplicationContext.getCurrentRequest().getSecurityContext().getRemoteUser();
+      String currentUser = Request.getCurrent().getBridge().getSecurityContext().getRemoteUser();
       OAuthServiceProvider provider =
          (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
 

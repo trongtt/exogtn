@@ -89,8 +89,8 @@
       </portlet-info>
       <portlet-preferences>
          <preference>
-            <name>consumer</name>
-            <value>par:/conf/consumer/extension.xml</value>
+            <name>extProperties</name>
+            <value>name|description|website</value>
             <read-only>false</read-only>
          </preference>
       </portlet-preferences>

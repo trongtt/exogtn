@@ -1,8 +1,4 @@
-@Application(
-   plugins = {
-      AssetPlugin.class,
-      AjaxPlugin.class
-})
+@Application
 @Assets(
    scripts = {
       @Script(src = "javascripts/jquery-1.7.1.min.js"),
@@ -17,8 +13,6 @@
 package org.exoplatform.oauth.provider.management.consumer;
 
 import org.juzu.Application;
-import org.juzu.plugin.ajax.AjaxPlugin;
-import org.juzu.plugin.asset.AssetPlugin;
 import org.juzu.plugin.asset.Assets;
 import org.juzu.plugin.asset.Script;
 import org.juzu.plugin.asset.Stylesheet;
