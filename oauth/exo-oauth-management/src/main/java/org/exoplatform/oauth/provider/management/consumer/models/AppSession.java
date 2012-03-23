@@ -16,7 +16,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.exoplatform.oauth.provider.management.consumer;
+package org.exoplatform.oauth.provider.management.consumer.models;
 
 import org.exoplatform.oauth.provider.Consumer;
 import org.exoplatform.oauth.provider.OAuthToken;
@@ -32,9 +32,9 @@ import javax.inject.Named;
  * @author <a href="kienna@exoplatform.com">Kien Nguyen</a>
  * @version $Revision$
  */
-@Named("session")
+@Named("appSession")
 @SessionScoped
-public class Session implements Serializable
+public class AppSession implements Serializable
 {
    private static final long serialVersionUID = 1L;
 

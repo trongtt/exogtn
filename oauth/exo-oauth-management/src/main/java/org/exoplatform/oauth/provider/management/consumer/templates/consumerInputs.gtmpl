@@ -1,16 +1,16 @@
 <%
-	def message = session.getMessage();
-	def props = session.getPropertyNames();
+	def message = appSession.getMessage();
+	def props = appSession.getPropertyNames();
 	def key, secret, callback_url, properties;
 
-	def params = session.getParameters();
+	def params = appSession.getParameters();
 	if (params != null && params.size() > 0) {
 		key = params.remove("key");
 		secret = params.remove("secret");
 		callback_url = params.remove("callback_url");
 	}
 	
-	def errors = session.getErrors();
+	def errors = appSession.getErrors();
 	def keyErr = "";
 	def secretErr = "";
 	def callback_urlErr = "";

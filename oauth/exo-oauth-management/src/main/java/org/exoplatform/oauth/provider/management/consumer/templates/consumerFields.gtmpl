@@ -1,6 +1,6 @@
 <%
-	def consumer = session.getConsumer();
-	def props = session.getPropertyNames();
+	def consumer = appSession.getConsumer();
+	def props = appSession.getPropertyNames();
 %>
 
 <table align="center" class="info-table">

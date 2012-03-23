@@ -2,9 +2,9 @@
 #{param name=session/}
 
 <%
-	def consumer = session.getConsumer();
-	def message = session.getMessage();
-	def props = session.getPropertyNames();
+	def consumer = appSession.getConsumer();
+	def message = appSession.getMessage();
+	def props = appSession.getPropertyNames();
 	def key, secret, callback_url, properties;
 	if (consumer != null) {
 		key = consumer.getConsumerKey();
@@ -12,7 +12,7 @@
 		callback_url = consumer.getCallbackURL();
 		properties = consumer.getProperties();
 	} else {
-		def params = session.getParameters();
+		def params = appSession.getParameters();
 		if (params != null && params.size() > 0) {
 			key = params.remove("key");
 			secret = params.remove("secret");
@@ -21,7 +21,7 @@
 		}
 	}
 	
-	def errors = session.getErrors();
+	def errors = appSession.getErrors();
 	def keyErr = "";
 	def secretErr = "";
 	def callback_urlErr = "";

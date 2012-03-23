@@ -1,9 +1,9 @@
 #{decorate path=navigation.gtmpl/}
 
 <%
-	def consumer = session.getConsumer();
-	def accessToken = session.getAccessToken();
-	def props = session.getPropertyNames();
+	def consumer = appSession.getConsumer();
+	def accessToken = appSession.getAccessToken();
+	def props = appSession.getPropertyNames();
 %>
 
 <div class="consumer-detail">

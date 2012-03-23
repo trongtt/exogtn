@@ -1,5 +1,5 @@
 <%
-	def accessToken = session.getAccessToken();
+	def accessToken = appSession.getAccessToken();
 %>
 <table class="token">
   <tbody>

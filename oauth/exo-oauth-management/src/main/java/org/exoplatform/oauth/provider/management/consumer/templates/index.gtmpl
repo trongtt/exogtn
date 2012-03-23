@@ -1,12 +1,12 @@
 <%
-	def props = session.getPropertyNames();
+	def props = appSession.getPropertyNames();
 %>
 
 <div class="all-consumer">
 	<div><h1>OAuth
 	Provider: Manage Consumer Applications</h1></div>
 	<div class="search-form">
-		<input type="text" class="text">
+		<input type="text" class="text" value="${searchSession.queryString}">
 		<select class="type">
 	        <option value="key">Consumer Key</option>
 	        <option value="secret">Consumer Secret</option>
@@ -20,6 +20,7 @@
 	<br />
 	
 	<div class="result">
+      #{include path=list.gtmpl/}
 	</div>
 	
 	<br />

@@ -1,7 +1,6 @@
-#{param name=consumers/}
-
 <%
-	def props = session.getPropertyNames();
+	def props = appSession.getPropertyNames();
+   def consumers = searchSession.getConsumers();
 %>
 <% if(consumers != null && consumers.size() > 0) { %>
 	<table border="1">

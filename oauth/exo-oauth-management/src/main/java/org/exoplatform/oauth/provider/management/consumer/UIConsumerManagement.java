@@ -24,6 +24,8 @@ import org.exoplatform.oauth.provider.Consumer;
 import org.exoplatform.oauth.provider.OAuthException;
 import org.exoplatform.oauth.provider.OAuthServiceProvider;
 import org.exoplatform.oauth.provider.OAuthToken;
+import org.exoplatform.oauth.provider.management.consumer.models.SearchSession;
+import org.exoplatform.oauth.provider.management.consumer.models.AppSession;
 import org.juzu.Action;
 import org.juzu.Controller;
 import org.juzu.Path;
@@ -80,7 +82,10 @@ public class UIConsumerManagement extends Controller
    org.exoplatform.oauth.provider.management.consumer.templates.tokenFields tokenFields;
    
    @Inject
-   Session session;
+   SearchSession searchSession;
+   
+   @Inject
+   AppSession appSession;
    
    @Inject
    PortletPreferences preferences;
@@ -89,7 +94,10 @@ public class UIConsumerManagement extends Controller
    public void index()
    {
       String[] pros =  preferences.getValue("extProperties", "name|description|website").split("[|]");
-      session.setPropertyNames(Arrays.asList(pros));
+      appSession.setPropertyNames(Arrays.asList(pros));
+      
+      searchSession.setConsumers(this.find(searchSession.getQueryString(), searchSession.getQueryType()));
+      
       ExoContainer container = ExoContainerContext.getCurrentContainer();
       OAuthServiceProvider oauthProvider =
          (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
@@ -105,6 +113,7 @@ public class UIConsumerManagement extends Controller
    @View
    public void addConsumer()
    {
+      System.out.println(appSession.getPropertyNames());
       add.with().render();
    }
 
@@ -112,7 +121,10 @@ public class UIConsumerManagement extends Controller
    @Resource
    public void search(String value, String type)
    {
-      list.with().consumers(this.find(value, type)).render();
+      searchSession.setQueryString(value);
+      searchSession.setQueryType(type);
+      searchSession.setConsumers(this.find(value, type));
+      list.with().render();
    }
 
    private List<Consumer> find(String value, String type)
@@ -130,19 +142,19 @@ public class UIConsumerManagement extends Controller
       for (Consumer c : provider.getAllConsumers())
       {
          String info = "";
-         if (type.equalsIgnoreCase(Constants.CONSUMER_KEY))
+         if (Constants.CONSUMER_KEY.equalsIgnoreCase(type))
          {
             info = c.getConsumerKey();
          }
-         else if (type.equalsIgnoreCase(Constants.CONSUMER_SECRET))
+         else if (Constants.CONSUMER_SECRET.equalsIgnoreCase(type))
          {
             info = c.getConsumerSecret();
          }
-         else if (type.equalsIgnoreCase(Constants.CONSUMER_CALLBACK_URL))
+         else if (Constants.CONSUMER_CALLBACK_URL.equalsIgnoreCase(type))
          {
             info = c.getCallbackURL();
          }
-         else if (session.getPropertyNames().contains(type))
+         else if (appSession.getPropertyNames().contains(type))
          {
             info = c.getProperty(type).toString();
          }
@@ -167,16 +179,16 @@ public class UIConsumerManagement extends Controller
       OAuthServiceProvider oauthProvider =
          (OAuthServiceProvider)container.getComponentInstanceOfType(OAuthServiceProvider.class);
       Consumer consumer = oauthProvider.getConsumer(consumerKey);
-      session.setConsumer(consumer);
-      session.setAccessToken(oauthProvider.getAccessToken(Request.getCurrent().getBridge().getSecurityContext().getRemoteUser(), consumerKey));
+      appSession.setConsumer(consumer);
+      appSession.setAccessToken(oauthProvider.getAccessToken(Request.getCurrent().getBridge().getSecurityContext().getRemoteUser(), consumerKey));
       return UIConsumerManagement_.consumerDetail();
    }
 
    @Action
    public Response showAddConsumer()
    {
-      session.setConsumer(null);
-      session.setMessage(null);
+      appSession.setConsumer(null);
+      appSession.setMessage(null);
       return UIConsumerManagement_.addConsumer();
    }
 
@@ -212,7 +224,7 @@ public class UIConsumerManagement extends Controller
             StringBuilder message = new StringBuilder();
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("key", "Consumer Key is existing");
-            session.setErrors(errors);
+            appSession.setErrors(errors);
             return UIConsumerManagement_.addConsumer();
          }
          else
@@ -222,7 +234,7 @@ public class UIConsumerManagement extends Controller
                consumer =
                   provider.registerConsumer(params.remove("key"), params.remove("secret"),
                      params.remove("callback_url"), params);
-               session.setConsumer(consumer);
+               appSession.setConsumer(consumer);
             }
             catch (OAuthException e)
             {
@@ -254,7 +266,7 @@ public class UIConsumerManagement extends Controller
                                     params);
          if (consumer != null)
          {
-            session.setConsumer(consumer);
+            appSession.setConsumer(consumer);
          }
          consumerFields.with().render();
       }
@@ -278,7 +290,7 @@ public class UIConsumerManagement extends Controller
          params.put(entry.getKey(), entry.getValue());
       }
 
-      session.setParameters(params);
+      appSession.setParameters(params);
       consumerInputs.render();
    }
 
@@ -292,7 +304,7 @@ public class UIConsumerManagement extends Controller
       OAuthToken token =
          provider.generateAccessToken(Request.getCurrent().getBridge().getSecurityContext()
             .getRemoteUser(), key);
-      session.setAccessToken(token);
+      appSession.setAccessToken(token);
       tokenFields.with().render();
    }
    
@@ -320,13 +332,13 @@ public class UIConsumerManagement extends Controller
 
       if (errors.size() > 0)
       {
-         session.setErrors(errors);
-         session.setParameters(params);
+         appSession.setErrors(errors);
+         appSession.setParameters(params);
          return false;
       }
       else
       {
-         session.setParameters(params);
+         appSession.setParameters(params);
       }
 
       return true;
